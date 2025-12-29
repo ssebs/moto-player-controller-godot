@@ -6,7 +6,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Gameplay
 
-<video src='https://github.com/ssebs/moto-player-controller-godot/raw/refs/heads/main/img/clip.mp4' alt="video of gameplay" width="200px" />
+<video src='https://github.com/ssebs/moto-player-controller-godot/raw/refs/heads/main/img/clip.mp4' alt="video of gameplay" width="200px"></video>
 
 
 ## In Progress:
