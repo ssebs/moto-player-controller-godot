@@ -9,7 +9,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 ![gameplay gif](./img/gameplay.gif)
 
 ## In Progress:
-- [ ] brake light 
 - [ ] Custom "bike_handler" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
 - [ ] Fix IK
 - [ ] Fix bugs / understand the code

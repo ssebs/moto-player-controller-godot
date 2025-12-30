@@ -8,11 +8,16 @@ var right_handlebar_marker: Marker3D
 var left_handlebar_marker: Marker3D
 var seat_marker: Marker3D
 
+# Tail light
+var tail_light_material: StandardMaterial3D = null
+
 # Shared state
 var state: BikeState
 
 # Input state (from signals)
 var steer_input: float = 0.0
+var front_brake_input: float = 0.0
+var rear_brake_input: float = 0.0
 
 # Body sway settings
 @export var body_sway_offset: float = 0.15  # How far the body moves left/right
@@ -49,15 +54,22 @@ var bones_initialized: bool = false
 
 
 func setup(bike_state: BikeState, input: BikeInput, skel: Skeleton3D,
-        right_marker: Marker3D, left_marker: Marker3D, seat: Marker3D) -> void:
+        right_marker: Marker3D, left_marker: Marker3D, seat: Marker3D,
+        tail_light: MeshInstance3D = null) -> void:
     state = bike_state
     character_skel = skel
     right_handlebar_marker = right_marker
     left_handlebar_marker = left_marker
     seat_marker = seat
 
+    # Setup tail light material reference
+    if tail_light:
+        tail_light_material = tail_light.get_surface_override_material(0)
+
     # Connect to input signals
     input.steer_changed.connect(_on_steer_changed)
+    input.front_brake_changed.connect(_on_front_brake_changed)
+    input.rear_brake_changed.connect(_on_rear_brake_changed)
 
     # Setup bone indices
     _setup_bones()
@@ -223,9 +235,27 @@ func _on_steer_changed(value: float) -> void:
     steer_input = value
 
 
+func _on_front_brake_changed(value: float) -> void:
+    front_brake_input = value
+    _update_brake_light()
+
+
+func _on_rear_brake_changed(value: float) -> void:
+    rear_brake_input = value
+    _update_brake_light()
+
+
+func _update_brake_light() -> void:
+    if tail_light_material:
+        tail_light_material.emission_enabled = front_brake_input > 0.01 or rear_brake_input > 0.01
+
+
 func reset() -> void:
     steer_input = 0.0
+    front_brake_input = 0.0
+    rear_brake_input = 0.0
     current_body_offset = 0.0
+    _update_brake_light()
     # Clear bone overrides
     if character_skel and bones_initialized:
         character_skel.set_bone_global_pose_override(right_upper_arm_idx, Transform3D(), 0.0, false)

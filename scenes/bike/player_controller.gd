@@ -49,8 +49,6 @@ func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
 
-    var mat = tail_light.get_surface_override_material(0) # TODO: turn on emission during braking
-
     # Setup all components with shared state and input signals
     bike_physics.setup(state, bike_input)
     bike_gearing.setup(state, bike_physics, bike_input)
@@ -58,7 +56,7 @@ func _ready():
     bike_crash.setup(state, bike_physics, bike_input)
     bike_audio.setup(state, bike_input, engine_sound, tire_screech, engine_grind, exhaust_pops)
     bike_ui.setup(state, bike_input, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, brake_danger_bar, clutch_bar, difficulty_label)
-    player_animation.setup(state, bike_input, character_skeleton, right_handlebar_marker, left_handlebar_marker, seat_marker)
+    player_animation.setup(state, bike_input, character_skeleton, right_handlebar_marker, left_handlebar_marker, seat_marker, tail_light)
 
     # Connect component signals
     bike_gearing.gear_grind.connect(_on_gear_grind)
