@@ -4,12 +4,11 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://cou3wm3hydmdp"
-path="res://.godot/imported/Male_Shirt.glb-7628c3425bb5e5e75d7c531428cb98c1.scn"
+valid=false
 
 [deps]
 
 source_file="res://assets/characters/Animated Men Characters - Feb 2019/Male_Shirt.glb"
-dest_files=["res://.godot/imported/Male_Shirt.glb-7628c3425bb5e5e75d7c531428cb98c1.scn"]
 
 [params]
 

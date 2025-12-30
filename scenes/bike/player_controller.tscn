@@ -1,8 +1,7 @@
-[gd_scene load_steps=17 format=3 uid="uid://bmqevs0vheol7"]
+[gd_scene load_steps=16 format=3 uid="uid://bmqevs0vheol7"]
 
 [ext_resource type="Script" uid="uid://c331s8cm2gjtp" path="res://scenes/bike/player_controller.gd" id="1_5uol1"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_ujl86"]
-[ext_resource type="PackedScene" uid="uid://cou3wm3hydmdp" path="res://assets/characters/Animated Men Characters - Feb 2019/Male_Shirt.glb" id="3_sdhfr"]
 [ext_resource type="Script" uid="uid://ct5kbf1mujm7r" path="res://scenes/bike/components/player_animation_controller.gd" id="4_n1tms"]
 [ext_resource type="Script" uid="uid://l500tpp42su8" path="res://scenes/bike/components/bike_gearing.gd" id="5_gearing"]
 [ext_resource type="Script" uid="uid://bpqhimqk1dt2d" path="res://scenes/bike/components/bike_tricks.gd" id="7_tricks"]
@@ -32,10 +31,6 @@ transform = Transform3D(0.99976206, 0.0049999, -0.021233829, 0.0005158487, 0.967
 fov = 70.0
 
 [node name="CharacterMesh" type="Node3D" parent="."]
-
-[node name="Male_Shirt" parent="CharacterMesh" instance=ExtResource("3_sdhfr")]
-transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
-visible = false
 
 [node name="Mesh" type="Node3D" parent="."]
 unique_name_in_owner = true

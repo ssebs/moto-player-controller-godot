@@ -8,8 +8,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ![gameplay gif](./img/gameplay.gif)
 
-
 ## In Progress:
+
 - [ ] Custom "bike_handler" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
 - [ ] Fix IK
 - [ ] Fix bugs / understand the code
@@ -28,6 +28,9 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] falling at low speeds (fix idle tip in)
   - [ ] wheelie / stoppie control
 
+- [ ] Fix bug:
+  - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
+- [ ] Gearing on ez mode doesn't lower rpm
 - [ ] User stories:
 
   - [ ] bike should fall when too slow
@@ -51,6 +54,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] tricks
   - [ ] Ragdoll
 - [ ] if the front tire skids and regains traction, the bike should porpoise. causing a high-side crash.
+- [ ] Burnout
 
 ## Done:
 
