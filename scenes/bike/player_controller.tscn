@@ -1,7 +1,8 @@
-[gd_scene load_steps=16 format=3 uid="uid://bmqevs0vheol7"]
+[gd_scene load_steps=18 format=3 uid="uid://bmqevs0vheol7"]
 
 [ext_resource type="Script" uid="uid://c331s8cm2gjtp" path="res://scenes/bike/player_controller.gd" id="1_5uol1"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_ujl86"]
+[ext_resource type="Material" uid="uid://bfxhki5bfmyn1" path="res://scenes/bike/tail_light_material.tres" id="3_n1tms"]
 [ext_resource type="Script" uid="uid://ct5kbf1mujm7r" path="res://scenes/bike/components/player_animation_controller.gd" id="4_n1tms"]
 [ext_resource type="Script" uid="uid://l500tpp42su8" path="res://scenes/bike/components/bike_gearing.gd" id="5_gearing"]
 [ext_resource type="Script" uid="uid://bpqhimqk1dt2d" path="res://scenes/bike/components/bike_tricks.gd" id="7_tricks"]
@@ -17,6 +18,9 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nkid5"]
 radius = 0.4
+
+[sub_resource type="BoxMesh" id="BoxMesh_sdhfr"]
+size = Vector3(0.3, 0.055, 0.05)
 
 [node name="PlayerController" type="CharacterBody3D"]
 collision_mask = 3
@@ -37,6 +41,12 @@ unique_name_in_owner = true
 
 [node name="GoogleMotorcycleSportbike" parent="Mesh" instance=ExtResource("1_ujl86")]
 transform = Transform3D(0.016, 0, 0, 0, 0.016, 0, 0, 0, 0.016, 0, 0, 0)
+
+[node name="TailLight" type="MeshInstance3D" parent="Mesh"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83589214, 0.83504957)
+mesh = SubResource("BoxMesh_sdhfr")
+surface_material_override/0 = ExtResource("3_n1tms")
 
 [node name="Functionality" type="Node" parent="."]
 

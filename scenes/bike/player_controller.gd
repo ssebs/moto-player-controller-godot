@@ -32,6 +32,8 @@ class_name PlayerController extends CharacterBody3D
 @onready var bike_ui: BikeUI = %BikeUI
 @onready var player_animation: PlayerAnimationController = %PlayerAnimationController
 
+@onready var tail_light: MeshInstance3D = %TailLight
+
 # Shared state
 var state: BikeState = BikeState.new()
 
@@ -46,6 +48,8 @@ var spawn_rotation: Vector3
 func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
+
+    var mat = tail_light.get_surface_override_material(0) # TODO: turn on emission during braking
 
     # Setup all components with shared state and input signals
     bike_physics.setup(state, bike_input)
