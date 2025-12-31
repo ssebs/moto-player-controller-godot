@@ -89,6 +89,9 @@ func _physics_process(delta):
     bike_physics._bike_update(delta)
     bike_tricks._bike_update(delta)
     bike_crash._bike_update(delta)
+    bike_audio._bike_update(delta)
+    bike_ui._bike_update(delta)
+    player_animation._bike_update(delta)
 
     # Force stoppie if brake danger while going straight
     if bike_crash.should_force_stoppie():
@@ -102,37 +105,6 @@ func _physics_process(delta):
 
     # Align to ground
     _align_to_ground(delta)
-
-    # Check for collisions
-    _check_collision_crash()
-
-    # Audio and UI (after move_and_slide)
-    bike_audio._bike_update(delta)
-    bike_ui._bike_update(delta)
-    player_animation._bike_update(delta)
-
-
-func _check_collision_crash():
-    if state.is_crashed:
-        return
-
-    for i in get_slide_collision_count():
-        var collision = get_slide_collision(i)
-        var collider = collision.get_collider()
-
-        # Check if collider is on layer 2 (bit 1)
-        var is_crash_layer = false
-        if collider is CollisionObject3D:
-            is_crash_layer = collider.get_collision_layer_value(2)
-        elif collider is CSGShape3D and collider.use_collision:
-            is_crash_layer = (collider.collision_layer & 2) != 0
-
-        if is_crash_layer:
-            var normal = collision.get_normal()
-            if state.speed > 5:
-                var local_normal = global_transform.basis.inverse() * normal
-                bike_crash.trigger_collision_crash(local_normal)
-                return
 
 
 func _align_to_ground(delta):

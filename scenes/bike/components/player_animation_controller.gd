@@ -23,9 +23,11 @@ func _bike_update(_delta):
 
 
 func _on_front_brake_changed(value: float):
+    print("front_brake_changed: %.1f "%value)
     _update_brake_light(value)
 
 func _on_rear_brake_changed(value: float):
+    print("rear_brake_changed: %.1f "%value)
     _update_brake_light(value)
 
 

@@ -43,6 +43,30 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhys
 func _bike_update(delta):
     if controller.is_on_floor():
         check_crash_conditions(delta)
+    _check_collision_crash()
+
+
+func _check_collision_crash():
+    if state.is_crashed:
+        return
+
+    for i in controller.get_slide_collision_count():
+        var collision = controller.get_slide_collision(i)
+        var collider = collision.get_collider()
+
+        # Check if collider is on layer 2 (bit 1)
+        var is_crash_layer = false
+        if collider is CollisionObject3D:
+            is_crash_layer = collider.get_collision_layer_value(2)
+        elif collider is CSGShape3D and collider.use_collision:
+            is_crash_layer = (collider.collision_layer & 2) != 0
+
+        if is_crash_layer:
+            var normal = collision.get_normal()
+            if state.speed > 5:
+                var local_normal = controller.global_transform.basis.inverse() * normal
+                trigger_collision_crash(local_normal)
+                return
 
 
 func check_crash_conditions(delta) -> String:
