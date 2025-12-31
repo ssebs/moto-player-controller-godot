@@ -1,8 +1,12 @@
-class_name BikeTricks extends BikeComponent
+class_name BikeTricks extends Node
 
 signal tire_screech_start(volume: float)
 signal tire_screech_stop
 signal stoppie_stopped # Emitted when bike comes to rest during a stoppie
+
+# Shared state
+var state: BikeState
+var bike_physics: BikePhysics
 
 # Rotation tuning
 @export var max_wheelie_angle: float = deg_to_rad(80)
@@ -19,10 +23,9 @@ signal stoppie_stopped # Emitted when bike comes to rest during a stoppie
 @export var fishtail_speed: float = 8.0
 @export var fishtail_recovery_speed: float = 3.0
 
+# Skid marks
+@export var skidmark_texture = preload("res://assets/skidmarktex.png")
 @export var skid_volume: float = 0.5
-
-# Shared state
-var bike_physics: BikePhysics
 
 # Input state (from signals)
 var throttle: float = 0.0
@@ -30,8 +33,6 @@ var front_brake: float = 0.0
 var rear_brake: float = 0.0
 var lean: float = 0.0
 
-# Skid marks
-@export var skidmark_texture = preload("res://assets/skidmarktex.png")
 
 const SKID_SPAWN_INTERVAL: float = 0.025
 const SKID_MARK_LIFETIME: float = 5.0
@@ -43,14 +44,17 @@ var last_throttle_input: float = 0.0
 var last_clutch_input: float = 0.0
 
 
-func setup(bike_state: BikeState, physics: BikePhysics, input: BikeInput):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics):
     state = bike_state
     bike_physics = physics
-    input.throttle_changed.connect(func(v): throttle = v)
-    input.front_brake_changed.connect(func(v): front_brake = v)
-    input.rear_brake_changed.connect(func(v): rear_brake = v)
-    input.lean_changed.connect(func(v): lean = v)
 
+    bike_input.throttle_changed.connect(func(v): throttle = v)
+    bike_input.front_brake_changed.connect(func(v): front_brake = v)
+    bike_input.rear_brake_changed.connect(func(v): rear_brake = v)
+    bike_input.lean_changed.connect(func(v): lean = v)
+
+func _bike_update(_delta):
+    pass
 
 func handle_wheelie_stoppie(delta, rpm_ratio: float,
                              front_wheel_locked: bool = false, is_airborne: bool = false):
@@ -210,8 +214,7 @@ func _spawn_skid_mark(pos: Vector3, rot: Vector3):
     timer.timeout.connect(func(): if is_instance_valid(decal): decal.queue_free())
 
 
-
-func reset():
+func _bike_reset():
     state.pitch_angle = 0.0
     state.fishtail_angle = 0.0
     skid_spawn_timer = 0.0

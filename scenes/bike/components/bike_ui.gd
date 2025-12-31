@@ -1,4 +1,10 @@
-class_name BikeUI extends BikeComponent
+class_name BikeUI extends Node
+
+# Shared state
+var state: BikeState
+var bike_input: BikeInput
+var bike_crash: BikeCrash
+var bike_tricks: BikeTricks
 
 @onready var gear_label: Label = null
 @onready var speed_label: Label = null
@@ -11,14 +17,9 @@ class_name BikeUI extends BikeComponent
 var throttle: float = 0.0
 var front_brake: float = 0.0
 
-# Component references for vibration
-var bike_input: BikeInput
-var bike_crash: BikeCrash
-var bike_tricks: BikeTricks
-
-
-func setup(bike_state: BikeState, input: BikeInput, crash: BikeCrash, tricks: BikeTricks,
-        gear: Label, spd: Label, throttle_b: ProgressBar, brake: ProgressBar, clutch: ProgressBar, difficulty: Label
+func _bike_setup(bike_state: BikeState, input: BikeInput, crash: BikeCrash, tricks: BikeTricks,
+        gear: Label, spd: Label, throttle_b: ProgressBar, brake: ProgressBar, 
+        clutch: ProgressBar, difficulty: Label
     ):
     state = bike_state
     bike_input = input
@@ -35,6 +36,10 @@ func setup(bike_state: BikeState, input: BikeInput, crash: BikeCrash, tricks: Bi
     input.throttle_changed.connect(func(v): throttle = v)
     input.front_brake_changed.connect(func(v): front_brake = v)
     input.difficulty_toggled.connect(_on_difficulty_toggled)
+
+
+func _bike_update(_delta):
+    pass
 
 
 func update_ui(rpm_ratio: float):
@@ -118,3 +123,7 @@ func _update_difficulty_display():
     else:
         difficulty_label.text = "Hard"
         difficulty_label.modulate = Color(1.0, 0.3, 0.3)
+
+
+func _bike_reset():
+    pass

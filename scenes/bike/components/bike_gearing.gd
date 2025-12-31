@@ -1,9 +1,14 @@
-class_name BikeGearing extends BikeComponent
+class_name BikeGearing extends Node
 
 signal gear_changed(new_gear: int)
 signal engine_stalled
 signal engine_started
 signal gear_grind # Tried to shift without clutch
+
+# Shared state
+var state: BikeState
+var bike_physics: BikePhysics
+
 
 # Gear system
 @export var num_gears: int = 6
@@ -20,9 +25,6 @@ signal gear_grind # Tried to shift without clutch
 @export var gear_shift_threshold: float = 0.2 # Clutch value needed to shift
 @export var rpm_blend_speed: float = 4.0 # How fast RPM changes when clutch engaged
 
-# Shared state
-var bike_physics: BikePhysics
-
 # Input state (from signals)
 var throttle: float = 0.0
 var clutch_held: bool = false
@@ -32,14 +34,17 @@ var clutch_just_pressed: bool = false
 var clutch_hold_time: float = 0.0
 
 
-func setup(bike_state: BikeState, physics: BikePhysics, input: BikeInput):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics):
     state = bike_state
     bike_physics = physics
-    input.throttle_changed.connect(func(v): throttle = v)
-    input.clutch_held_changed.connect(_on_clutch_input)
-    input.gear_up_pressed.connect(_on_gear_up)
-    input.gear_down_pressed.connect(_on_gear_down)
 
+    bike_input.throttle_changed.connect(func(v): throttle = v)
+    bike_input.clutch_held_changed.connect(_on_clutch_input)
+    bike_input.gear_up_pressed.connect(_on_gear_up)
+    bike_input.gear_down_pressed.connect(_on_gear_down)
+
+func _bike_update(_delta):
+    pass
 
 func _on_clutch_input(held: bool, just_pressed: bool):
     clutch_held = held
@@ -158,7 +163,7 @@ func is_clutch_dump(last_clutch: float) -> bool:
     return last_clutch > 0.7 and state.clutch_value < 0.3 and throttle > 0.5
 
 
-func reset():
+func _bike_reset():
     state.current_gear = 1
     state.current_rpm = idle_rpm
     state.is_stalled = false

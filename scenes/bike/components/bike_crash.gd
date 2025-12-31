@@ -1,7 +1,10 @@
-class_name BikeCrash extends BikeComponent
+class_name BikeCrash extends Node
 
 signal crashed(pitch_direction: float, lean_direction: float)
 signal respawned
+
+# Shared state
+var state: BikeState
 
 # Crash thresholds
 @export var crash_wheelie_threshold: float = deg_to_rad(75)
@@ -29,11 +32,14 @@ var brake_grab_level: float = 0.0 # How aggressively brake was grabbed (0-1)
 var brake_grab_threshold: float = 4.0 # Rate per second that counts as "grabbing"
 
 
-func setup(bike_state: BikeState, physics: BikePhysics, input: BikeInput):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics):
     state = bike_state
     bike_physics = physics
-    input.front_brake_changed.connect(func(v): front_brake = v)
-    input.steer_changed.connect(func(v): steer = v)
+    bike_input.front_brake_changed.connect(func(v): front_brake = v)
+    bike_input.steer_changed.connect(func(v): steer = v)
+
+func _bike_update(_delta):
+    pass
 
 
 func check_crash_conditions(delta) -> String:
@@ -169,18 +175,6 @@ func is_lowside_crash() -> bool:
     return crash_lean_direction != 0 and crash_pitch_direction == 0
 
 
-func reset():
-    state.is_crashed = false
-    crash_timer = 0.0
-    crash_pitch_direction = 0.0
-    crash_lean_direction = 0.0
-    front_brake_hold_time = 0.0
-    state.brake_danger_level = 0.0
-    last_front_brake = 0.0
-    brake_grab_level = 0.0
-    respawned.emit()
-
-
 func is_front_wheel_locked() -> bool:
     """Returns true if front brake was grabbed hard enough to lock wheel (skid)"""
     return brake_grab_level > brake_grab_crash_threshold
@@ -194,7 +188,6 @@ func get_brake_vibration() -> Vector2:
         var strong = state.brake_danger_level * state.brake_danger_level * intensity
         return Vector2(weak, strong)
     return Vector2.ZERO
-
 
 
 func trigger_collision_crash(collision_normal: Vector3):
@@ -216,3 +209,14 @@ func trigger_collision_crash(collision_normal: Vector3):
         crash_lean_direction = 0
 
     trigger_crash()
+
+func _bike_reset():
+    state.is_crashed = false
+    crash_timer = 0.0
+    crash_pitch_direction = 0.0
+    crash_lean_direction = 0.0
+    front_brake_hold_time = 0.0
+    state.brake_danger_level = 0.0
+    last_front_brake = 0.0
+    brake_grab_level = 0.0
+    respawned.emit()

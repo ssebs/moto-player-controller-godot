@@ -1,4 +1,4 @@
-class_name BikeInput extends BikeComponent
+class_name BikeInput extends Node
 
 signal throttle_changed(value: float)
 signal front_brake_changed(value: float)
@@ -10,14 +10,17 @@ signal gear_up_pressed
 signal gear_down_pressed
 signal difficulty_toggled
 
+# Shared state
+var state: BikeState
+
 # Vibration settings
 @export var vibration_duration: float = 0.15
 
-func bike_setup(_bike_state: BikeState, _input: BikeInput):
+func _bike_setup(_bike_state: BikeState, _bike_input: BikeInput):
     # TODO: MP check for authority
     pass
 
-func _physics_process(_delta):
+func _bike_update(_delta):
     _update_input()
 
 
@@ -53,5 +56,5 @@ func add_vibration(weak: float, strong: float):
 func stop_vibration():
     Input.stop_joy_vibration(0)
 
-func reset():
+func _bike_reset():
     stop_vibration()

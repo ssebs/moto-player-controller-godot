@@ -1,7 +1,9 @@
-class_name BikePhysics extends BikeComponent
+class_name BikePhysics extends Node
 
 signal brake_stopped
 
+# Shared state
+var state: BikeState
 
 # Movement tuning
 @export var max_speed: float = 60.0
@@ -37,12 +39,16 @@ var has_started_moving: bool = false
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 
-func setup(bike_state: BikeState, input: BikeInput):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput):
     state = bike_state
-    input.throttle_changed.connect(func(v): throttle = v)
-    input.front_brake_changed.connect(func(v): front_brake = v)
-    input.rear_brake_changed.connect(func(v): rear_brake = v)
-    input.steer_changed.connect(func(v): steer = v)
+    bike_input.throttle_changed.connect(func(v): throttle = v)
+    bike_input.front_brake_changed.connect(func(v): front_brake = v)
+    bike_input.rear_brake_changed.connect(func(v): rear_brake = v)
+    bike_input.steer_changed.connect(func(v): steer = v)
+
+
+func _bike_update(_delta):
+    pass
 
 
 func handle_acceleration(delta, power_output: float, gear_max_speed: float,
@@ -173,7 +179,7 @@ func is_turning() -> bool:
     return abs(state.steering_angle) > 0.2
 
 
-func reset():
+func _bike_reset():
     state.speed = 0.0
     state.fall_angle = 0.0
     has_started_moving = false
