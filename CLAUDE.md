@@ -23,10 +23,20 @@ The player controller ([player_controller.gd](scenes/bike/player_controller.gd))
 
 ### Communication Pattern
 
-Components communicate via Godot signals. Key signal flows:
-- `bike_input.*_changed` signals → components receive input state
+Components communicate via Godot signals. The main controller only handles signal routing between components that don't have direct references to each other.
+
+**Input signals** (`BikeInput` → all components):
+- `throttle_changed`, `front_brake_changed`, `rear_brake_changed`, `steer_changed`, `lean_changed`
+- `clutch_held_changed`, `gear_up_pressed`, `gear_down_pressed`
+
+**Component-to-component signals** (connected in `_bike_setup`):
+- `bike_crash.force_stoppie_requested` → `bike_tricks.force_pitch()`
+
+**Signals routed through main controller** (connected in `_ready`):
 - `bike_gearing.gear_grind` → `bike_audio.play_gear_grind()`
-- `bike_crash.crashed` → triggers crash animation and respawn
+- `bike_gearing.gear_changed` → `bike_audio.on_gear_changed()`
+- `bike_tricks.tire_screech_start/stop` → `bike_audio`
+- `bike_crash.crashed` → `player_controller._on_crashed()`
 
 ### Input System
 
@@ -42,19 +52,24 @@ Components subscribe to these signals in their `setup()` function and store inpu
 
 Uses Godot's unique name syntax (`%NodeName`) for reliable node access. Components receive shared state, physics reference, and input signals via `setup()` calls in `_ready()`.
 
-### Physics Loop
+### Component Structure
 
-All physics updates occur in `_physics_process(delta)` with this flow:
-1. Check crash state (early return if crashed)
-2. Update gearing/RPM
-3. Physics calculations (acceleration, steering, lean)
-4. Trick handling (wheelies, stoppies, skidding)
-5. Crash detection
-6. Apply movement and mesh rotation
-7. Update audio/UI
-8. `move_and_slide()` and ground alignment
+Each component follows this pattern (see `player_animation_controller.gd` as reference):
+1. Component signals (at top)
+2. Shared state vars (`BikeState`, other component refs)
+3. Local vars
+4. `_bike_setup(bike_state, bike_input, ...)` - receives dependencies
+5. Signal handlers
+6. `_bike_update(delta)` - called from main `_physics_process()`
+7. `_bike_reset()` - reset to default values for respawn
 
-Note: Input is gathered via signals from `BikeInput` which updates in its own `_physics_process()`.
+### Event Loop
+
+- `@onready` - Node references using `%NodeName` syntax
+- `_ready()` - Call component `_bike_setup()`, connect signals
+- `_physics_process(delta)` - Call component `_bike_update(delta)`
+
+Input is handled by `BikeInput` which emits signals; components subscribe and store values locally.
 
 ## Key Physics Values
 
@@ -80,7 +95,3 @@ Defined in `project.godot`. Main inputs: `throttle_pct`, `brake_front_pct`, `bra
 
 - Layer 1: Ground/terrain
 - Layer 2: Obstacles that trigger crashes on collision
-
-## Current Development Focus
-
-Per README.md - fixing lean/tip-in/steering feel, brake slam behavior, and tweaking physics values for good game feel. Character animation and state machine are future work.
