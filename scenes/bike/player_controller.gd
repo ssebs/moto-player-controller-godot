@@ -56,13 +56,14 @@ func _ready():
     spawn_rotation = rotation
 
     # Setup all components with shared state and input signals
-    bike_physics.setup(state, bike_input)
-    bike_gearing.setup(state, bike_physics, bike_input)
-    bike_tricks.setup(state, bike_physics, bike_input)
-    bike_crash.setup(state, bike_physics, bike_input)
-    bike_audio.setup(state, bike_input, engine_sound, tire_screech, engine_grind, exhaust_pops)
-    bike_ui.setup(state, bike_input, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, brake_danger_bar, clutch_bar, difficulty_label)
-    player_animation.setup(state, bike_input, tail_light)
+    bike_input._bike_setup(state, bike_input)
+    bike_gearing._bike_setup(state, bike_input, bike_physics)
+    bike_crash._bike_setup(state, bike_input, bike_physics, self)
+    bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash)
+    bike_tricks._bike_setup(state, bike_input, bike_physics, bike_gearing, bike_crash, self, rear_wheel, front_wheel)
+    bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
+    bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, brake_danger_bar, clutch_bar, difficulty_label)
+    player_animation._bike_setup(state, bike_input, tail_light)
 
     # Connect component signals
     bike_gearing.gear_grind.connect(_on_gear_grind)
@@ -80,46 +81,14 @@ func _physics_process(delta):
         _handle_crash_state(delta)
         return
 
-    # Gearing
-    bike_gearing.update_clutch(delta)
-    bike_gearing.update_rpm(delta)
+    # Input
+    bike_input._bike_update(delta)
 
-    # Physics / acceleration
-    bike_physics.handle_acceleration(
-        delta,
-        bike_gearing.get_power_output(),
-        bike_gearing.get_max_speed_for_gear(),
-        bike_crash.is_front_wheel_locked()
-    )
-
-    # Steering and lean
-    bike_physics.handle_steering(delta)
-    bike_physics.update_lean(delta)
-    bike_physics.handle_fall_physics(delta)
-
-    # Tricks (wheelies, stoppies, skidding)
-    bike_tricks.handle_wheelie_stoppie(
-        delta,
-        bike_gearing.get_rpm_ratio(),
-        bike_crash.is_front_wheel_locked(),
-        !is_on_floor()
-    )
-    bike_tricks.handle_skidding(
-        delta,
-        bike_crash.is_front_wheel_locked(),
-        rear_wheel.global_position,
-        front_wheel.global_position,
-        global_rotation,
-        is_on_floor()
-    )
-
-    # Check for controlled brake stop
-    bike_physics.check_brake_stop()
-
-    # Crash detection
-    if is_on_floor():
-        bike_crash.check_crash_conditions(delta)
-
+    # Component updates
+    bike_gearing._bike_update(delta)
+    bike_physics._bike_update(delta)
+    bike_tricks._bike_update(delta)
+    bike_crash._bike_update(delta)
 
     # Force stoppie if brake danger while going straight
     if bike_crash.should_force_stoppie():
@@ -129,10 +98,6 @@ func _physics_process(delta):
     _apply_movement(delta)
     _apply_mesh_rotation()
 
-    # Audio and UI
-    bike_audio.update_engine_audio(delta, bike_gearing.get_rpm_ratio())
-    bike_ui.update_ui(bike_gearing.get_rpm_ratio())
-
     move_and_slide()
 
     # Align to ground
@@ -140,6 +105,11 @@ func _physics_process(delta):
 
     # Check for collisions
     _check_collision_crash()
+
+    # Audio and UI (after move_and_slide)
+    bike_audio._bike_update(delta)
+    bike_ui._bike_update(delta)
+    player_animation._bike_update(delta)
 
 
 func _check_collision_crash():
@@ -246,13 +216,14 @@ func _respawn():
     velocity = Vector3.ZERO
     mesh.transform = Transform3D.IDENTITY
 
-    # Reset all components (removed duplicate bike_physics.reset())
-    bike_gearing.reset()
-    bike_physics.reset()
-    bike_tricks.reset()
-    bike_crash.reset()
-    bike_input.reset()
-    player_animation.reset()
+    # Reset all components
+    bike_gearing._bike_reset()
+    bike_physics._bike_reset()
+    bike_tricks._bike_reset()
+    bike_crash._bike_reset()
+    bike_input._bike_reset()
+    bike_audio._bike_reset()
+    player_animation._bike_reset()
 
 
 # Signal handlers
@@ -277,14 +248,14 @@ func _on_tire_screech_stop():
 
 
 func _on_stoppie_stopped():
-    bike_physics.reset()
+    bike_physics._bike_reset()
     state.speed = 0.0
     state.fall_angle = 0.0
     velocity = Vector3.ZERO
 
 
 func _on_brake_stopped():
-    bike_physics.reset()
+    bike_physics._bike_reset()
     velocity = Vector3.ZERO
 
 

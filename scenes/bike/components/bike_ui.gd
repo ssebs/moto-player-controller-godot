@@ -5,6 +5,7 @@ var state: BikeState
 var bike_input: BikeInput
 var bike_crash: BikeCrash
 var bike_tricks: BikeTricks
+var bike_gearing: BikeGearing
 
 @onready var gear_label: Label = null
 @onready var speed_label: Label = null
@@ -17,12 +18,14 @@ var bike_tricks: BikeTricks
 var throttle: float = 0.0
 var front_brake: float = 0.0
 
-func _bike_setup(bike_state: BikeState, input: BikeInput, crash: BikeCrash, tricks: BikeTricks,
-        gear: Label, spd: Label, throttle_b: ProgressBar, brake: ProgressBar, 
+func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
+        crash: BikeCrash, tricks: BikeTricks,
+        gear: Label, spd: Label, throttle_b: ProgressBar, brake: ProgressBar,
         clutch: ProgressBar, difficulty: Label
     ):
     state = bike_state
     bike_input = input
+    bike_gearing = gearing
     bike_crash = crash
     bike_tricks = tricks
 
@@ -39,7 +42,7 @@ func _bike_setup(bike_state: BikeState, input: BikeInput, crash: BikeCrash, tric
 
 
 func _bike_update(_delta):
-    pass
+    update_ui(bike_gearing.get_rpm_ratio())
 
 
 func update_ui(rpm_ratio: float):

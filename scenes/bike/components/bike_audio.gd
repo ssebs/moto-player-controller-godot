@@ -2,6 +2,7 @@ class_name BikeAudio extends Node
 
 # Shared state
 var state: BikeState
+var bike_gearing: BikeGearing
 
 # Local state
 
@@ -21,7 +22,7 @@ var state: BikeState
 @export var exhaust_pop_threshold: float = 0.7  # RPM ratio above which pops can occur
 @export var exhaust_pop_chance: float = 0.15    # Chance per frame when conditions met
 @export var exhaust_pop_volume: float = 0.2
-@export var exhaust_pop_cooldown: float = 0.1   # Min time between pops
+@export var exhaust_pop_cooldown: float = 0.2   # Min time between pops
 
 # Input state (from signals)
 var throttle: float = 0.0
@@ -30,8 +31,11 @@ var throttle: float = 0.0
 var last_rpm_ratio: float = 0.0
 var exhaust_pop_timer: float = 0.0
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, engine: AudioStreamPlayer, screech: AudioStreamPlayer, grind: AudioStreamPlayer, pops: AudioStreamPlayer):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGearing,
+        engine: AudioStreamPlayer, screech: AudioStreamPlayer,
+        grind: AudioStreamPlayer, pops: AudioStreamPlayer):
     state = bike_state
+    bike_gearing = gearing
 
     engine_sound = engine
     tire_screech = screech
@@ -40,9 +44,8 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, engine: AudioStre
 
     bike_input.throttle_changed.connect(func(v): throttle = v)
 
-func _bike_update(_delta):
-    pass
-
+func _bike_update(delta):
+    update_engine_audio(delta, bike_gearing.get_rpm_ratio())
 
 
 func update_engine_audio(delta: float, rpm_ratio: float):

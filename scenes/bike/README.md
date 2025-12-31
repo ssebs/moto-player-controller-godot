@@ -9,6 +9,7 @@
   - Any vars that need to be passed in should use the `_bike_setup()` func
     - > Which is called in the main script's `_ready()` function.
   - **Signals** are exposed to the main script to handle & pipe between components as needed.
+    - **...or are they? should this be handled in each components script instead?**
   - Structure - See `player_animation_controller.gd` as best reference.
     - Component Signals
     - Shared state vars - local BikeState var / other components that are needed

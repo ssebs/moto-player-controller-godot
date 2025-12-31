@@ -5,6 +5,7 @@ signal respawned
 
 # Shared state
 var state: BikeState
+var controller: CharacterBody3D
 
 # Crash thresholds
 @export var crash_wheelie_threshold: float = deg_to_rad(75)
@@ -32,14 +33,16 @@ var brake_grab_level: float = 0.0 # How aggressively brake was grabbed (0-1)
 var brake_grab_threshold: float = 4.0 # Rate per second that counts as "grabbing"
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics, ctrl: CharacterBody3D):
     state = bike_state
     bike_physics = physics
+    controller = ctrl
     bike_input.front_brake_changed.connect(func(v): front_brake = v)
     bike_input.steer_changed.connect(func(v): steer = v)
 
-func _bike_update(_delta):
-    pass
+func _bike_update(delta):
+    if controller.is_on_floor():
+        check_crash_conditions(delta)
 
 
 func check_crash_conditions(delta) -> String:

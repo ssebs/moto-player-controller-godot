@@ -43,8 +43,9 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhys
     bike_input.gear_up_pressed.connect(_on_gear_up)
     bike_input.gear_down_pressed.connect(_on_gear_down)
 
-func _bike_update(_delta):
-    pass
+func _bike_update(delta):
+    update_clutch(delta)
+    update_rpm(delta)
 
 func _on_clutch_input(held: bool, just_pressed: bool):
     clutch_held = held

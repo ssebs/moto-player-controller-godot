@@ -7,6 +7,11 @@ signal stoppie_stopped # Emitted when bike comes to rest during a stoppie
 # Shared state
 var state: BikeState
 var bike_physics: BikePhysics
+var bike_gearing: BikeGearing
+var bike_crash: BikeCrash
+var controller: CharacterBody3D
+var rear_wheel_marker: Marker3D
+var front_wheel_marker: Marker3D
 
 # Rotation tuning
 @export var max_wheelie_angle: float = deg_to_rad(80)
@@ -44,17 +49,38 @@ var last_throttle_input: float = 0.0
 var last_clutch_input: float = 0.0
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics,
+        gearing: BikeGearing, crash: BikeCrash, ctrl: CharacterBody3D,
+        rear_wheel: Marker3D, front_wheel: Marker3D):
     state = bike_state
     bike_physics = physics
+    bike_gearing = gearing
+    bike_crash = crash
+    controller = ctrl
+    rear_wheel_marker = rear_wheel
+    front_wheel_marker = front_wheel
 
     bike_input.throttle_changed.connect(func(v): throttle = v)
     bike_input.front_brake_changed.connect(func(v): front_brake = v)
     bike_input.rear_brake_changed.connect(func(v): rear_brake = v)
     bike_input.lean_changed.connect(func(v): lean = v)
 
-func _bike_update(_delta):
-    pass
+func _bike_update(delta):
+    var is_airborne = !controller.is_on_floor()
+    handle_wheelie_stoppie(
+        delta,
+        bike_gearing.get_rpm_ratio(),
+        bike_crash.is_front_wheel_locked(),
+        is_airborne
+    )
+    handle_skidding(
+        delta,
+        bike_crash.is_front_wheel_locked(),
+        rear_wheel_marker.global_position,
+        front_wheel_marker.global_position,
+        controller.global_rotation,
+        controller.is_on_floor()
+    )
 
 func handle_wheelie_stoppie(delta, rpm_ratio: float,
                              front_wheel_locked: bool = false, is_airborne: bool = false):

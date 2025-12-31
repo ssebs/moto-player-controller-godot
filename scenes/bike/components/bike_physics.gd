@@ -4,6 +4,8 @@ signal brake_stopped
 
 # Shared state
 var state: BikeState
+var bike_gearing: BikeGearing
+var bike_crash: BikeCrash
 
 # Movement tuning
 @export var max_speed: float = 60.0
@@ -39,16 +41,27 @@ var has_started_moving: bool = false
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGearing, crash: BikeCrash):
     state = bike_state
+    bike_gearing = gearing
+    bike_crash = crash
     bike_input.throttle_changed.connect(func(v): throttle = v)
     bike_input.front_brake_changed.connect(func(v): front_brake = v)
     bike_input.rear_brake_changed.connect(func(v): rear_brake = v)
     bike_input.steer_changed.connect(func(v): steer = v)
 
 
-func _bike_update(_delta):
-    pass
+func _bike_update(delta):
+    handle_acceleration(
+        delta,
+        bike_gearing.get_power_output(),
+        bike_gearing.get_max_speed_for_gear(),
+        bike_crash.is_front_wheel_locked()
+    )
+    handle_steering(delta)
+    update_lean(delta)
+    handle_fall_physics(delta)
+    check_brake_stop()
 
 
 func handle_acceleration(delta, power_output: float, gear_max_speed: float,
