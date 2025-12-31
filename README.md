@@ -45,7 +45,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Bugs
 
-- [ ] Gearing on ez mode doesn't lower rpm
 - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
 
 ## TODO:
