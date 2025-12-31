@@ -58,6 +58,12 @@ size = Vector3(4, 0.1, 3.282)
 [node name="Ramp2" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 193.76974, 0.08500248, 269.42715)
 
+[node name="CSGBox3D17" type="CSGBox3D" parent="Ramp2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -57.032684, 1.3001173, -274.8331)
+use_collision = true
+collision_layer = 3
+size = Vector3(8.967552, 2.7702394, 3.2959795)
+
 [node name="CSGBox3DRAMP2" type="CSGBox3D" parent="Ramp2"]
 transform = Transform3D(-4.371139e-08, -0.25881904, 0.9659258, 0, 0.96592593, 0.25881907, -1.0000001, 1.13133405e-08, -4.2221963e-08, 0, 0.94429934, 0)
 use_collision = true
@@ -70,12 +76,6 @@ size = Vector3(4, 0.1, 3.282)
 
 [node name="CrashColliders" type="Node3D" parent="."]
 visible = false
-
-[node name="CSGBox3D17" type="CSGBox3D" parent="CrashColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 136.73706, 1.3851197, -5.405952)
-use_collision = true
-collision_layer = 3
-size = Vector3(8.967552, 2.7702394, 3.2959795)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="CrashColliders"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100.377884, 0.5, 24.806492)

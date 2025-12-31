@@ -9,7 +9,7 @@ var bike_crash: BikeCrash
 var player: CharacterBody3D
 
 # Movement tuning
-@export var max_speed: float = 60.0
+@export var max_speed: float = 80.0
 @export var acceleration: float = 15.0
 @export var brake_strength: float = 25.0
 @export var friction: float = 8.0

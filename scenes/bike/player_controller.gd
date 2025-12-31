@@ -148,12 +148,8 @@ func _on_brake_stopped():
 
 
 func _on_crashed(pitch_dir: float, lean_dir: float):
-    # Lowside crashes keep some momentum, others stop immediately
     if lean_dir != 0 and pitch_dir == 0:
         state.speed *= 0.7
-    else:
-        state.speed = 0.0
-        velocity = Vector3.ZERO
 
     # Play tire screech for lowside crashes
     if lean_dir != 0:
