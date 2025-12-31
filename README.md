@@ -37,21 +37,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 ## In Progress:
 
 - [ ] Refactor
-  - [x] setup should be in order: (state, bike_input, [others]). 
-  - [x] Add custom "_bike_update()" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
-  - [x] Move all handler calls to bike_update
-  - [x] Confirm event loop & apply refactor to support it
-    - Event loop:
-      - Check inputs
-      - Component updates:
-        - Gear/RPM component
-        - Movement/Steering/Physics component (set velocity/rotation)
-        - Tricks component
-        - Crash component
-      - Based on above state, move_and_slide
-      - Update animations
-      - Update UI
-      - Play sounds
   - [ ] Simpify physics logic
   - [ ] Simplify gearing logic
   - [ ] Simplify tricks logic
@@ -106,7 +91,21 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] nollie lazerflip
 
 ## Done:
-
+  - [x] setup should be in order: (state, bike_input, [others]). 
+  - [x] Add custom "_bike_update()" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
+  - [x] Move all handler calls to bike_update
+  - [x] Confirm event loop & apply refactor to support it
+    - Event loop:
+      - Check inputs
+      - Component updates:
+        - Gear/RPM component
+        - Movement/Steering/Physics component (set velocity/rotation)
+        - Tricks component
+        - Crash component
+      - Based on above state, move_and_slide
+      - Update animations
+      - Update UI
+      - Play sounds
 - [x] Update TODO's, currently on In Progress
 - [x] bike should lean up when accelerating
 - [x] bike should tip-in / countersteer when leaning
