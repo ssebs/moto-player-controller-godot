@@ -1,20 +1,26 @@
 class_name PlayerController extends CharacterBody3D
 
-# Node references
+#region Onready Node References
+# Meshes / Character / Animations
 @onready var mesh: Node3D = %Mesh
+@onready var player_animation: PlayerAnimationController = %PlayerAnimationController
+@onready var tail_light: MeshInstance3D = %TailLight
+# @onready var character_skeleton: Skeleton3D = $CharacterMesh/Male_Shirt/HumanArmature/Skeleton3D
+
+# Markers
 @onready var rear_wheel: Marker3D = %RearWheelMarker
 @onready var front_wheel: Marker3D = %FrontWheelMarker
+@onready var right_handlebar_marker: Marker3D = %RightHandleBarMarker
+@onready var left_handlebar_marker: Marker3D = %LeftHandleBarMarker
+@onready var seat_marker: Marker3D = %SeatMarker
+
+# Sounds
 @onready var engine_sound: AudioStreamPlayer = %EngineSound
 @onready var tire_screech: AudioStreamPlayer = %TireScreechSound
 @onready var engine_grind: AudioStreamPlayer = %EngineGrindSound
 @onready var exhaust_pops: AudioStreamPlayer = %ExhaustPopsSound
 
-# Character markers and skeleton
-@onready var right_handlebar_marker: Marker3D = %RightHandleBarMarker
-@onready var left_handlebar_marker: Marker3D = %LeftHandleBarMarker
-@onready var seat_marker: Marker3D = %SeatMarker
-@onready var character_skeleton: Skeleton3D = $CharacterMesh/Male_Shirt/HumanArmature/Skeleton3D
-
+# UI 
 @onready var gear_label: Label = %GearLabel
 @onready var speed_label: Label = %SpeedLabel
 @onready var throttle_bar: ProgressBar = %ThrottleBar
@@ -30,12 +36,12 @@ class_name PlayerController extends CharacterBody3D
 @onready var bike_crash: BikeCrash = %BikeCrash
 @onready var bike_audio: BikeAudio = %BikeAudio
 @onready var bike_ui: BikeUI = %BikeUI
-@onready var player_animation: PlayerAnimationController = %PlayerAnimationController
-
-@onready var tail_light: MeshInstance3D = %TailLight
+#endregion
 
 # Shared state
-var state: BikeState = BikeState.new()
+@export var state: BikeState = BikeState.new()
+
+# Local state
 
 # Ground alignment
 @export var ground_align_speed: float = 10.0
@@ -56,7 +62,7 @@ func _ready():
     bike_crash.setup(state, bike_physics, bike_input)
     bike_audio.setup(state, bike_input, engine_sound, tire_screech, engine_grind, exhaust_pops)
     bike_ui.setup(state, bike_input, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, brake_danger_bar, clutch_bar, difficulty_label)
-    player_animation.setup(state, bike_input, character_skeleton, right_handlebar_marker, left_handlebar_marker, seat_marker, tail_light)
+    player_animation.setup(state, bike_input, tail_light)
 
     # Connect component signals
     bike_gearing.gear_grind.connect(_on_gear_grind)

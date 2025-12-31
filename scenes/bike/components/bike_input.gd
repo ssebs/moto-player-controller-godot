@@ -1,16 +1,14 @@
 class_name BikeInput extends Node
 
-signal difficulty_toggled
-
-# Input signals - emitted every physics frame with current values
 signal throttle_changed(value: float)
 signal front_brake_changed(value: float)
 signal rear_brake_changed(value: float)
-signal steer_changed(value: float)
-signal lean_changed(value: float)
+signal steer_changed(value: float) # lean left/right
+signal lean_changed(value: float) # lean back/fwd
 signal clutch_held_changed(held: bool, just_pressed: bool)
 signal gear_up_pressed
 signal gear_down_pressed
+signal difficulty_toggled
 
 # Vibration settings
 @export var vibration_duration: float = 0.15
