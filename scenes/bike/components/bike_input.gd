@@ -16,45 +16,76 @@ var state: BikeState
 # Vibration settings
 @export var vibration_duration: float = 0.15
 
+# Input state (with change detection)
+var throttle: float = 0.0:
+	set(value):
+		if throttle != value:
+			throttle = value
+			throttle_changed.emit(value)
+
+var front_brake: float = 0.0:
+	set(value):
+		if front_brake != value:
+			front_brake = value
+			front_brake_changed.emit(value)
+
+var rear_brake: float = 0.0:
+	set(value):
+		if rear_brake != value:
+			rear_brake = value
+			rear_brake_changed.emit(value)
+
+var steer: float = 0.0:
+	set(value):
+		if steer != value:
+			steer = value
+			steer_changed.emit(value)
+
+var lean: float = 0.0:
+	set(value):
+		if lean != value:
+			lean = value
+			lean_changed.emit(value)
+
 func _bike_setup(_bike_state: BikeState, _bike_input: BikeInput):
-    # TODO: MP check for authority
-    pass
+	# TODO: MP check for authority
+	pass
 
 func _bike_update(_delta):
-    _update_input()
+	_update_input()
 
 
 func _update_input():
-    throttle_changed.emit(Input.get_action_strength("throttle_pct"))
-    front_brake_changed.emit(Input.get_action_strength("brake_front_pct"))
-    rear_brake_changed.emit(Input.get_action_strength("brake_rear"))
+	throttle = Input.get_action_strength("throttle_pct")
+	front_brake = Input.get_action_strength("brake_front_pct")
+	rear_brake = Input.get_action_strength("brake_rear")
 
-    steer_changed.emit(Input.get_action_strength("steer_right") - Input.get_action_strength("steer_left"))
-    lean_changed.emit(Input.get_action_strength("lean_back") - Input.get_action_strength("lean_forward"))
+	steer = Input.get_action_strength("steer_right") - Input.get_action_strength("steer_left")
+	lean = Input.get_action_strength("lean_back") - Input.get_action_strength("lean_forward")
 
-    clutch_held_changed.emit(
-        Input.is_action_pressed("clutch"),
-        Input.is_action_just_pressed("clutch")
-    )
+	clutch_held_changed.emit(
+		Input.is_action_pressed("clutch"),
+		Input.is_action_just_pressed("clutch")
+	)
 
-    if Input.is_action_just_pressed("gear_up"):
-        gear_up_pressed.emit()
-    if Input.is_action_just_pressed("gear_down"):
-        gear_down_pressed.emit()
+	if Input.is_action_just_pressed("gear_up"):
+		gear_up_pressed.emit()
+	if Input.is_action_just_pressed("gear_down"):
+		gear_down_pressed.emit()
 
-    if Input.is_action_just_pressed("change_difficulty"):
-        difficulty_toggled.emit()
+	if Input.is_action_just_pressed("change_difficulty"):
+		difficulty_toggled.emit()
 
 
 func add_vibration(weak: float, strong: float):
-    """Add vibration intensity from external sources. Call this each frame vibration is needed."""
-    if weak > 0.01 or strong > 0.01:
-        Input.start_joy_vibration(0, clamp(weak, 0.0, 1.0), clamp(strong, 0.0, 1.0), vibration_duration)
-    else:
-        stop_vibration()
+	"""Add vibration intensity from external sources. Call this each frame vibration is needed."""
+	if weak > 0.01 or strong > 0.01:
+		Input.start_joy_vibration(0, clamp(weak, 0.0, 1.0), clamp(strong, 0.0, 1.0), vibration_duration)
+	else:
+		stop_vibration()
 
 func stop_vibration():
-    Input.stop_joy_vibration(0)
+	Input.stop_joy_vibration(0)
 
 func _bike_reset():
-    stop_vibration()
+	stop_vibration()
