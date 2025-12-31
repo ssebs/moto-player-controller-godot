@@ -1,12 +1,15 @@
 class_name BikeCrash extends Node
 
 signal crashed(pitch_direction: float, lean_direction: float)
+signal respawn_requested
 signal respawned
 signal force_stoppie_requested(target_pitch: float, rate: float)
 
 # Shared state
 var state: BikeState
 var controller: CharacterBody3D
+var bike_physics: BikePhysics
+var bike_tricks: Node  # BikeTricks - avoid circular reference
 
 # Crash thresholds
 @export var crash_wheelie_threshold: float = deg_to_rad(75)
@@ -15,17 +18,18 @@ var controller: CharacterBody3D
 @export var respawn_delay: float = 2.0
 @export var brake_grab_crash_threshold: float = 0.9
 
-# Shared state
-var bike_physics: BikePhysics
+# Crash physics
+@export var crash_deceleration: float = 20.0
+@export var crash_rotation_speed: float = 3.0
 
 # Input state (from signals)
 var front_brake: float = 0.0
 var steer: float = 0.0
 
 # Local state
-var crash_timer: float = 0.0 # TODO: cleanup
-var crash_pitch_direction: float = 0.0 # TODO: cleanup
-var crash_lean_direction: float = 0.0 # TODO: cleanup
+var crash_timer: float = 0.0
+var crash_pitch_direction: float = 0.0
+var crash_lean_direction: float = 0.0
 var front_brake_hold_time: float = 0.0
 
 # Brake grab detection
@@ -34,14 +38,19 @@ var brake_grab_level: float = 0.0 # How aggressively brake was grabbed (0-1)
 var brake_grab_threshold: float = 4.0 # Rate per second that counts as "grabbing"
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics, ctrl: CharacterBody3D):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics, tricks: Node, ctrl: CharacterBody3D):
     state = bike_state
     bike_physics = physics
+    bike_tricks = tricks
     controller = ctrl
     bike_input.front_brake_changed.connect(func(v): front_brake = v)
     bike_input.steer_changed.connect(func(v): steer = v)
 
 func _bike_update(delta):
+    if state.is_crashed:
+        _update_crash_state(delta)
+        return
+
     if controller.is_on_floor():
         check_crash_conditions(delta)
     _check_collision_crash()
@@ -186,20 +195,24 @@ func trigger_crash():
     crashed.emit(crash_pitch_direction, crash_lean_direction)
 
 
-func handle_crash_state(delta) -> bool:
-    """Returns true when respawn should occur"""
+func _update_crash_state(delta):
     crash_timer += delta
 
-    # Lowside respawn condition: when bike stops
-    if crash_lean_direction != 0 and crash_pitch_direction == 0:
-        if state.speed < 0.1:
-            return true
-    else:
-        # Wheelie/stoppie crashes: use timer
-        if crash_timer >= respawn_delay:
-            return true
+    # Apply crash physics - rotate bike to ground
+    if crash_pitch_direction != 0:
+        bike_tricks.force_pitch(crash_pitch_direction * deg_to_rad(90), crash_rotation_speed, delta)
+    elif crash_lean_direction != 0:
+        state.fall_angle = move_toward(state.fall_angle, crash_lean_direction * deg_to_rad(90), crash_rotation_speed * delta)
 
-    return false
+        # Slide along ground while falling
+        if state.speed > 0.1:
+            var forward = -controller.global_transform.basis.z
+            controller.velocity = forward * state.speed
+            state.speed = move_toward(state.speed, 0, crash_deceleration * delta)
+            controller.move_and_slide()
+
+    if crash_timer >= respawn_delay:
+        respawn_requested.emit()
 
 
 func is_lowside_crash() -> bool:

@@ -52,7 +52,7 @@ func _ready():
     # Setup all components with shared state and input signals
     bike_input._bike_setup(state, bike_input)
     bike_gearing._bike_setup(state, bike_input, bike_physics)
-    bike_crash._bike_setup(state, bike_input, bike_physics, self)
+    bike_crash._bike_setup(state, bike_input, bike_physics, bike_tricks, self)
     bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, self)
     bike_tricks._bike_setup(state, bike_input, bike_physics, bike_gearing, bike_crash, self, rear_wheel, front_wheel)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
@@ -68,11 +68,13 @@ func _ready():
     bike_tricks.stoppie_stopped.connect(_on_stoppie_stopped)
     bike_physics.brake_stopped.connect(_on_brake_stopped)
     bike_crash.crashed.connect(_on_crashed)
+    bike_crash.respawn_requested.connect(_respawn)
 
 
 func _physics_process(delta):
     if state.is_crashed:
-        _physics_process_crashed(delta)
+        bike_crash._bike_update(delta)
+        player_animation.apply_mesh_rotation()
         return
 
     # Input
@@ -94,25 +96,6 @@ func _physics_process(delta):
 
     # Align to ground & mesh rotation
     player_animation._bike_update(delta)
-
-
-func _physics_process_crashed(delta):
-    if bike_crash.handle_crash_state(delta):
-        _respawn()
-        return
-
-    if bike_crash.crash_pitch_direction != 0:
-        bike_tricks.force_pitch(bike_crash.crash_pitch_direction * deg_to_rad(90), 3.0, delta)
-    elif bike_crash.crash_lean_direction != 0:
-        state.fall_angle = move_toward(state.fall_angle, bike_crash.crash_lean_direction * deg_to_rad(90), 3.0 * delta)
-
-        if state.speed > 0.1:
-            var forward = - global_transform.basis.z
-            velocity = forward * state.speed
-            state.speed = move_toward(state.speed, 0, 20.0 * delta)
-            move_and_slide()
-
-    player_animation.apply_mesh_rotation()
 
 
 func _respawn():
@@ -165,12 +148,13 @@ func _on_brake_stopped():
 
 
 func _on_crashed(pitch_dir: float, lean_dir: float):
+    # Lowside crashes keep some momentum, others stop immediately
     if lean_dir != 0 and pitch_dir == 0:
         state.speed *= 0.7
     else:
         state.speed = 0.0
         velocity = Vector3.ZERO
 
+    # Play tire screech for lowside crashes
     if lean_dir != 0:
-        tire_screech.volume_db = 0.0
-        tire_screech.play()
+        bike_audio.play_tire_screech(1.0)
