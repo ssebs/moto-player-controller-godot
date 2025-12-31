@@ -10,6 +10,7 @@ var bike_gearing: BikeGearing
 @onready var gear_label: Label = null
 @onready var speed_label: Label = null
 @onready var throttle_bar: ProgressBar = null
+@onready var rpm_bar: ProgressBar = null
 @onready var brake_danger_bar: ProgressBar = null
 @onready var clutch_bar: ProgressBar = null
 @onready var difficulty_label: Label = null
@@ -20,8 +21,8 @@ var front_brake: float = 0.0
 
 func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
         crash: BikeCrash, tricks: BikeTricks,
-        gear: Label, spd: Label, throttle_b: ProgressBar, brake: ProgressBar,
-        clutch: ProgressBar, difficulty: Label
+        gear: Label, spd: Label, throttle_b: ProgressBar, rpm_b: ProgressBar,
+        brake: ProgressBar, clutch: ProgressBar, difficulty: Label
     ):
     state = bike_state
     bike_input = input
@@ -32,6 +33,7 @@ func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
     gear_label = gear
     speed_label = spd
     throttle_bar = throttle_b
+    rpm_bar = rpm_b
     brake_danger_bar = brake
     clutch_bar = clutch
     difficulty_label = difficulty
@@ -74,6 +76,16 @@ func _update_bars(rpm_ratio: float):
         throttle_bar.modulate = Color(1.0, 0.2, 0.2) # Red at redline
     else:
         throttle_bar.modulate = Color(0.2, 0.8, 0.2) # Green
+
+    # RPM gauge
+    if rpm_bar:
+        rpm_bar.value = rpm_ratio
+        if rpm_ratio > 0.9:
+            rpm_bar.modulate = Color(1.0, 0.2, 0.2) # Red at redline
+        elif rpm_ratio > 0.7:
+            rpm_bar.modulate = Color(1.0, 0.8, 0.2) # Yellow/orange approaching redline
+        else:
+            rpm_bar.modulate = Color(0.2, 0.6, 1.0) # Blue for normal range
 
     brake_danger_bar.value = front_brake
 

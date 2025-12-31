@@ -20,10 +20,11 @@ class_name PlayerController extends CharacterBody3D
 @onready var engine_grind: AudioStreamPlayer = %EngineGrindSound
 @onready var exhaust_pops: AudioStreamPlayer = %ExhaustPopsSound
 
-# UI 
+# UI
 @onready var gear_label: Label = %GearLabel
 @onready var speed_label: Label = %SpeedLabel
 @onready var throttle_bar: ProgressBar = %ThrottleBar
+@onready var rpm_bar: ProgressBar = %RPMBar
 @onready var brake_danger_bar: ProgressBar = %BrakeDangerBar
 @onready var clutch_bar: ProgressBar = %ClutchBar
 @onready var difficulty_label: Label = %DifficultyLabel
@@ -56,7 +57,7 @@ func _ready():
     bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, self)
     bike_tricks._bike_setup(state, bike_input, bike_physics, bike_gearing, bike_crash, self, rear_wheel, front_wheel)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
-    bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, brake_danger_bar, clutch_bar, difficulty_label)
+    bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label)
     player_animation._bike_setup(state, bike_input, tail_light, mesh, rear_wheel, front_wheel)
 
     # Connect component signals

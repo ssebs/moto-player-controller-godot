@@ -121,9 +121,13 @@ func update_rpm(delta: float):
     # engagement = 1: clutch out, engine locked to wheel (follows wheel speed)
     var target_rpm = lerpf(throttle_rpm, wheel_rpm, engagement)
 
-    # RPM blend speed: fast when free-revving, slower when engaged to wheel
-    var blend_speed = lerpf(12.0, rpm_blend_speed, engagement)
-    state.current_rpm = lerpf(state.current_rpm, target_rpm, blend_speed * delta)
+    # When clutch is fully engaged, RPM is locked to wheel speed (no blend delay)
+    if engagement > 0.95:
+        state.current_rpm = wheel_rpm
+    else:
+        # RPM blend speed: fast when free-revving, slower when engaged to wheel
+        var blend_speed = lerpf(12.0, rpm_blend_speed, engagement)
+        state.current_rpm = lerpf(state.current_rpm, target_rpm, blend_speed * delta)
 
     # Check for stall when clutch is mostly engaged and RPM too low
     if engagement > 0.9 and state.current_rpm < stall_rpm:
