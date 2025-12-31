@@ -9,23 +9,64 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 ![gameplay gif](./img/gameplay.gif)
 
 ## In Progress:
-- [ ] Custom "bike_handler" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
-- [ ] Fix IK
-- [ ] Fix bugs / understand the code
-  - [x] Merge bike_steering & bike_physics
-  - [x] Cleanup player controller
-  - [ ] Fix lean / tip in / steering feeling
-  - [ ] Fix brake slam / crashing
+
+- [ ] Update TODO's, currently on In Progress
+- [ ] Refactor
+
+  - [ ] Add custom "bike_handler" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
+  - [ ] Confirm event loop & apply refactor to support it
+    - Event loop:
+      - Check inputs
+      - Component updates:
+        - Gear/RPM component
+        - Movement/Steering/Physics component (set velocity/rotation)
+        - Tricks component
+        - Crash component
+      - Based on above state, move_and_slide
+      - Update animations
+      - Update UI
+      - Play sounds
+  - [ ] Simpify physics
+  - [ ] Simplify gearing
+  - [ ] Simplify tricks
+  - [ ] Simplify crash checks
+
+- How turning should feel:
+  - Counter steer (leaning left steers you left)
+  - Tip in (TBD, look into this, low speed instability w/ speed, throttle accel reduces this)
+  - **MORE**
+- How you can crash:
+  - lowslide (brake too hard during lean)
+  - loop wheelie
+  - crash into obstacle
+  - **MORE**
 
 ## TODO:
 
-- [ ] Tweak values til they feel good
+- Tricks:
 
-  - [ ] Gearing / speed
-  - [ ] rpm / sound
-  - [x] Steering at low speeds
-  - [ ] falling at low speeds (fix idle tip in)
-  - [ ] wheelie / stoppie control
+  - [ ] Wheelie
+    - [x] Basic (sitting)
+    - [ ] Standing variants
+  - [ ] Stoppie
+    - [x] Basic
+    - [ ] See **Stunt compilation**
+  - [ ] Drift
+  - [ ] Burnout
+  - [ ] Biker Boyz w/ 2 legs over the side (sparks)
+  - [ ] FMX tricks (only off **Ramps**)
+    - [ ] Back / Front flip
+    - [ ] 360 / 180 turns
+    - [ ] Heel clicker (legs over bars & touch)
+    - [ ] Whip (table)
+    - [ ] Superman (no hand spread eagle)
+  - [ ] Skate tricks for memez (only off **Ramps**)
+    - > hop on top of bike, then do it like skater
+    - [ ] kickflip/heelflip
+    - [ ] pop shuvit
+    - [ ] hardflip
+    - [ ] 360flip
+    - [ ] nollie lazerflip
 
 - [ ] Fix bug:
   - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
@@ -33,17 +74,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] User stories:
 
   - [ ] bike should fall when too slow
-  - [ ] bike should lean up when accelerating
-  - [ ] bike should tip-in / countersteer when leaning
-  - [ ] the steer angle + lean angle should be based on speed
-  - [ ] crash detection and respawn
-  - [x] wheelies / stoppies - pitch control during each
-  - [x] Skidding / fishtail - rear brake skids, fishtail drift physics w/ skidmarks
-  - [x] engine sound pitch based on RPM
-  - [x] tire screech on skids/stoppies
-  - [x] gear grind sound
-  - [x] gear display, speedometer, throttle bar (with redline color), brake danger bar
-  - [x] Controller vibration - brake danger, fishtail, redline
 
 - [ ] Create rigged character
 - [ ] Animate character
@@ -53,10 +83,20 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] tricks
   - [ ] Ragdoll
 - [ ] if the front tire skids and regains traction, the bike should porpoise. causing a high-side crash.
-- [ ] Burnout
 
 ## Done:
 
+- [x] bike should lean up when accelerating
+- [x] bike should tip-in / countersteer when leaning
+- [x] the steer angle + lean angle should be based on speed
+- [x] crash detection and respawn
+- [x] wheelies / stoppies - pitch control during each
+- [x] Skidding / fishtail - rear brake skids, fishtail drift physics w/ skidmarks
+- [x] engine sound pitch based on RPM
+- [x] tire screech on skids/stoppies
+- [x] gear grind sound
+- [x] gear display, speedometer, throttle bar (with redline color), brake danger bar
+- [x] Controller vibration - brake danger, fishtail, redline
 - [x] Cleanup / refactor vibe coded `player_controller.gd`
   - [x] Move to its own node/script
 - [x] Basic Movement / input system
