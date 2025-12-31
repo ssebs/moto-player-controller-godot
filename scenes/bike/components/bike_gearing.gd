@@ -12,10 +12,10 @@ var bike_physics: BikePhysics
 
 # Gear system
 @export var num_gears: int = 6
-@export var max_rpm: float = 9000.0
+@export var max_rpm: float = 11000.0
 @export var idle_rpm: float = 1000.0
 @export var stall_rpm: float = 800.0
-@export var gear_ratios: Array[float] = [2.92, 2.05, 1.6, 1.46, 1.15, 1.0]
+@export var gear_ratios: Array[float] = [2.92, 2.05, 1.6, 1.46, 1.15, 1.0] # IRL ninja 500
 
 # Clutch tuning
 @export var clutch_engage_speed: float = 6.0 # How fast clutch pulls in when held
@@ -23,7 +23,8 @@ var bike_physics: BikePhysics
 @export var clutch_tap_amount: float = 0.35 # How much a tap adds to clutch value
 @export var clutch_hold_delay: float = 0.05 # Seconds before hold starts engaging fully
 @export var gear_shift_threshold: float = 0.2 # Clutch value needed to shift
-@export var rpm_blend_speed: float = 4.0 # How fast RPM changes when clutch engaged
+@export var rpm_blend_speed: float = 12.0 # How fast RPM changes when clutch engaged
+@export var rev_match_speed: float = 8.0 # How fast RPM adjusts during easy mode shifts
 
 # Input state (from signals)
 var throttle: float = 0.0
@@ -121,9 +122,14 @@ func update_rpm(delta: float):
     # engagement = 1: clutch out, engine locked to wheel (follows wheel speed)
     var target_rpm = lerpf(throttle_rpm, wheel_rpm, engagement)
 
-    # When clutch is fully engaged, RPM is locked to wheel speed (no blend delay)
+    # When clutch is fully engaged, RPM follows wheel speed
     if engagement > 0.95:
-        state.current_rpm = wheel_rpm
+        if state.is_easy_mode:
+            # Easy mode: smooth rev-matching when shifting (RPM blends to new gear's wheel RPM)
+            state.current_rpm = lerpf(state.current_rpm, wheel_rpm, rev_match_speed * delta)
+        else:
+            # Hard mode: RPM locked directly to wheel speed
+            state.current_rpm = wheel_rpm
     else:
         # RPM blend speed: fast when free-revving, slower when engaged to wheel
         var blend_speed = lerpf(12.0, rpm_blend_speed, engagement)

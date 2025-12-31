@@ -12,8 +12,8 @@ var bike_gearing: BikeGearing
 @onready var exhaust_pops: AudioStreamPlayer = null
 
 # Audio settings
-@export var engine_min_pitch: float = 0.35
-@export var engine_max_pitch: float = 2.0
+@export var engine_min_pitch: float = 0.25
+@export var engine_max_pitch: float = 2.2
 @export var gear_grind_volume: float = 0.3
 @export var stoppie_volume: float = 0.4
 @export var fishtail_volume: float = 0.4

@@ -9,10 +9,11 @@ var bike_crash: BikeCrash
 var player: CharacterBody3D
 
 # Movement tuning
-@export var max_speed: float = 80.0
-@export var acceleration: float = 15.0
-@export var brake_strength: float = 25.0
-@export var friction: float = 8.0
+@export var max_speed: float = 120.0
+@export var acceleration: float = 12.0
+@export var brake_strength: float = 20.0
+@export var friction: float = 2.0
+@export var engine_brake_strength: float = 12.0 # Max engine braking at high RPM
 
 # Steering tuning
 @export var steering_speed: float = 4.0
@@ -91,9 +92,13 @@ func handle_acceleration(delta, power_output: float, gear_max_speed: float,
         else:
             state.speed = move_toward(state.speed, gear_max_speed, friction * 2.0 * delta)
 
-    # Friction when coasting
+    # Engine braking when coasting (includes friction + RPM-based drag)
     if throttle == 0 and front_brake == 0 and rear_brake == 0:
-        var drag = friction * (1.5 - state.clutch_value * 0.5)
+        var clutch_engagement = bike_gearing.get_clutch_engagement()
+        var rpm_ratio = bike_gearing.get_rpm_ratio()
+        # Clutch engaged: friction + RPM-based engine braking
+        # Clutch disengaged: reduced friction only (freewheeling)
+        var drag = friction * (0.5 + clutch_engagement * 0.5) + engine_brake_strength * rpm_ratio * clutch_engagement
         state.speed = move_toward(state.speed, 0, drag * delta)
 
 
