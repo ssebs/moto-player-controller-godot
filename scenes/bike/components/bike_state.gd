@@ -23,3 +23,6 @@ var brake_grab_level: float = 0.0
 
 # Difficulty
 var is_easy_mode: bool = true
+
+# Ground alignment
+var ground_pitch: float = 0.0

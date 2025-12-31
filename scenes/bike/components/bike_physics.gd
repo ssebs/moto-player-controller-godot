@@ -6,6 +6,7 @@ signal brake_stopped
 var state: BikeState
 var bike_gearing: BikeGearing
 var bike_crash: BikeCrash
+var player: CharacterBody3D
 
 # Movement tuning
 @export var max_speed: float = 60.0
@@ -28,6 +29,9 @@ var bike_crash: BikeCrash
 @export var fall_rate: float = 0.5 # How fast bike falls over at zero speed
 @export var countersteer_factor: float = 1.2 # How much lean induces automatic steering
 
+# Ground alignment
+@export var ground_align_speed: float = 10.0
+
 # Input state (from signals)
 var throttle: float = 0.0
 var front_brake: float = 0.0
@@ -41,10 +45,11 @@ var has_started_moving: bool = false
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGearing, crash: BikeCrash):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGearing, crash: BikeCrash, p_player: CharacterBody3D):
     state = bike_state
     bike_gearing = gearing
     bike_crash = crash
+    player = p_player
     bike_input.throttle_changed.connect(func(v): throttle = v)
     bike_input.front_brake_changed.connect(func(v): front_brake = v)
     bike_input.rear_brake_changed.connect(func(v): rear_brake = v)
@@ -62,6 +67,7 @@ func _bike_update(delta):
     update_lean(delta)
     handle_fall_physics(delta)
     check_brake_stop()
+    align_to_ground(delta)
 
 
 func handle_acceleration(delta, power_output: float, gear_max_speed: float,
@@ -190,6 +196,34 @@ func get_turn_rate() -> float:
 
 func is_turning() -> bool:
     return abs(state.steering_angle) > 0.2
+
+
+func align_to_ground(delta):
+    if player.is_on_floor():
+        var floor_normal = player.get_floor_normal()
+        var forward_dir = -player.global_transform.basis.z
+        var forward_dot = forward_dir.dot(floor_normal)
+        var target_pitch = asin(clamp(forward_dot, -1.0, 1.0))
+        state.ground_pitch = lerp(state.ground_pitch, target_pitch, ground_align_speed * delta)
+    else:
+        state.ground_pitch = lerp(state.ground_pitch, 0.0, ground_align_speed * 0.5 * delta)
+
+
+func apply_movement(delta, bike_tricks: BikeTricks):
+    var forward = -player.global_transform.basis.z
+
+    if state.speed > 0.5:
+        var turn_rate = get_turn_rate()
+        player.rotate_y(-state.steering_angle * turn_rate * delta)
+
+        if abs(state.fishtail_angle) > 0.01:
+            player.rotate_y(state.fishtail_angle * delta * 1.5)
+            apply_fishtail_friction(delta, bike_tricks.get_fishtail_speed_loss(delta))
+
+    var vertical_velocity = player.velocity.y
+    player.velocity = forward * state.speed
+    player.velocity.y = vertical_velocity
+    player.velocity = apply_gravity(delta, player.velocity, player.is_on_floor())
 
 
 func _bike_reset():

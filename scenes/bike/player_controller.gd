@@ -41,12 +41,6 @@ class_name PlayerController extends CharacterBody3D
 # Shared state
 @export var state: BikeState = BikeState.new()
 
-# Local state
-
-# Ground alignment
-@export var ground_align_speed: float = 10.0
-var ground_pitch: float = 0.0
-
 # Spawn tracking
 var spawn_position: Vector3
 var spawn_rotation: Vector3
@@ -59,11 +53,11 @@ func _ready():
     bike_input._bike_setup(state, bike_input)
     bike_gearing._bike_setup(state, bike_input, bike_physics)
     bike_crash._bike_setup(state, bike_input, bike_physics, self)
-    bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash)
+    bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, self)
     bike_tricks._bike_setup(state, bike_input, bike_physics, bike_gearing, bike_crash, self, rear_wheel, front_wheel)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
     bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, brake_danger_bar, clutch_bar, difficulty_label)
-    player_animation._bike_setup(state, bike_input, tail_light)
+    player_animation._bike_setup(state, bike_input, tail_light, mesh, rear_wheel, front_wheel)
 
     # Connect component signals
     bike_gearing.gear_grind.connect(_on_gear_grind)
@@ -78,7 +72,7 @@ func _ready():
 
 func _physics_process(delta):
     if state.is_crashed:
-        _handle_crash_state(delta)
+        _physics_process_crashed(delta)
         return
 
     # Input
@@ -91,75 +85,18 @@ func _physics_process(delta):
     bike_crash._bike_update(delta)
     bike_audio._bike_update(delta)
     bike_ui._bike_update(delta)
-    player_animation._bike_update(delta)
 
     # Movement
-    _apply_movement(delta)
-    _apply_mesh_rotation()
+    # have to pass bike_tricks here since it's setup is before tricks'
+    bike_physics.apply_movement(delta, bike_tricks)
 
     move_and_slide()
 
-    # Align to ground
-    _align_to_ground(delta)
+    # Align to ground & mesh rotation
+    player_animation._bike_update(delta)
 
 
-func _align_to_ground(delta):
-    if is_on_floor():
-        var floor_normal = get_floor_normal()
-        var forward_dir = - global_transform.basis.z
-        var forward_dot = forward_dir.dot(floor_normal)
-        var target_pitch = asin(clamp(forward_dot, -1.0, 1.0))
-        ground_pitch = lerp(ground_pitch, target_pitch, ground_align_speed * delta)
-    else:
-        ground_pitch = lerp(ground_pitch, 0.0, ground_align_speed * 0.5 * delta)
-
-
-func _apply_movement(delta):
-    var forward = - global_transform.basis.z
-
-    if state.speed > 0.5:
-        var turn_rate = bike_physics.get_turn_rate()
-        rotate_y(-state.steering_angle * turn_rate * delta)
-
-        if abs(state.fishtail_angle) > 0.01:
-            rotate_y(state.fishtail_angle * delta * 1.5)
-            bike_physics.apply_fishtail_friction(delta, bike_tricks.get_fishtail_speed_loss(delta))
-
-    var vertical_velocity = velocity.y
-    velocity = forward * state.speed
-    velocity.y = vertical_velocity
-    velocity = bike_physics.apply_gravity(delta, velocity, is_on_floor())
-
-
-func _apply_mesh_rotation():
-    mesh.transform = Transform3D.IDENTITY
-
-    if ground_pitch != 0:
-        mesh.rotate_x(-ground_pitch)
-
-    var pivot: Vector3
-    if state.pitch_angle >= 0:
-        pivot = rear_wheel.position
-    else:
-        pivot = front_wheel.position
-
-    if state.pitch_angle != 0:
-        _rotate_mesh_around_pivot(pivot, Vector3.RIGHT, state.pitch_angle)
-
-    var total_lean = state.lean_angle + state.fall_angle
-    if total_lean != 0:
-        mesh.rotate_z(total_lean)
-
-
-func _rotate_mesh_around_pivot(pivot: Vector3, axis: Vector3, angle: float):
-    var t = mesh.transform
-    t.origin -= pivot
-    t = t.rotated(axis, angle)
-    t.origin += pivot
-    mesh.transform = t
-
-
-func _handle_crash_state(delta):
+func _physics_process_crashed(delta):
     if bike_crash.handle_crash_state(delta):
         _respawn()
         return
@@ -175,7 +112,7 @@ func _handle_crash_state(delta):
             state.speed = move_toward(state.speed, 0, 20.0 * delta)
             move_and_slide()
 
-    _apply_mesh_rotation()
+    player_animation.apply_mesh_rotation()
 
 
 func _respawn():
