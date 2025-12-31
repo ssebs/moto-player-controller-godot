@@ -2,17 +2,41 @@
 
 Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally created for [Dank Nooner](https://github.com/ssebs/DankNooner), this is the motorcycle + controls + driving physics implementation.
 
-> The todo list is below
-
 ## Gameplay
 
 ![gameplay gif](./img/gameplay.gif)
 
+- How riding should feel
+  - Mix of Sim / Arcade - not as hard as real life, but not as easy as GTA.
+  - Fast, but you need to brake to turn during a race.
+  - Crashing is easy to do, but the better you get, the less often you'll crash
+  - Jumps / doing tricks should feel like Skate (some complexity, need to time right, etc.)
+  - Player should think about traction, like IRL. Can't brake too hard during a turn, can't accelerate during a turn unless weight is transferred, etc.
+- How turning should feel:
+  - More like real life's physics than arcade game physics.
+  - Counter steer
+    - Leaning left steers you left
+    - Tip in / falling
+      - Bike should fall when too slow
+      - Speeding up should stabilize
+  - Some weight to it
+  - Higher speed = more stable (harder to turn, easier to stay up) (except tricks)
+- How you can crash:
+  - wheelie too far back
+  - crash into obstacle
+  - lowslide (brake too hard during lean)
+  - (maybe just on hard difficulty)
+    - death wobble after landing too hard
+    - if the front tire skids and regains traction, the bike should high-side crash.
+  - Failing a trick (hit the ground before you're back on the bike)
+
+---
+
+# Planning / Tasks
+
 ## In Progress:
 
-- [ ] Update TODO's, currently on In Progress
 - [ ] Refactor
-
   - [ ] Add custom "bike_handler" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
   - [ ] Confirm event loop & apply refactor to support it
     - Event loop:
@@ -26,38 +50,49 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
       - Update animations
       - Update UI
       - Play sounds
-  - [ ] Simpify physics
-  - [ ] Simplify gearing
-  - [ ] Simplify tricks
-  - [ ] Simplify crash checks
+  - [ ] Simpify physics logic
+  - [ ] Simplify gearing logic
+  - [ ] Simplify tricks logic
+  - [ ] Simplify crash checks logic
+  - [ ] Bike stats / mesh / marker positions for tricks should be in a resource
 
-- How turning should feel:
-  - Counter steer (leaning left steers you left)
-  - Tip in (TBD, look into this, low speed instability w/ speed, throttle accel reduces this)
-  - **MORE**
-- How you can crash:
-  - lowslide (brake too hard during lean)
-  - loop wheelie
-  - crash into obstacle
-  - **MORE**
+## Bugs
+
+- [ ] Gearing on ez mode doesn't lower rpm
+- [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
 
 ## TODO:
 
-- Tricks:
-
-  - [ ] Wheelie
-    - [x] Basic (sitting)
-    - [ ] Standing variants
-  - [ ] Stoppie
-    - [x] Basic
-    - [ ] See **Stunt compilation**
+- [ ] Tune "feeling" of riding the bike & doing tricks
+  - [ ] Bike should fall when too slow
+  - [ ] Counter steering
+- [ ] Create animated character that sits on bike using IK
+  - [ ] Procedural animations (move legs here, move arms there, etc.)
+    - [ ] Playable using animationplayer when doing tricks
+  - [ ] Riding animations (lean, wheelie v1, stoppie)
+  - [ ] Stopped (1 leg down)
+  - [ ] 1 complex trick (heel clicker)
+- [ ] Ragdoll character on crash + bike falls w/ physics
+- [ ] Complex movement / input system
+- [ ] State machine?
+- [ ] Difficulty settings
+  - **Easy** - Automatic, can't fall off bike unless crashing into object / during trick
+  - **Medium** - Manual, can't fall easily from mistakes (e.g. death wobble), clutch not required
+  - **Hard** - Manual, can fall easily from mistakes, clutch required
+- [ ] Some tricks:
+  - [x] Basic Wheelie (sitting)
+  - [x] Basic stoppie
+  - [ ] Heel clicker (legs over bars & touch)
+- [ ] All Tricks:
+  - [ ] Standing wheelie
+  - [ ] One leg over wheelie
+  - [ ] Stoppie to 180
   - [ ] Drift
   - [ ] Burnout
   - [ ] Biker Boyz w/ 2 legs over the side (sparks)
   - [ ] FMX tricks (only off **Ramps**)
     - [ ] Back / Front flip
     - [ ] 360 / 180 turns
-    - [ ] Heel clicker (legs over bars & touch)
     - [ ] Whip (table)
     - [ ] Superman (no hand spread eagle)
   - [ ] Skate tricks for memez (only off **Ramps**)
@@ -68,24 +103,9 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] 360flip
     - [ ] nollie lazerflip
 
-- [ ] Fix bug:
-  - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
-- [ ] Gearing on ez mode doesn't lower rpm
-- [ ] User stories:
-
-  - [ ] bike should fall when too slow
-
-- [ ] Create rigged character
-- [ ] Animate character
-- [ ] Complex movement / input system
-  - [ ] State machine
-  - [ ] Sync'd animations
-  - [ ] tricks
-  - [ ] Ragdoll
-- [ ] if the front tire skids and regains traction, the bike should porpoise. causing a high-side crash.
-
 ## Done:
 
+- [x] Update TODO's, currently on In Progress
 - [x] bike should lean up when accelerating
 - [x] bike should tip-in / countersteer when leaning
 - [x] the steer angle + lean angle should be based on speed
@@ -146,7 +166,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
       - Gamepad: **Start**
       - KBM: `ESC`
 
-## Notes copied from ../README.md
+# Notes copied from ../README.md
 
 ### To implement
 
