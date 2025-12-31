@@ -1,4 +1,4 @@
-class_name BikeGearing extends Node
+class_name BikeGearing extends BikeComponent
 
 signal gear_changed(new_gear: int)
 signal engine_stalled
@@ -21,7 +21,6 @@ signal gear_grind # Tried to shift without clutch
 @export var rpm_blend_speed: float = 4.0 # How fast RPM changes when clutch engaged
 
 # Shared state
-var state: BikeState
 var bike_physics: BikePhysics
 
 # Input state (from signals)

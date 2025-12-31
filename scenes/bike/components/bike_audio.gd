@@ -1,4 +1,4 @@
-class_name BikeAudio extends Node
+class_name BikeAudio extends BikeComponent
 
 @onready var engine_sound: AudioStreamPlayer = null
 @onready var tire_screech: AudioStreamPlayer = null
@@ -17,9 +17,6 @@ class_name BikeAudio extends Node
 @export var exhaust_pop_chance: float = 0.15    # Chance per frame when conditions met
 @export var exhaust_pop_volume: float = 0.2
 @export var exhaust_pop_cooldown: float = 0.1   # Min time between pops
-
-# Shared state
-var state: BikeState
 
 # Input state (from signals)
 var throttle: float = 0.0

@@ -1,4 +1,4 @@
-class_name BikeTricks extends Node
+class_name BikeTricks extends BikeComponent
 
 signal tire_screech_start(volume: float)
 signal tire_screech_stop
@@ -22,7 +22,6 @@ signal stoppie_stopped # Emitted when bike comes to rest during a stoppie
 @export var skid_volume: float = 0.5
 
 # Shared state
-var state: BikeState
 var bike_physics: BikePhysics
 
 # Input state (from signals)

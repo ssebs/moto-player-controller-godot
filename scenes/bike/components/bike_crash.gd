@@ -1,4 +1,4 @@
-class_name BikeCrash extends Node
+class_name BikeCrash extends BikeComponent
 
 signal crashed(pitch_direction: float, lean_direction: float)
 signal respawned
@@ -11,7 +11,6 @@ signal respawned
 @export var brake_grab_crash_threshold: float = 0.9
 
 # Shared state
-var state: BikeState
 var bike_physics: BikePhysics
 
 # Input state (from signals)

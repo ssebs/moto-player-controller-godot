@@ -1,7 +1,4 @@
-class_name PlayerAnimationController extends Node
-
-# Shared state
-var state: BikeState
+class_name PlayerAnimationController extends BikeComponent
 
 # Local state
 var tail_light_material: StandardMaterial3D = null

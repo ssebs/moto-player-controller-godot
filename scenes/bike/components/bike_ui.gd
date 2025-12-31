@@ -1,4 +1,4 @@
-class_name BikeUI extends Node
+class_name BikeUI extends BikeComponent
 
 @onready var gear_label: Label = null
 @onready var speed_label: Label = null
@@ -6,9 +6,6 @@ class_name BikeUI extends Node
 @onready var brake_danger_bar: ProgressBar = null
 @onready var clutch_bar: ProgressBar = null
 @onready var difficulty_label: Label = null
-
-# Shared state
-var state: BikeState
 
 # Input state (from signals)
 var throttle: float = 0.0

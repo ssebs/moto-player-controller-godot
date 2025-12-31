@@ -1,4 +1,4 @@
-class_name BikePhysics extends Node
+class_name BikePhysics extends BikeComponent
 
 signal brake_stopped
 
@@ -23,9 +23,6 @@ signal brake_stopped
 # Fall physics
 @export var fall_rate: float = 0.5 # How fast bike falls over at zero speed
 @export var countersteer_factor: float = 1.2 # How much lean induces automatic steering
-
-# Shared state
-var state: BikeState
 
 # Input state (from signals)
 var throttle: float = 0.0
