@@ -1,5 +1,9 @@
 # Moto Player Controller
 
+
+Hide license plate / police chase feature in main game
+
+
 Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally created for [Dank Nooner](https://github.com/ssebs/DankNooner), this is the motorcycle + controls + driving physics implementation.
 
 ## Gameplay
