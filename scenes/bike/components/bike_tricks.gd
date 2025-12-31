@@ -48,6 +48,9 @@ var front_skid_spawn_timer: float = 0.0
 var last_throttle_input: float = 0.0
 var last_clutch_input: float = 0.0
 
+# Frame delta for signal handlers
+var current_delta: float = 0.0
+
 
 func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics,
         gearing: BikeGearing, crash: BikeCrash, ctrl: CharacterBody3D,
@@ -64,8 +67,10 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhys
     bike_input.front_brake_changed.connect(func(v): front_brake = v)
     bike_input.rear_brake_changed.connect(func(v): rear_brake = v)
     bike_input.lean_changed.connect(func(v): lean = v)
+    bike_crash.force_stoppie_requested.connect(_on_force_stoppie_requested)
 
 func _bike_update(delta):
+    current_delta = delta
     var is_airborne = !controller.is_on_floor()
     handle_wheelie_stoppie(
         delta,
@@ -238,6 +243,10 @@ func _spawn_skid_mark(pos: Vector3, rot: Vector3):
 
     var timer = get_tree().create_timer(SKID_MARK_LIFETIME)
     timer.timeout.connect(func(): if is_instance_valid(decal): decal.queue_free())
+
+
+func _on_force_stoppie_requested(target_pitch: float, rate: float):
+    force_pitch(target_pitch, rate, current_delta)
 
 
 func _bike_reset():

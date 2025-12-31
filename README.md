@@ -39,7 +39,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Refactor
   - [x] setup should be in order: (state, bike_input, [others]). 
   - [x] Add custom "_bike_update()" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
-  - [ ] Move all handler calls to bike_update
+  - [x] Move all handler calls to bike_update
   - [x] Confirm event loop & apply refactor to support it
     - Event loop:
       - Check inputs

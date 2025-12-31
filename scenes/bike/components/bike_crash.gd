@@ -2,6 +2,7 @@ class_name BikeCrash extends Node
 
 signal crashed(pitch_direction: float, lean_direction: float)
 signal respawned
+signal force_stoppie_requested(target_pitch: float, rate: float)
 
 # Shared state
 var state: BikeState
@@ -160,7 +161,9 @@ func _update_brake_danger(delta) -> bool:
                 crash_lean_direction = - sign(state.steering_angle) if state.steering_angle != 0 else sign(state.lean_angle)
                 trigger_crash()
                 return true
-            # else: will force stoppie in parent
+            else:
+                # Force stoppie when going straight with brake danger maxed
+                _check_force_stoppie()
     else:
         front_brake_hold_time = 0.0
         state.brake_danger_level = move_toward(state.brake_danger_level, 0.0, 5.0 * delta)
@@ -168,12 +171,13 @@ func _update_brake_danger(delta) -> bool:
     return false
 
 
-func should_force_stoppie() -> bool:
-    """Returns true if brake danger should force into stoppie"""
+func _check_force_stoppie():
+    """Emit signal to force stoppie when brake danger maxed while going straight"""
     if front_brake > 0.8 and state.speed > 25 and state.brake_danger_level >= 1.0:
         var turn_factor = abs(steer)
-        return turn_factor <= 0.2 # Only when going straight
-    return false
+        if turn_factor <= 0.2:
+            var target_pitch = -crash_stoppie_threshold * 1.2
+            force_stoppie_requested.emit(target_pitch, 4.0)
 
 
 func trigger_crash():

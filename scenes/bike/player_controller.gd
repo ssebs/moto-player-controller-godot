@@ -93,10 +93,6 @@ func _physics_process(delta):
     bike_ui._bike_update(delta)
     player_animation._bike_update(delta)
 
-    # Force stoppie if brake danger while going straight
-    if bike_crash.should_force_stoppie():
-        bike_tricks.force_pitch(-bike_crash.crash_stoppie_threshold * 1.2, 4.0, delta)
-
     # Movement
     _apply_movement(delta)
     _apply_mesh_rotation()
