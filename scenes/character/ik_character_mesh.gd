@@ -6,7 +6,6 @@ class_name IKCharacterMesh extends Node3D
 
 # Target markers
 @export var head_target: Marker3D
-@export var neck_target: Marker3D
 @export var left_arm_target: Marker3D
 @export var right_arm_target: Marker3D
 @export var butt_target: Marker3D
@@ -21,7 +20,6 @@ class_name IKCharacterMesh extends Node3D
 
 # IK nodes
 @onready var head_ik: SkeletonIK3D = %HeadIK
-@onready var neck_ik: SkeletonIK3D = %NeckIK
 @onready var left_arm_ik: SkeletonIK3D = %LeftArmIK
 @onready var right_arm_ik: SkeletonIK3D = %RightArmIK
 # note: butt doesn't use IK
@@ -52,4 +50,6 @@ func move_butt():
         return
 
     var offset = butt_target.position
+    var rot = Quaternion.from_euler(butt_target.rotation)
     skel.set_bone_pose_position(bone_idx, offset)
+    skel.set_bone_pose_rotation(bone_idx, rot)

@@ -18,16 +18,21 @@ right_leg_target = NodePath("Targets/RightLegTarget")
 
 [node name="Skeleton3D" parent="MixamoRacer" index="0"]
 bones/0/position = Vector3(0, 0.8325197, 0)
-bones/0/rotation = Quaternion(-0.098452166, 0.017347036, 0.001777114, 0.9949891)
 bones/1/rotation = Quaternion(0.034887537, -0.03561846, 0.030996146, 0.9982753)
 bones/2/rotation = Quaternion(0.029627217, -0.018389555, 0.0063354806, 0.99937177)
 bones/3/rotation = Quaternion(0.029617313, -0.018185338, 0.006805207, 0.9993727)
 bones/4/rotation = Quaternion(0.16386226, -0.0006864143, 0.0079627875, 0.98645085)
 bones/5/rotation = Quaternion(0.1163598, -0.00030374381, 0.007986608, 0.99317497)
 bones/7/rotation = Quaternion(-0.5051158, -0.46667194, 0.61004233, -0.3936036)
-bones/8/rotation = Quaternion(0.31801856, -0.045004096, -0.1184464, 0.9395793)
-bones/9/rotation = Quaternion(0.069111, -0.0010518562, 0.772178, 0.6316358)
-bones/10/rotation = Quaternion(-0.05072942, 0.4047327, -0.30782837, 0.85956955)
+bones/8/position = Vector3(0, 0.13107654, 0)
+bones/8/rotation = Quaternion(0.4420489, -0.14176078, 0.13019863, 0.8760964)
+bones/8/scale = Vector3(0.998976, 0.99897593, 0.9989761)
+bones/9/position = Vector3(-6.854534e-07, 0.27073437, -1.1920929e-07)
+bones/9/rotation = Quaternion(-0.33779213, -0.11426707, 0.2911084, 0.8877474)
+bones/9/scale = Vector3(0.99993336, 0.99993336, 0.9999333)
+bones/10/position = Vector3(4.2915344e-06, 0.25568256, 8.702278e-06)
+bones/10/rotation = Quaternion(0.4900992, -0.26146597, 0.17112727, 0.81372833)
+bones/10/scale = Vector3(0.9999003, 0.9998994, 0.9998885)
 bones/11/rotation = Quaternion(0.16930608, 0.113110155, 0.14957051, 0.96755886)
 bones/12/rotation = Quaternion(0.05503097, -0.026924042, -0.12155372, 0.9906924)
 bones/13/rotation = Quaternion(-0.01540187, -0.011922935, 0.089324266, 0.9958122)
@@ -44,9 +49,15 @@ bones/27/rotation = Quaternion(0.33914298, 0.02082902, -0.040486872, 0.9396325)
 bones/28/rotation = Quaternion(0.63240063, 0.023373768, -0.07010398, 0.7711086)
 bones/29/rotation = Quaternion(0.62194824, 8.7636996e-05, -0.09285997, 0.777533)
 bones/31/rotation = Quaternion(0.50994015, -0.4316458, 0.6759163, 0.3110949)
-bones/32/rotation = Quaternion(0.15569986, 0.16387783, -0.062304962, 0.9721213)
-bones/33/rotation = Quaternion(0.04512638, 0.0014076838, -0.5050068, 0.86193377)
-bones/34/rotation = Quaternion(-0.12505244, -0.35480863, 0.0084640635, 0.9264994)
+bones/32/position = Vector3(1.4901161e-08, 0.1310769, -2.3841858e-07)
+bones/32/rotation = Quaternion(0.512502, 0.12520432, -0.098736204, 0.8437516)
+bones/32/scale = Vector3(1.0000043, 1.0000042, 1.0000043)
+bones/33/position = Vector3(8.940697e-08, 0.2706958, -1.6391277e-07)
+bones/33/rotation = Quaternion(-0.0013878334, -0.22855324, -0.0019516257, 0.9735285)
+bones/33/scale = Vector3(1.0000814, 1.0000815, 1.0000823)
+bones/34/position = Vector3(3.963709e-06, 0.25564134, 2.682209e-07)
+bones/34/rotation = Quaternion(0.032790493, -0.00084276235, -0.61097646, 0.7909689)
+bones/34/scale = Vector3(0.9998184, 0.9998194, 0.9998207)
 bones/35/rotation = Quaternion(0.22846729, -0.02228838, -0.16702446, 0.95885813)
 bones/36/rotation = Quaternion(0.06620668, -0.0067436206, 0.20658985, 0.97616184)
 bones/37/rotation = Quaternion(-0.03487094, -0.012899209, -0.15540268, 0.9871513)
@@ -75,6 +86,7 @@ bones/63/rotation = Quaternion(0.32396698, 0.06544195, -0.02024301, 0.9435852)
 unique_name_in_owner = true
 root_bone = &"mixamorig6_LeftArm"
 tip_bone = &"mixamorig6_LeftHand"
+target = Transform3D(0.02765167, -0.9962736, 0.08169474, 0.15483421, -0.076470934, -0.98497635, 0.9875532, 0.039885417, 0.15214273, -0.18084005, 0.18939535, -0.34834242)
 use_magnet = true
 target_node = NodePath("../../../Targets/LeftArmTarget")
 script = ExtResource("3_hiykm")
@@ -83,6 +95,7 @@ script = ExtResource("3_hiykm")
 unique_name_in_owner = true
 root_bone = &"mixamorig6_RightArm"
 tip_bone = &"mixamorig6_RightHand"
+target = Transform3D(-0.048892476, 0.9259691, -0.374421, -0.52059925, -0.34354672, -0.7816345, -0.8524003, 0.15670711, 0.4988557, 0.30723536, 0.60162836, 0.86473644)
 use_magnet = true
 target_node = NodePath("../../../Targets/RightArmTarget")
 script = ExtResource("3_hiykm")
@@ -91,6 +104,7 @@ script = ExtResource("3_hiykm")
 unique_name_in_owner = true
 root_bone = &"mixamorig6_LeftUpLeg"
 tip_bone = &"mixamorig6_LeftFoot"
+target = Transform3D(-0.9982336, 0.03612911, -0.047162842, -0.059410855, -0.60704976, 0.7924393, -6.939984e-08, 0.7938415, 0.60812396, 0.2, 0.04, 0)
 use_magnet = true
 magnet = Vector3(0.1, 0, 1)
 target_node = NodePath("../../../Targets/LeftLegTarget")
@@ -100,6 +114,7 @@ script = ExtResource("3_hiykm")
 unique_name_in_owner = true
 root_bone = &"mixamorig6_RightUpLeg"
 tip_bone = &"mixamorig6_RightFoot"
+target = Transform3D(-0.9982256, 0.036801673, -0.046809737, -0.05953972, -0.60723305, 0.7922895, 0.0007331595, 0.7936708, 0.60834676, -0.2, 0, 0)
 use_magnet = true
 magnet = Vector3(-0.1, 0, 1)
 target_node = NodePath("../../../Targets/RightLegTarget")
@@ -109,34 +124,23 @@ script = ExtResource("3_hiykm")
 unique_name_in_owner = true
 root_bone = &"mixamorig6_Neck"
 tip_bone = &"mixamorig6_Head"
+target = Transform3D(1, 0, 0, 0, 0.92230207, -0.38646945, 0, 0.38646945, 0.92230207, 0, 2.0420756, 0.52922785)
 target_node = NodePath("../../../Targets/HeadTarget")
-script = ExtResource("3_hiykm")
-
-[node name="NeckIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="6"]
-unique_name_in_owner = true
-root_bone = &"mixamorig6_Spine"
-tip_bone = &"mixamorig6_Neck"
-override_tip_basis = false
-target_node = NodePath("../../../Targets/NeckTarget")
 script = ExtResource("3_hiykm")
 
 [node name="Targets" type="Node3D" parent="."]
 
 [node name="HeadTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.9999999, 0, 0, 0, 0.9999999, 0, 1.7, 0)
-
-[node name="NeckTarget" type="Marker3D" parent="Targets"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 1.69, 0)
+transform = Transform3D(1, 0, 0, 0, 0.9999999, 0, 0, 0, 0.9999999, 0, 1.76, 0.15)
 
 [node name="LeftArmTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
-transform = Transform3D(1.9106855e-15, -4.371139e-08, -1, -1, -4.371139e-08, 0, -4.371139e-08, 1, -4.371139e-08, 0.25, 0.25, 0.15)
+transform = Transform3D(1.9106855e-15, -4.371139e-08, -1, -1, -4.371139e-08, 0, -4.371139e-08, 1, -4.371139e-08, 0.25, 0.15, 0.25)
 
 [node name="RightArmTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
-transform = Transform3D(8.742278e-08, 4.3711395e-08, 1, 1, 7.54979e-08, -8.742278e-08, -7.549791e-08, 1, -4.371139e-08, -0.25, 0.25, 0.15)
+transform = Transform3D(8.742278e-08, 4.3711395e-08, 1, 1, 7.54979e-08, -8.742278e-08, -7.549791e-08, 1, -4.371139e-08, -0.25, 0.15, 0.25)
 
 [node name="ButtTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
@@ -149,7 +153,5 @@ transform = Transform3D(-0.9982336, 0.03612911, -0.047162842, -0.059410855, -0.6
 [node name="RightLegTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
 transform = Transform3D(-0.9982256, 0.036801673, -0.046809737, -0.05953972, -0.60723305, 0.7922895, 0.0007331595, 0.7936708, 0.60834676, -0.2, 0, 0)
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 
 [editable path="MixamoRacer"]
