@@ -20,22 +20,6 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nkid5"]
 radius = 0.4
 
-[sub_resource type="Animation" id="Animation_wi4rf"]
-resource_name = "lean_left"
-length = 0.4
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("BikeMesh/IKCharacterMesh/Targets/ButtTarget:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.4),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(2.769973e-08, 0.98623186, -0.35969338), Vector3(0.25, 0.986, -0.36)]
-}
-
 [sub_resource type="Animation" id="Animation_262bm"]
 length = 0.001
 tracks/0/type = "value"
@@ -61,6 +45,22 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector3(0.43134058, 1.4476901e-08, 7.8451706e-08)]
+}
+
+[sub_resource type="Animation" id="Animation_wi4rf"]
+resource_name = "lean_left"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BikeMesh/IKCharacterMesh/Targets/ButtTarget:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(2.769973e-08, 0.98623186, -0.35969338), Vector3(0.25, 0.986, -0.36)]
 }
 
 [sub_resource type="Animation" id="Animation_fm7or"]
@@ -135,7 +135,7 @@ left_leg_magnet = Vector3(1, 0, 1)
 right_leg_magnet = Vector3(-1, 0, 1)
 
 [node name="Skeleton3D" parent="BikeMesh/IKCharacterMesh/MixamoRacer" index="0"]
-bones/0/position = Vector3(0.25, 0.986, -0.36)
+bones/0/position = Vector3(2.769973e-08, 0.98623186, -0.35969338)
 bones/0/rotation = Quaternion(0.46173313, 8.114462e-09, 4.2768583e-08, 0.88701886)
 bones/8/position = Vector3(1.5199184e-06, 0.1310766, 5.6028366e-06)
 bones/8/rotation = Quaternion(0.46174, -0.23288499, 0.40978566, 0.75142294)
