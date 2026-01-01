@@ -1,18 +1,23 @@
 [gd_scene load_steps=4 format=3 uid="uid://gobjlpuvfmm8"]
 
-[ext_resource type="Script" uid="uid://cnhikt5heakgg" path="res://scenes/character/test_ik.gd" id="1_6lf8s"]
-[ext_resource type="PackedScene" uid="uid://dxgxjvo8bvmo1" path="res://assets/characters/Mixamo/MixamoRacer.fbx" id="2_iilqs"]
-[ext_resource type="Script" uid="uid://dhlwot1rrwitp" path="res://scenes/character/ik_start_script.gd" id="3_iilqs"]
+[ext_resource type="Script" uid="uid://cnhikt5heakgg" path="res://scenes/character/ik_character_mesh.gd" id="1_b7r8g"]
+[ext_resource type="PackedScene" uid="uid://dxgxjvo8bvmo1" path="res://assets/characters/Mixamo/MixamoRacer.fbx" id="2_034on"]
+[ext_resource type="Script" uid="uid://dhlwot1rrwitp" path="res://scenes/character/ik_start_script.gd" id="3_hiykm"]
 
-[node name="TestIK" type="Node3D" node_paths=PackedStringArray("butt_position", "skel")]
-script = ExtResource("1_6lf8s")
-butt_position = NodePath("MixamoRacer/ButtTarget")
+[node name="IKCharacterMesh" type="Node3D" node_paths=PackedStringArray("skel", "head_target", "left_arm_target", "right_arm_target", "butt_target", "left_leg_target", "right_leg_target")]
+script = ExtResource("1_b7r8g")
 skel = NodePath("MixamoRacer/Skeleton3D")
+head_target = NodePath("Targets/HeadTarget")
+left_arm_target = NodePath("Targets/LeftArmTarget")
+right_arm_target = NodePath("Targets/RightArmTarget")
+butt_target = NodePath("Targets/ButtTarget")
+left_leg_target = NodePath("Targets/LeftLegTarget")
+right_leg_target = NodePath("Targets/RightLegTarget")
 
-[node name="MixamoRacer" parent="." instance=ExtResource("2_iilqs")]
+[node name="MixamoRacer" parent="." instance=ExtResource("2_034on")]
 
 [node name="Skeleton3D" parent="MixamoRacer" index="0"]
-bones/0/position = Vector3(0, 0.82, 0)
+bones/0/position = Vector3(0, 0.8325197, 0)
 bones/0/rotation = Quaternion(-0.098452166, 0.017347036, 0.001777114, 0.9949891)
 bones/1/rotation = Quaternion(0.034887537, -0.03561846, 0.030996146, 0.9982753)
 bones/2/rotation = Quaternion(0.029627217, -0.018389555, 0.0063354806, 0.99937177)
@@ -67,61 +72,84 @@ bones/62/rotation = Quaternion(0.6033191, 0.23516077, -0.17193255, 0.74239117)
 bones/63/rotation = Quaternion(0.32396698, 0.06544195, -0.02024301, 0.9435852)
 
 [node name="LeftArmIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="1"]
+unique_name_in_owner = true
 root_bone = &"mixamorig6_LeftArm"
 tip_bone = &"mixamorig6_LeftHand"
-target_node = NodePath("../../LeftArmTarget")
-script = ExtResource("3_iilqs")
+use_magnet = true
+target_node = NodePath("../../../Targets/LeftArmTarget")
+script = ExtResource("3_hiykm")
 
 [node name="RightArmIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="2"]
+unique_name_in_owner = true
 root_bone = &"mixamorig6_RightArm"
 tip_bone = &"mixamorig6_RightHand"
-target_node = NodePath("../../RightArmTarget")
-script = ExtResource("3_iilqs")
+use_magnet = true
+target_node = NodePath("../../../Targets/RightArmTarget")
+script = ExtResource("3_hiykm")
 
 [node name="LeftLegIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="3"]
+unique_name_in_owner = true
 root_bone = &"mixamorig6_LeftUpLeg"
 tip_bone = &"mixamorig6_LeftFoot"
 use_magnet = true
 magnet = Vector3(0.1, 0, 1)
-target_node = NodePath("../../LeftLegTarget")
-script = ExtResource("3_iilqs")
+target_node = NodePath("../../../Targets/LeftLegTarget")
+script = ExtResource("3_hiykm")
 
 [node name="RightLegIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="4"]
+unique_name_in_owner = true
 root_bone = &"mixamorig6_RightUpLeg"
 tip_bone = &"mixamorig6_RightFoot"
 use_magnet = true
 magnet = Vector3(-0.1, 0, 1)
-target_node = NodePath("../../RightLegTarget")
-script = ExtResource("3_iilqs")
+target_node = NodePath("../../../Targets/RightLegTarget")
+script = ExtResource("3_hiykm")
 
 [node name="HeadIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="5"]
+unique_name_in_owner = true
 root_bone = &"mixamorig6_Neck"
 tip_bone = &"mixamorig6_Head"
-target_node = NodePath("../../HeadTarget")
-script = ExtResource("3_iilqs")
+target_node = NodePath("../../../Targets/HeadTarget")
+script = ExtResource("3_hiykm")
 
-[node name="LeftArmTarget" type="Marker3D" parent="MixamoRacer"]
+[node name="NeckIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="6"]
+unique_name_in_owner = true
+root_bone = &"mixamorig6_Spine"
+tip_bone = &"mixamorig6_Neck"
+override_tip_basis = false
+target_node = NodePath("../../../Targets/NeckTarget")
+script = ExtResource("3_hiykm")
+
+[node name="Targets" type="Node3D" parent="."]
+
+[node name="HeadTarget" type="Marker3D" parent="Targets"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.9999999, 0, 0, 0, 0.9999999, 0, 1.7, 0)
+
+[node name="NeckTarget" type="Marker3D" parent="Targets"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 1.69, 0)
+
+[node name="LeftArmTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
 transform = Transform3D(1.9106855e-15, -4.371139e-08, -1, -1, -4.371139e-08, 0, -4.371139e-08, 1, -4.371139e-08, 0.25, 0.25, 0.15)
 
-[node name="RightArmTarget" type="Marker3D" parent="MixamoRacer"]
+[node name="RightArmTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
 transform = Transform3D(8.742278e-08, 4.3711395e-08, 1, 1, 7.54979e-08, -8.742278e-08, -7.549791e-08, 1, -4.371139e-08, -0.25, 0.25, 0.15)
 
-[node name="LeftLegTarget" type="Marker3D" parent="MixamoRacer"]
+[node name="ButtTarget" type="Marker3D" parent="Targets"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8325197, 0)
+
+[node name="LeftLegTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
 transform = Transform3D(-0.9982336, 0.03612911, -0.047162842, -0.059410855, -0.60704976, 0.7924393, -6.939984e-08, 0.7938415, 0.60812396, 0.2, 0.04, 0)
 
-[node name="RightLegTarget" type="Marker3D" parent="MixamoRacer"]
+[node name="RightLegTarget" type="Marker3D" parent="Targets"]
 unique_name_in_owner = true
 transform = Transform3D(-0.9982256, 0.036801673, -0.046809737, -0.05953972, -0.60723305, 0.7922895, 0.0007331595, 0.7936708, 0.60834676, -0.2, 0, 0)
 
-[node name="ButtTarget" type="Marker3D" parent="MixamoRacer"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.82, 0)
-
-[node name="HeadTarget" type="Marker3D" parent="MixamoRacer"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 1.6, 0)
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 
 [editable path="MixamoRacer"]

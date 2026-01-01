@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c331s8cm2gjtp" path="res://scenes/bike/player_controller.gd" id="1_5uol1"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_ujl86"]
-[ext_resource type="PackedScene" uid="uid://cqbxhsw63yle3" path="res://assets/characters/neoblizz-inverse-kinematics/Zero.glb" id="2_wi4rf"]
+[ext_resource type="PackedScene" uid="uid://gobjlpuvfmm8" path="res://scenes/character/ik_char_mesh.tscn" id="2_wi4rf"]
 [ext_resource type="Material" uid="uid://bfxhki5bfmyn1" path="res://scenes/bike/tail_light_material.tres" id="3_n1tms"]
 [ext_resource type="Script" uid="uid://ct5kbf1mujm7r" path="res://scenes/bike/components/player_animation_controller.gd" id="4_n1tms"]
 [ext_resource type="Script" uid="uid://l500tpp42su8" path="res://scenes/bike/components/bike_gearing.gd" id="5_gearing"]
@@ -35,97 +35,34 @@ shape = SubResource("CapsuleShape3D_nkid5")
 transform = Transform3D(0.99976206, 0.0049999, -0.021233829, 0.0005158487, 0.9676885, 0.25214824, 0.021808447, -0.25209916, 0.9674557, -0.23836821, 1.2938731, 2.5680387)
 fov = 70.0
 
-[node name="CharacterMesh" type="Node3D" parent="."]
+[node name="IKCharacterMesh" parent="." instance=ExtResource("2_wi4rf")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
-[node name="Zero" parent="CharacterMesh" instance=ExtResource("2_wi4rf")]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
-visible = false
+[node name="Skeleton3D" parent="IKCharacterMesh/MixamoRacer" index="0"]
+bones/0/position = Vector3(2.7225205e-08, 0.98623186, -0.31142005)
 
-[node name="Skeleton3D" parent="CharacterMesh/Zero/Armature" index="0"]
-bones/0/rotation = Quaternion(-0.017961785, -1.9121456e-17, 1.0679514e-18, 0.9998387)
-bones/1/rotation = Quaternion(0.99602437, 0.07321159, -0.050655108, 0.003106872)
-bones/2/rotation = Quaternion(0.122296005, 0.045326248, -0.028492102, 0.99104875)
-bones/3/rotation = Quaternion(-0.10573165, 0.01579959, 0.094612435, 0.9897574)
-bones/4/rotation = Quaternion(0.995944, -0.07337158, 0.051978372, 0.0032412251)
-bones/5/rotation = Quaternion(0.12229519, -0.045326274, 0.028491924, 0.99104875)
-bones/6/rotation = Quaternion(-0.10563294, -0.017137798, -0.09458882, 0.98974794)
-bones/7/rotation = Quaternion(0.0045329332, 1.8617615e-19, -1.3160598e-18, 0.9999898)
-bones/9/rotation = Quaternion(0.013429441, 1.8953912e-17, 1.6457565e-19, 0.9999099)
-bones/12/rotation = Quaternion(0.9259572, 0.26138604, 0.2081802, -0.17590252)
-bones/13/rotation = Quaternion(-0.14988412, 0.019069415, -0.15250422, 0.976685)
-bones/14/rotation = Quaternion(0.009286329, 0.055013895, 0.045917764, 0.99738604)
-bones/15/rotation = Quaternion(-0.5039546, 0.45891798, 0.47979853, 0.5524649)
-bones/16/rotation = Quaternion(-0.008601391, 0.011516998, 0.15290193, 0.9881368)
-bones/17/rotation = Quaternion(0.017647864, 0.77851254, -0.021497535, 0.6270125)
-bones/18/position = Vector3(-2.193818, 1.5406398, -0.19739132)
-bones/18/rotation = Quaternion(0.7099119, -0.6946386, 0.020666525, 0.11434691)
-bones/20/position = Vector3(1.4538807, 0.252522, -0.23737144)
-bones/20/rotation = Quaternion(0.8859151, 0.32701862, 0.32701877, -0.035666678)
+[node name="LeftArmTarget" parent="IKCharacterMesh/Targets" index="2"]
+transform = Transform3D(1.9106855e-15, -4.371139e-08, -1, -1, -4.371139e-08, 0, -4.371139e-08, 1, -4.371139e-08, 0.28244296, 0.87914, 0.4761408)
 
-[node name="LeftFoot" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="0"]
-transform = Transform3D(0.9999999, 5.7742e-08, 7.450581e-09, 6.053597e-08, -0.9999998, 0, -1.8626451e-08, 0, -0.99999964, 0.6768379, -2.3126884, -0.5040197)
+[node name="RightArmTarget" parent="IKCharacterMesh/Targets" index="3"]
+transform = Transform3D(8.742278e-08, 4.3711395e-08, 1, 1, 7.54979e-08, -8.742278e-08, -7.549791e-08, 1, -4.371138e-08, -0.284, 0.879, 0.47)
 
-[node name="LeftLegLower" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="1"]
-transform = Transform3D(0.9815976, 0.1839457, -0.05128257, 0.19062775, -0.9597385, 0.20630765, -0.011268482, -0.21228696, -0.9771421, 0.44243884, -1.0897086, -0.23350573)
+[node name="ButtTarget" parent="IKCharacterMesh/Targets" index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7225205e-08, 0.98623186, -0.31142005)
 
-[node name="LeftLeg" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="2"]
-transform = Transform3D(0.98414814, 0.14615579, -0.10045249, 0.14179166, -0.98866653, -0.049330086, -0.10652391, 0.034304798, -0.9937179, 0.2568382, 0.16578098, -0.27706873)
+[node name="LeftLegTarget" parent="IKCharacterMesh/Targets" index="5"]
+transform = Transform3D(-0.9982336, 0.03612911, -0.047162842, -0.059410855, -0.60704976, 0.7924393, -6.939984e-08, 0.7938415, 0.60812396, 0.2375038, 0.39871255, -0.17106614)
 
-[node name="RightFoot" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="3"]
-transform = Transform3D(0.9999996, 1.8626451e-09, -7.8231096e-08, 8.288771e-08, -0.9999997, 1.1920929e-07, -5.9604645e-08, -4.4703484e-08, -0.9999993, -0.7267212, -2.3126888, -0.50401986)
+[node name="RightLegTarget" parent="IKCharacterMesh/Targets" index="6"]
+transform = Transform3D(-0.9982256, 0.036801673, -0.046809737, -0.05953972, -0.60723305, 0.7922895, 0.0007331595, 0.7936708, 0.60834676, -0.238, 0.399, -0.171)
 
-[node name="RightLegLower" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="4"]
-transform = Transform3D(0.9815181, -0.18361749, 0.053907495, -0.19085872, -0.9597891, 0.20585795, 0.013940729, -0.21234198, -0.9770955, -0.49274033, -1.0896444, -0.2334359)
-
-[node name="RightLeg" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="5"]
-transform = Transform3D(0.9838294, -0.1464849, 0.10305941, -0.14198105, -0.98861593, -0.049797453, 0.10918076, 0.034359742, -0.9934274, -0.30672187, 0.16578121, -0.2770687)
-
-[node name="HairR" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="6"]
-transform = Transform3D(0.6666664, -0.66666704, 0.3333332, 0.21919854, 0.6027958, 0.76719546, -0.71239585, -0.43839738, 0.54799604, -0.19116074, 2.2675264, -0.6051073)
-
-[node name="HairL" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="7"]
-transform = Transform3D(0.6666662, 0.6666671, -0.3333332, -0.21919854, 0.6027956, 0.7671956, 0.7123959, -0.4383973, 0.547996, 0.20883928, 2.2675264, -0.6051073)
-
-[node name="Head" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="8"]
-transform = Transform3D(1, -2.688337e-24, 0, 3.3087225e-24, 0.9999999, -6.3329935e-08, 6.617445e-24, 6.3329935e-08, 0.9999999, 3.5098995e-19, 1.809104, -0.35322782)
-
-[node name="Neck" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="9"]
-transform = Transform3D(1, 8.381996e-19, -3.7899983e-17, 1.7996004e-19, 0.9996392, 0.02685639, 3.7908827e-17, -0.02685639, 0.9996392, 1.8335017e-19, 1.6091763, -0.34785655)
-
-[node name="LeftHand" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="10"]
-transform = Transform3D(0.57223517, 0.6027487, 0.5560944, 0.55609393, -0.7835732, 0.27707788, 0.6027489, 0.15068696, -0.7835733, 1.4538815, 0.2525218, -0.23737131)
-
-[node name="LeftArm" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="11"]
-transform = Transform3D(0.5732654, 0.6456102, 0.5045338, 0.65199685, -0.73236275, 0.19632754, 0.49625275, 0.21640667, -0.84077424, 0.8515229, 0.9358208, -0.4392799)
-
-[node name="LeftSholder" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="12"]
-transform = Transform3D(0.7766767, 0.5573033, 0.29357496, 0.42350107, -0.80700785, 0.4115638, 0.46628323, -0.1953227, -0.86280274, 0.39327818, 1.5993859, -0.2786754)
-
-[node name="RightHand" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="13"]
-transform = Transform3D(0.034100365, -0.9909909, -0.12951674, -0.9815381, -0.008804219, -0.19106396, 0.18820228, 0.13364089, -0.9729954, -2.2177505, 1.5391815, -0.19833237)
-
-[node name="RightArm" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="14"]
-transform = Transform3D(-0.18755813, -0.9822385, 0.005481381, 0.022288729, 0.0013230154, 0.9997508, -0.9820006, 0.18763347, 0.021644667, -1.2773833, 1.5394039, -0.37245426)
-
-[node name="RightShoulder" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="15"]
-transform = Transform3D(0.1183753, -0.9926914, 0.02347881, 0.040965978, 0.028507194, 0.99875385, -0.9921235, -0.11726602, 0.044041082, -0.46664447, 1.5123621, -0.2763374)
-
-[node name="Torso" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="16"]
-transform = Transform3D(1, 8.38199e-19, -3.7899983e-17, 1.7996004e-19, 0.9996392, 0.026856376, 3.7908827e-17, -0.026856376, 0.9996392, -7.3866815e-19, 0.509573, -0.31831455)
-
-[node name="Hip" parent="CharacterMesh/Zero/Armature/Skeleton3D" index="17"]
-transform = Transform3D(1, -1.4486471e-18, -3.8275106e-17, 2.8224693e-18, 0.99935466, 0.035917774, 3.819838e-17, -0.035917774, 0.99935466, 0, 0, -0.3)
-
-[node name="LeftHandIK" type="SkeletonIK3D" parent="CharacterMesh/Zero"]
-target_node = NodePath("../../../CharacterMarkers/LeftHandleBarMarker")
-
-[node name="Mesh" type="Node3D" parent="."]
+[node name="BikeMesh" type="Node3D" parent="."]
 unique_name_in_owner = true
 
-[node name="GoogleMotorcycleSportbike" parent="Mesh" instance=ExtResource("1_ujl86")]
-transform = Transform3D(0.016, 0, 0, 0, 0.016, 0, 0, 0, 0.016, 0, 0, 0)
+[node name="GoogleMotorcycleSportbike" parent="BikeMesh" instance=ExtResource("1_ujl86")]
+transform = Transform3D(0.018, 0, 0, 0, 0.018, 0, 0, 0, 0.018, 0, 0, 0)
 
-[node name="TailLight" type="MeshInstance3D" parent="Mesh"]
+[node name="TailLight" type="MeshInstance3D" parent="BikeMesh"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83589214, 0.83504957)
 mesh = SubResource("BoxMesh_sdhfr")
@@ -188,25 +125,6 @@ volume_db = -10.0
 unique_name_in_owner = true
 stream = ExtResource("12_nkid5")
 volume_db = 2.5
-
-[node name="CharacterMarkers" type="Node3D" parent="."]
-
-[node name="LeftHandleBarMarker" type="Marker3D" parent="CharacterMarkers"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.23768854, 0.76780385, -0.40563497)
-
-[node name="RightHandleBarMarker" type="Marker3D" parent="CharacterMarkers"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.238, 0.768, -0.406)
-
-[node name="SeatMarker" type="Marker3D" parent="CharacterMarkers"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.768, 0.32891658)
-
-[node name="TBD_LEG_MARK" type="Marker3D" parent="CharacterMarkers"]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.19405714, 0.32784185, 0.16405696)
-visible = false
 
 [node name="BikeMarkers" type="Node3D" parent="."]
 
@@ -287,4 +205,5 @@ layout_mode = 2
 size_flags_horizontal = 8
 text = "Easy"
 
-[editable path="CharacterMesh/Zero"]
+[editable path="IKCharacterMesh"]
+[editable path="IKCharacterMesh/MixamoRacer"]
