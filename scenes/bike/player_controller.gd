@@ -17,6 +17,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var tire_screech: AudioStreamPlayer = %TireScreechSound
 @onready var engine_grind: AudioStreamPlayer = %EngineGrindSound
 @onready var exhaust_pops: AudioStreamPlayer = %ExhaustPopsSound
+@onready var nos_sound: AudioStreamPlayer = %NOSSound
 
 # UI
 @onready var gear_label: Label = %GearLabel
@@ -26,6 +27,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var brake_danger_bar: ProgressBar = %BrakeDangerBar
 @onready var clutch_bar: ProgressBar = %ClutchBar
 @onready var difficulty_label: Label = %DifficultyLabel
+@onready var speed_lines_effect: ColorRect = %SpeedLinesEffect
 
 # Components
 @onready var bike_input: BikeInput = %BikeInput
@@ -55,7 +57,7 @@ func _ready():
     bike_gearing._bike_setup(state, bike_input, bike_physics, bike_tricks)
     bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, self)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
-    bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label)
+    bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label, speed_lines_effect)
     player_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel)
 
     # Connect component signals
@@ -65,6 +67,8 @@ func _ready():
     bike_tricks.tire_screech_start.connect(_on_tire_screech_start)
     bike_tricks.tire_screech_stop.connect(_on_tire_screech_stop)
     bike_tricks.stoppie_stopped.connect(_on_stoppie_stopped)
+    bike_tricks.boost_started.connect(_on_boost_started)
+    bike_tricks.boost_ended.connect(_on_boost_ended)
     bike_physics.brake_stopped.connect(_on_brake_stopped)
     bike_crash.crashed.connect(_on_crashed)
     bike_crash.respawn_requested.connect(_respawn)
@@ -152,3 +156,13 @@ func _on_crashed(pitch_dir: float, lean_dir: float):
     # Play tire screech for lowside crashes
     if lean_dir != 0:
         bike_audio.play_tire_screech(1.0)
+
+
+func _on_boost_started():
+    bike_ui.show_speed_lines()
+    nos_sound.play()
+
+
+func _on_boost_ended():
+    bike_ui.hide_speed_lines()
+    nos_sound.stop()

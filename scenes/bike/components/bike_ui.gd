@@ -14,6 +14,7 @@ var bike_gearing: BikeGearing
 @onready var brake_danger_bar: ProgressBar = null
 @onready var clutch_bar: ProgressBar = null
 @onready var difficulty_label: Label = null
+@onready var speed_lines_effect: ColorRect = null
 
 # Input state (from signals)
 var throttle: float = 0.0
@@ -22,7 +23,8 @@ var front_brake: float = 0.0
 func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
         crash: BikeCrash, tricks: BikeTricks,
         gear: Label, spd: Label, throttle_b: ProgressBar, rpm_b: ProgressBar,
-        brake: ProgressBar, clutch: ProgressBar, difficulty: Label
+        brake: ProgressBar, clutch: ProgressBar, difficulty: Label,
+        speed_lines: ColorRect
     ):
     state = bike_state
     bike_input = input
@@ -37,6 +39,7 @@ func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
     brake_danger_bar = brake
     clutch_bar = clutch
     difficulty_label = difficulty
+    speed_lines_effect = speed_lines
 
     input.throttle_changed.connect(func(v): throttle = v)
     input.front_brake_changed.connect(func(v): front_brake = v)
@@ -140,5 +143,15 @@ func _update_difficulty_display():
         difficulty_label.modulate = Color(1.0, 0.3, 0.3)
 
 
+func show_speed_lines():
+    if speed_lines_effect:
+        speed_lines_effect.visible = true
+
+
+func hide_speed_lines():
+    if speed_lines_effect:
+        speed_lines_effect.visible = false
+
+
 func _bike_reset():
-    pass
+    hide_speed_lines()

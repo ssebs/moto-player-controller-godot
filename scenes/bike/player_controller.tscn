@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://bmqevs0vheol7"]
+[gd_scene load_steps=28 format=3 uid="uid://bmqevs0vheol7"]
 
 [ext_resource type="Script" uid="uid://c331s8cm2gjtp" path="res://scenes/bike/player_controller.gd" id="1_5uol1"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_ujl86"]
@@ -16,6 +16,8 @@
 [ext_resource type="AudioStream" uid="uid://fghbqufnqde0" path="res://assets/exhaust-pops.ogg" id="12_nkid5"]
 [ext_resource type="AudioStream" uid="uid://tkuif41xejv4" path="res://assets/grinding-gear.ogg" id="12_pgn4o"]
 [ext_resource type="Script" uid="uid://deoncd44247pm" path="res://scenes/bike/components/bike_input.gd" id="13_input"]
+[ext_resource type="Material" uid="uid://dddd4ebearn7x" path="res://scenes/bike/speed_lines_material.tres" id="14_speedlines"]
+[ext_resource type="AudioStream" uid="uid://7duowi0k1kbh" path="res://assets/nos-sfx.mp3" id="17_fm7or"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nkid5"]
 radius = 0.35
@@ -394,6 +396,11 @@ unique_name_in_owner = true
 stream = ExtResource("12_nkid5")
 volume_db = 2.5
 
+[node name="NOSSound" type="AudioStreamPlayer" parent="Sounds"]
+unique_name_in_owner = true
+stream = ExtResource("17_fm7or")
+volume_db = -20.0
+
 [node name="BikeMarkers" type="Node3D" parent="."]
 
 [node name="RearWheelMarker" type="Marker3D" parent="BikeMarkers"]
@@ -417,6 +424,15 @@ theme_override_constants/margin_left = 64
 theme_override_constants/margin_top = 64
 theme_override_constants/margin_right = 64
 theme_override_constants/margin_bottom = 64
+
+[node name="SpeedLinesEffect" type="ColorRect" parent="MotoUI"]
+unique_name_in_owner = true
+material = ExtResource("14_speedlines")
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MotoUI"]
 layout_mode = 2
