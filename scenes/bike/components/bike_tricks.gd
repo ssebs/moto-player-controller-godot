@@ -3,6 +3,8 @@ class_name BikeTricks extends Node
 signal tire_screech_start(volume: float)
 signal tire_screech_stop
 signal stoppie_stopped # Emitted when bike comes to rest during a stoppie
+signal boost_started
+signal boost_ended
 
 # Shared state
 var state: BikeState
@@ -31,6 +33,13 @@ var front_wheel_marker: Marker3D
 # Skid marks
 @export var skidmark_texture = preload("res://assets/skidmarktex.png")
 @export var skid_volume: float = 0.5
+
+# Boost tuning
+@export var boost_speed_multiplier: float = 1.5
+@export var boost_duration: float = 2.0
+
+# Boost state
+var boost_timer: float = 0.0
 
 # Input state (from signals)
 var throttle: float = 0.0
@@ -67,10 +76,12 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhys
     bike_input.front_brake_changed.connect(func(v): front_brake = v)
     bike_input.rear_brake_changed.connect(func(v): rear_brake = v)
     bike_input.lean_changed.connect(func(v): lean = v)
+    bike_input.trick_changed.connect(_on_trick_changed)
     bike_crash.force_stoppie_requested.connect(_on_force_stoppie_requested)
 
 func _bike_update(delta):
     current_delta = delta
+    _update_boost(delta)
     var is_airborne = !controller.is_on_floor()
     handle_wheelie_stoppie(
         delta,
@@ -249,9 +260,44 @@ func _on_force_stoppie_requested(target_pitch: float, rate: float):
     force_pitch(target_pitch, rate, current_delta)
 
 
+func _on_trick_changed(btn_pressed: bool):
+    if not btn_pressed:
+        return
+    if state.is_boosting:
+        return
+
+    state.is_boosting = true
+    boost_timer = boost_duration
+    boost_started.emit()
+
+
+func _update_boost(delta):
+    if not state.is_boosting:
+        return
+
+    boost_timer -= delta
+    if boost_timer <= 0:
+        state.is_boosting = false
+        boost_ended.emit()
+
+
+func get_boosted_max_speed(base_max_speed: float) -> float:
+    if state.is_boosting:
+        return base_max_speed * boost_speed_multiplier
+    return base_max_speed
+
+
+func get_boosted_throttle(base_throttle: float) -> float:
+    if state.is_boosting:
+        return 1.0
+    return base_throttle
+
+
 func _bike_reset():
     state.pitch_angle = 0.0
     state.fishtail_angle = 0.0
+    state.is_boosting = false
+    boost_timer = 0.0
     skid_spawn_timer = 0.0
     front_skid_spawn_timer = 0.0
     last_throttle_input = 0.0

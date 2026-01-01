@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://bmqevs0vheol7"]
+[gd_scene load_steps=26 format=3 uid="uid://bmqevs0vheol7"]
 
 [ext_resource type="Script" uid="uid://c331s8cm2gjtp" path="res://scenes/bike/player_controller.gd" id="1_5uol1"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_ujl86"]
@@ -18,7 +18,8 @@
 [ext_resource type="Script" uid="uid://deoncd44247pm" path="res://scenes/bike/components/bike_input.gd" id="13_input"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nkid5"]
-radius = 0.4
+radius = 0.35
+height = 2.3
 
 [sub_resource type="Animation" id="Animation_262bm"]
 length = 0.001
@@ -45,6 +46,54 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector3(0.43134058, 1.4476901e-08, 7.8451706e-08)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("BikeMesh/IKCharacterMesh/Targets/LeftArmTarget:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.284, 0.9407963, 0.42305174)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("BikeMesh/IKCharacterMesh/Targets/RightArmTarget:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.284, 0.90103054, 0.44884363)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("BikeMesh/IKCharacterMesh/Targets/LeftArmTarget:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.5337216, 1.0176142, -1.1505777e-07)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("BikeMesh/IKCharacterMesh/Targets/RightArmTarget:rotation")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1.1478428, 2.5467584, 2.9892645)]
 }
 
 [sub_resource type="Animation" id="Animation_wi4rf"]
@@ -79,6 +128,89 @@ tracks/0/keys = {
 "values": [Vector3(2.769973e-08, 0.98623186, -0.35969338), Vector3(-0.25, 0.986, -0.36)]
 }
 
+[sub_resource type="Animation" id="Animation_x2eqs"]
+resource_name = "naruto_run_loop"
+length = 0.4
+loop_mode = 1
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BikeMesh/IKCharacterMesh/Targets/LeftArmTarget:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.389, 1.351, -0.572), Vector3(0.389, 1.1732985, -0.572), Vector3(0.389, 1.351, -0.572), Vector3(0.389, 1.1732985, -0.572), Vector3(0.389, 1.351, -0.572)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("BikeMesh/IKCharacterMesh/Targets/RightArmTarget:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.389, 1.351, -0.572), Vector3(-0.389, 1.1732985, -0.572), Vector3(-0.389, 1.351, -0.572), Vector3(-0.389, 1.1732985, -0.572), Vector3(-0.389, 1.351, -0.572)]
+}
+
+[sub_resource type="Animation" id="Animation_f1dwp"]
+resource_name = "naruto_run_start"
+length = 0.25
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BikeMesh/IKCharacterMesh/Targets/LeftArmTarget:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.284, 0.9407963, 0.42305174), Vector3(0.389, 1.351, -0.572)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("BikeMesh/IKCharacterMesh/Targets/RightArmTarget:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-0.284, 0.90103054, 0.44884363), Vector3(-0.389, 1.351, -0.572)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("BikeMesh/IKCharacterMesh/Targets/LeftArmTarget:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-0.5337216, 1.0176142, -1.1505777e-07), Vector3(1.9355701, 1.017527, -0.6981317)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("BikeMesh/IKCharacterMesh/Targets/RightArmTarget:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(1.1478428, 2.5467584, 2.9892645), Vector3(-1.4119713, 2.5464354, 3.9200096)]
+}
+
 [sub_resource type="Animation" id="Animation_voh27"]
 resource_name = "snap_neck"
 length = 0.4
@@ -100,6 +232,8 @@ _data = {
 &"RESET": SubResource("Animation_262bm"),
 &"lean_left": SubResource("Animation_wi4rf"),
 &"lean_right": SubResource("Animation_fm7or"),
+&"naruto_run_loop": SubResource("Animation_x2eqs"),
+&"naruto_run_start": SubResource("Animation_f1dwp"),
 &"snap_neck": SubResource("Animation_voh27")
 }
 
@@ -111,7 +245,7 @@ collision_mask = 3
 script = ExtResource("1_5uol1")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.4, 0)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.35, 0)
 shape = SubResource("CapsuleShape3D_nkid5")
 
 [node name="Camera3D" type="Camera3D" parent="."]
@@ -136,7 +270,7 @@ right_leg_magnet = Vector3(-1, 0, 1)
 
 [node name="Skeleton3D" parent="BikeMesh/IKCharacterMesh/MixamoRacer" index="0"]
 bones/0/position = Vector3(2.769973e-08, 0.98623186, -0.35969338)
-bones/0/rotation = Quaternion(0.46173313, 8.114462e-09, 4.2768583e-08, 0.88701886)
+bones/0/rotation = Quaternion(0.46173313, 8.114458e-09, 4.276859e-08, 0.88701886)
 bones/8/position = Vector3(1.5199184e-06, 0.1310766, 5.6028366e-06)
 bones/8/rotation = Quaternion(0.46174, -0.23288499, 0.40978566, 0.75142294)
 bones/8/scale = Vector3(0.99952495, 0.999525, 0.99952507)
@@ -179,26 +313,26 @@ target = Transform3D(1, 1.274684e-08, 9.343069e-10, -1.274684e-08, 0.9893129, 0.
 transform = Transform3D(1, -7.2399075e-08, 1.3150904e-08, 7.126601e-08, 0.9084061, -0.41808897, 1.8322893e-08, 0.41808897, 0.9084061, -1.3219673e-07, 1.452965, 0.39370275)
 
 [node name="LeftArmTarget" parent="BikeMesh/IKCharacterMesh/Targets" index="1"]
-transform = Transform3D(0.5253975, -0.4328657, 0.7325196, -9.905552e-08, 0.86091965, 0.50874096, -0.8508571, -0.26729122, 0.452325, 0.284, 0.9407963, 0.42305174)
+transform = Transform3D(0.5253975, -0.4328656, 0.73251957, -9.905552e-08, 0.86091954, 0.50874096, -0.850857, -0.26729116, 0.45232502, 0.284, 0.9407963, 0.42305174)
 
 [node name="RightArmTarget" parent="BikeMesh/IKCharacterMesh/Targets" index="2"]
-transform = Transform3D(0.8961885, -0.3793976, 0.23000783, 0.062282473, -0.40570283, -0.9118804, 0.43928, 0.83154255, -0.33995625, -0.284, 0.90103054, 0.44884363)
+transform = Transform3D(0.8961884, -0.37939778, 0.23000747, 0.062282406, -0.4057027, -0.9118803, 0.43928, 0.83154255, -0.33995613, -0.284, 0.90103054, 0.44884363)
 
 [node name="ButtTarget" parent="BikeMesh/IKCharacterMesh/Targets" index="3"]
-transform = Transform3D(1, -6.837967e-08, 5.3890723e-08, 8.336654e-08, 0.57360506, -0.81913203, 2.5099993e-08, 0.81913203, 0.57360506, 2.769973e-08, 0.98623186, -0.35969338)
+transform = Transform3D(1, -6.837966e-08, 5.3890716e-08, 8.336652e-08, 0.573605, -0.81913203, 2.5099986e-08, 0.81913203, 0.573605, 2.769973e-08, 0.98623186, -0.35969338)
 
 [node name="LeftLegTarget" parent="BikeMesh/IKCharacterMesh/Targets" index="4"]
-transform = Transform3D(-0.9982336, 0.03612911, -0.047162842, -0.059410855, -0.60704976, 0.7924393, -6.939984e-08, 0.7938415, 0.60812396, 0.2375038, 0.39871255, -0.17106614)
+transform = Transform3D(-0.9982336, 0.03612911, -0.047162846, -0.059410863, -0.60704976, 0.7924393, -5.9604645e-08, 0.7938415, 0.60812396, 0.2375038, 0.39871255, -0.17106614)
 
 [node name="RightLegTarget" parent="BikeMesh/IKCharacterMesh/Targets" index="5"]
-transform = Transform3D(-0.9982256, 0.036801673, -0.046809737, -0.05953972, -0.60723305, 0.7922895, 0.0007331595, 0.7936708, 0.60834676, -0.238, 0.399, -0.171)
+transform = Transform3D(-0.99822557, 0.03680166, -0.046809744, -0.059539717, -0.60723305, 0.7922895, 0.0007331445, 0.79367083, 0.60834676, -0.238, 0.399, -0.171)
 
 [node name="GoogleMotorcycleSportbike" parent="BikeMesh" instance=ExtResource("1_ujl86")]
 transform = Transform3D(0.018, 0, 0, 0, 0.018, 0, 0, 0, 0.018, 0, 0, 0)
 
 [node name="TailLight" type="MeshInstance3D" parent="BikeMesh"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83589214, 0.83504957)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.94790524, 0.958052)
 mesh = SubResource("BoxMesh_sdhfr")
 surface_material_override/0 = ExtResource("3_n1tms")
 

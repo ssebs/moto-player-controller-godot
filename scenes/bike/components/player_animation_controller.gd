@@ -5,6 +5,7 @@ var state: BikeState
 
 # Mesh references
 var bike_mesh: Node3D
+var bike_tricks: BikeTricks
 var character_mesh: IKCharacterMesh
 var anim_player: AnimationPlayer
 var rear_wheel: Marker3D
@@ -14,15 +15,17 @@ var front_wheel: Marker3D
 var tail_light_material: StandardMaterial3D = null
 
 # Lean animation state
-enum LeanState { CENTER, LEANING_LEFT, HELD_LEFT, RETURNING_LEFT, LEANING_RIGHT, HELD_RIGHT, RETURNING_RIGHT }
+enum LeanState {CENTER, LEANING_LEFT, HELD_LEFT, RETURNING_LEFT, LEANING_RIGHT, HELD_RIGHT, RETURNING_RIGHT}
 var lean_state: LeanState = LeanState.CENTER
-const LEAN_THRESHOLD := 0.1  # Minimum lean angle to trigger animation
+const LEAN_THRESHOLD := 0.1 # Minimum lean angle to trigger animation
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, animation_player: AnimationPlayer, b_mesh: Node3D, c_mesh: IKCharacterMesh,
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, b_tricks: BikeTricks,
+                animation_player: AnimationPlayer, b_mesh: Node3D, c_mesh: IKCharacterMesh,
                 tail_light: MeshInstance3D, p_rear_wheel: Marker3D, p_front_wheel: Marker3D
     ):
     state = bike_state
     bike_mesh = b_mesh
+    bike_tricks = b_tricks
     character_mesh = c_mesh
     anim_player = animation_player
     rear_wheel = p_rear_wheel
@@ -36,6 +39,10 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, animation_player:
     bike_input.front_brake_changed.connect(_on_front_brake_changed)
     bike_input.rear_brake_changed.connect(_on_rear_brake_changed)
 
+    # Connect to boost signals from tricks
+    bike_tricks.boost_started.connect(_on_boost_started)
+    bike_tricks.boost_ended.connect(_on_boost_ended)
+
 
 func _bike_update(_delta):
     apply_mesh_rotation()
@@ -48,6 +55,23 @@ func _on_front_brake_changed(value: float):
 func _on_rear_brake_changed(value: float):
     _update_brake_light(value)
 
+
+func _on_boost_started():
+    if anim_player.is_playing():
+        return
+    anim_player.play("naruto_run_start")
+    anim_player.animation_finished.connect(_on_boost_anim_finished)
+
+
+func _on_boost_ended():
+    if anim_player.animation_finished.is_connected(_on_boost_anim_finished):
+        anim_player.animation_finished.disconnect(_on_boost_anim_finished)
+    anim_player.play_backwards("naruto_run_start")
+
+
+func _on_boost_anim_finished(anim_name: String):
+    if anim_name == "naruto_run_start":
+        anim_player.play("naruto_run_loop")
 
 func _update_brake_light(value: float):
     if tail_light_material:

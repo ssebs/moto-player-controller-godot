@@ -9,6 +9,7 @@ signal clutch_held_changed(held: bool, just_pressed: bool)
 signal gear_up_pressed
 signal gear_down_pressed
 signal difficulty_toggled
+signal trick_changed(value: float)
 
 # Shared state
 var state: BikeState
@@ -47,6 +48,12 @@ var lean: float = 0.0:
 			lean = value
 			lean_changed.emit(value)
 
+var trick: bool = false:
+	set(value):
+		if trick != value:
+			trick = value
+			trick_changed.emit(value)
+
 func _bike_setup(_bike_state: BikeState, _bike_input: BikeInput):
 	# TODO: MP check for authority
 	pass
@@ -67,6 +74,8 @@ func _update_input():
 		Input.is_action_pressed("clutch"),
 		Input.is_action_just_pressed("clutch")
 	)
+
+	trick = Input.is_action_pressed("trick")
 
 	if Input.is_action_just_pressed("gear_up"):
 		gear_up_pressed.emit()

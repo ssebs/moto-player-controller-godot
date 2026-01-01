@@ -50,13 +50,13 @@ func _ready():
 
     # Setup all components with shared state and input signals
     bike_input._bike_setup(state, bike_input)
-    bike_gearing._bike_setup(state, bike_input, bike_physics)
     bike_crash._bike_setup(state, bike_input, bike_physics, bike_tricks, self)
-    bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, self)
     bike_tricks._bike_setup(state, bike_input, bike_physics, bike_gearing, bike_crash, self, rear_wheel, front_wheel)
+    bike_gearing._bike_setup(state, bike_input, bike_physics, bike_tricks)
+    bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, self)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
     bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label)
-    player_animation._bike_setup(state, bike_input, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel)
+    player_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel)
 
     # Connect component signals
     bike_gearing.gear_grind.connect(_on_gear_grind)
@@ -88,8 +88,7 @@ func _physics_process(delta):
     bike_ui._bike_update(delta)
 
     # Movement
-    # have to pass bike_tricks here since it's setup is before tricks'
-    bike_physics.apply_movement(delta, bike_tricks)
+    bike_physics.apply_movement(delta)
 
     move_and_slide()
 

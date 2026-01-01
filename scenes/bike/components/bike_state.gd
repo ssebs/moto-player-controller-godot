@@ -16,6 +16,9 @@ var is_stalled: bool = false
 var pitch_angle: float = 0.0
 var fishtail_angle: float = 0.0
 
+# Boost state
+var is_boosting: bool = false
+
 # Crash state
 var is_crashed: bool = false
 var brake_danger_level: float = 0.0

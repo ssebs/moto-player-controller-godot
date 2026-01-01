@@ -8,6 +8,7 @@ signal gear_grind # Tried to shift without clutch
 # Shared state
 var state: BikeState
 var bike_physics: BikePhysics
+var bike_tricks: BikeTricks
 
 
 # Gear system
@@ -35,9 +36,10 @@ var clutch_just_pressed: bool = false
 var clutch_hold_time: float = 0.0
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics, tricks: BikeTricks):
     state = bike_state
     bike_physics = physics
+    bike_tricks = tricks
 
     bike_input.throttle_changed.connect(func(v): throttle = v)
     bike_input.clutch_held_changed.connect(_on_clutch_input)
@@ -166,7 +168,8 @@ func get_power_output() -> float:
     var base_ratio = gear_ratios[num_gears - 1]
     var torque_multiplier = gear_ratio / base_ratio
 
-    return throttle * power_curve * torque_multiplier * engagement
+    var effective_throttle = bike_tricks.get_boosted_throttle(throttle)
+    return effective_throttle * power_curve * torque_multiplier * engagement
 
 
 func is_clutch_dump(last_clutch: float) -> bool:

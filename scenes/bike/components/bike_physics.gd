@@ -6,6 +6,7 @@ signal brake_stopped
 var state: BikeState
 var bike_gearing: BikeGearing
 var bike_crash: BikeCrash
+var bike_tricks: BikeTricks
 var player: CharacterBody3D
 
 # Movement tuning
@@ -46,10 +47,11 @@ var has_started_moving: bool = false
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGearing, crash: BikeCrash, p_player: CharacterBody3D):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGearing, crash: BikeCrash, tricks: BikeTricks, p_player: CharacterBody3D):
     state = bike_state
     bike_gearing = gearing
     bike_crash = crash
+    bike_tricks = tricks
     player = p_player
     bike_input.throttle_changed.connect(func(v): throttle = v)
     bike_input.front_brake_changed.connect(func(v): front_brake = v)
@@ -73,6 +75,9 @@ func _bike_update(delta):
 
 func handle_acceleration(delta, power_output: float, gear_max_speed: float,
                            front_wheel_locked: bool = false):
+    # Apply boost multiplier to max speed
+    var effective_max_speed = bike_tricks.get_boosted_max_speed(gear_max_speed)
+
     # Braking
     if front_brake > 0 or rear_brake > 0:
         var front_effectiveness = 0.6 if front_wheel_locked else 1.0
@@ -86,11 +91,11 @@ func handle_acceleration(delta, power_output: float, gear_max_speed: float,
 
     # Acceleration
     if power_output > 0:
-        if state.speed < gear_max_speed:
+        if state.speed < effective_max_speed:
             state.speed += acceleration * power_output * delta
-            state.speed = min(state.speed, gear_max_speed)
+            state.speed = min(state.speed, effective_max_speed)
         else:
-            state.speed = move_toward(state.speed, gear_max_speed, friction * 2.0 * delta)
+            state.speed = move_toward(state.speed, effective_max_speed, friction * 2.0 * delta)
 
     # Engine braking when coasting (includes friction + RPM-based drag)
     if throttle == 0 and front_brake == 0 and rear_brake == 0:
@@ -214,7 +219,7 @@ func align_to_ground(delta):
         state.ground_pitch = lerp(state.ground_pitch, 0.0, ground_align_speed * 0.5 * delta)
 
 
-func apply_movement(delta, bike_tricks: BikeTricks):
+func apply_movement(delta):
     var forward = -player.global_transform.basis.z
 
     if state.speed > 0.5:
