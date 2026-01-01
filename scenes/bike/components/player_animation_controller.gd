@@ -4,17 +4,22 @@ class_name PlayerAnimationController extends Node
 var state: BikeState
 
 # Mesh references
-var mesh: Node3D
+var bike_mesh: Node3D
+var character_mesh: IKCharacterMesh
+var anim_player: AnimationPlayer
 var rear_wheel: Marker3D
 var front_wheel: Marker3D
 
 # Local state
 var tail_light_material: StandardMaterial3D = null
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, tail_light: MeshInstance3D,
-        p_mesh: Node3D, p_rear_wheel: Marker3D, p_front_wheel: Marker3D):
+func _bike_setup(bike_state: BikeState, bike_input: BikeInput, animation_player: AnimationPlayer, b_mesh: Node3D, c_mesh: IKCharacterMesh,
+                tail_light: MeshInstance3D, p_rear_wheel: Marker3D, p_front_wheel: Marker3D
+    ):
     state = bike_state
-    mesh = p_mesh
+    bike_mesh = b_mesh
+    character_mesh = c_mesh
+    anim_player = animation_player
     rear_wheel = p_rear_wheel
     front_wheel = p_front_wheel
 
@@ -44,10 +49,10 @@ func _update_brake_light(value: float):
 
 
 func apply_mesh_rotation():
-    mesh.transform = Transform3D.IDENTITY
+    bike_mesh.transform = Transform3D.IDENTITY
 
     if state.ground_pitch != 0:
-        mesh.rotate_x(-state.ground_pitch)
+        bike_mesh.rotate_x(-state.ground_pitch)
 
     var pivot: Vector3
     if state.pitch_angle >= 0:
@@ -56,19 +61,20 @@ func apply_mesh_rotation():
         pivot = front_wheel.position
 
     if state.pitch_angle != 0:
-        _rotate_mesh_around_pivot(pivot, Vector3.RIGHT, state.pitch_angle)
+        _rotate_mesh_around_pivot(pivot, Vector3.RIGHT)
+
 
     var total_lean = state.lean_angle + state.fall_angle
     if total_lean != 0:
-        mesh.rotate_z(total_lean)
+        bike_mesh.rotate_z(total_lean)
 
 
-func _rotate_mesh_around_pivot(pivot: Vector3, axis: Vector3, angle: float):
-    var t = mesh.transform
+func _rotate_mesh_around_pivot(pivot: Vector3, axis: Vector3):
+    var t = bike_mesh.transform
     t.origin -= pivot
-    t = t.rotated(axis, angle)
+    t = t.rotated(axis, state.pitch_angle)
     t.origin += pivot
-    mesh.transform = t
+    bike_mesh.transform = t
 
 
 func _bike_reset():

@@ -2,17 +2,15 @@ class_name PlayerController extends CharacterBody3D
 
 #region Onready Node References
 # Meshes / Character / Animations
-@onready var mesh: Node3D = %BikeMesh
+@onready var bike_mesh: Node3D = %BikeMesh
+@onready var character_mesh: Node3D = %IKCharacterMesh
 @onready var player_animation: PlayerAnimationController = %PlayerAnimationController
+@onready var anim_player: AnimationPlayer = %AnimationPlayer
 @onready var tail_light: MeshInstance3D = %TailLight
-# @onready var character_skeleton: Skeleton3D = $CharacterMesh/Male_Shirt/HumanArmature/Skeleton3D
 
 # Markers
 @onready var rear_wheel: Marker3D = %RearWheelMarker
 @onready var front_wheel: Marker3D = %FrontWheelMarker
-@onready var right_handlebar_marker: Marker3D = %RightHandleBarMarker
-@onready var left_handlebar_marker: Marker3D = %LeftHandleBarMarker
-@onready var seat_marker: Marker3D = %SeatMarker
 
 # Sounds
 @onready var engine_sound: AudioStreamPlayer = %EngineSound
@@ -58,7 +56,7 @@ func _ready():
     bike_tricks._bike_setup(state, bike_input, bike_physics, bike_gearing, bike_crash, self, rear_wheel, front_wheel)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
     bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label)
-    player_animation._bike_setup(state, bike_input, tail_light, mesh, rear_wheel, front_wheel)
+    player_animation._bike_setup(state, bike_input, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel)
 
     # Connect component signals
     bike_gearing.gear_grind.connect(_on_gear_grind)
@@ -95,7 +93,7 @@ func _physics_process(delta):
 
     move_and_slide()
 
-    # Align to ground & mesh rotation
+    # Align to ground & bike_mesh rotation
     player_animation._bike_update(delta)
 
 
@@ -103,7 +101,7 @@ func _respawn():
     global_position = spawn_position
     rotation = spawn_rotation
     velocity = Vector3.ZERO
-    mesh.transform = Transform3D.IDENTITY
+    bike_mesh.transform = Transform3D.IDENTITY
 
     # Reset all components
     bike_gearing._bike_reset()
