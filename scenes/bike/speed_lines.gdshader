@@ -54,8 +54,6 @@ void fragment() {
     value = length(uv) - Radius - LineLength * (value - 0.5);
     value = smoothstep(-Softness, Softness, value);
 
-    //vec4 tex = texture(TEXTURE, getuv(fragCoord / resolution, resolution));
-    vec4 tex = texture(TEXTURE, UV);
-    vec3 color = mix(tex.rgb, LineColor.rgb, value * LineColor.a);
-    COLOR = vec4(color, 1.0);
+    // Only show the speed lines, transparent in the center
+    COLOR = vec4(LineColor.rgb, value * LineColor.a);
 }

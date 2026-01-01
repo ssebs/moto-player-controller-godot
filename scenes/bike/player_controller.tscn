@@ -414,6 +414,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.7181249)
 [node name="OriginMarker" type="Marker3D" parent="BikeMarkers"]
 unique_name_in_owner = true
 
+[node name="SpeedLinesEffect" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+material = ExtResource("14_speedlines")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
 [node name="MotoUI" type="MarginContainer" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
@@ -424,15 +438,6 @@ theme_override_constants/margin_left = 64
 theme_override_constants/margin_top = 64
 theme_override_constants/margin_right = 64
 theme_override_constants/margin_bottom = 64
-
-[node name="SpeedLinesEffect" type="ColorRect" parent="MotoUI"]
-unique_name_in_owner = true
-material = ExtResource("14_speedlines")
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-mouse_filter = 2
-color = Color(0, 0, 0, 1)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MotoUI"]
 layout_mode = 2

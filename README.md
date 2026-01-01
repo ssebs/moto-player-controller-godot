@@ -55,7 +55,9 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
   - [ ] Stopped (1 leg down)
   - [ ] 1 complex trick (heel clicker)
   - [ ] NOS
-    - [ ] Naruto run animation
+    - [x] Naruto run animation
+    - [x] Increase max rpm sound
+    - [ ] Limited boosts, tricks to increase boost bar.
     - [ ] Stop all turning during, you can only boost forward
 - [ ] Refactor
   - [ ] Simpify physics logic

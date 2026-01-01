@@ -14,6 +14,7 @@ var bike_gearing: BikeGearing
 # Audio settings
 @export var engine_min_pitch: float = 0.25
 @export var engine_max_pitch: float = 2.2
+@export var engine_boost_max_pitch: float = 2.4
 @export var gear_grind_volume: float = 0.3
 @export var stoppie_volume: float = 0.4
 @export var fishtail_volume: float = 0.4
@@ -63,7 +64,8 @@ func update_engine_audio(delta: float, rpm_ratio: float):
         if !engine_sound.playing:
             engine_sound.play()
 
-        var target_pitch = lerpf(engine_min_pitch, engine_max_pitch, clamp(rpm_ratio, 0.0, 1.0))
+        var max_pitch = engine_boost_max_pitch if state.is_boosting else engine_max_pitch
+        var target_pitch = lerpf(engine_min_pitch, max_pitch, clamp(rpm_ratio, 0.0, 1.0))
         engine_sound.pitch_scale = target_pitch
     else:
         if engine_sound.playing:
