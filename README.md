@@ -1,8 +1,5 @@
 # Moto Player Controller
 
-Hide license plate / police chase feature in main game
-
-
 Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally created for [Dank Nooner](https://github.com/ssebs/DankNooner), this is the motorcycle + controls + driving physics implementation.
 
 ## Gameplay
@@ -44,8 +41,15 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
   - [x] Basic IK control
   - [x] Procedural animations (move legs here, move arms there, etc.)
     - [x] Playable using animationplayer when doing tricks
+  - [ ] State machine for biker state
+    - > ENUM - code based, not Node based.
+    - [ ] Riding on ground
+    - [ ] In air
+    - [ ] Mid trick
+    - [ ] Crashing
+    - [ ] Idle (stopped)
   - [ ] Riding animations
-    - [ ] lean
+    - [x] lean
     - [ ] wheelie v1
     - [ ] stoppie
   - [ ] Stopped (1 leg down)
@@ -66,10 +70,8 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 - [ ] Tune "feeling" of riding the bike & doing tricks
   - [ ] Bike should fall when too slow
   - [ ] Counter steering
-
 - [ ] Ragdoll character on crash + bike falls w/ physics
 - [ ] Complex movement / input system
-- [ ] State machine?
 - [ ] Difficulty settings
   - **Easy** - Automatic, can't fall off bike unless crashing into object / during trick
   - **Medium** - Manual, can't fall easily from mistakes (e.g. death wobble), clutch not required
