@@ -1,0 +1,115 @@
+[gd_scene load_steps=4 format=3 uid="uid://gobjlpuvfmm8"]
+
+[ext_resource type="Script" uid="uid://cnhikt5heakgg" path="res://scenes/character/test_ik.gd" id="1_6lf8s"]
+[ext_resource type="PackedScene" uid="uid://dxgxjvo8bvmo1" path="res://assets/characters/Mixamo/MixamoRacer.fbx" id="2_iilqs"]
+[ext_resource type="Script" uid="uid://dhlwot1rrwitp" path="res://scenes/character/ik_start_script.gd" id="3_iilqs"]
+
+[node name="TestIK" type="Node3D" node_paths=PackedStringArray("butt_position", "skel")]
+script = ExtResource("1_6lf8s")
+butt_position = NodePath("MixamoRacer/ButtTarget")
+skel = NodePath("MixamoRacer/Skeleton3D")
+
+[node name="MixamoRacer" parent="." instance=ExtResource("2_iilqs")]
+
+[node name="Skeleton3D" parent="MixamoRacer" index="0"]
+bones/0/position = Vector3(0, 0.13939053, 0)
+bones/1/rotation = Quaternion(-0.047964085, 0, 0, 0.9988491)
+bones/3/rotation = Quaternion(0, 0, 0, 1)
+bones/4/rotation = Quaternion(0.047964077, 0, 0, 0.9988491)
+bones/7/rotation = Quaternion(-0.5541937, -0.43477345, 0.56968266, -0.42344198)
+bones/8/rotation = Quaternion(-0.11095855, 0.002315576, -0.020735394, 0.9936061)
+bones/9/rotation = Quaternion(-0.02740118, -0.0016615825, 0.06050513, 0.99779034)
+bones/10/rotation = Quaternion(0.048652954, 0.037280627, -0.021908293, 0.9978794)
+bones/11/rotation = Quaternion(0.1638815, 0.054633725, 0.31150725, 0.93440956)
+bones/12/rotation = Quaternion(0.071573004, 8.881784e-16, 1.0222908e-15, 0.9974354)
+bones/13/rotation = Quaternion(-0.08987837, -1.7763568e-15, 5.4261396e-16, 0.9959528)
+bones/15/rotation = Quaternion(0.062911116, 0.00694192, 0.10945928, 0.9919742)
+bones/16/rotation = Quaternion(0.015924446, 2.220446e-15, -2.3223166e-15, 0.9998732)
+bones/17/rotation = Quaternion(0.020319276, 0, 3.637599e-15, 0.9997935)
+bones/19/rotation = Quaternion(0.06380391, 0.0018547818, 0.028998496, 0.99753934)
+bones/20/rotation = Quaternion(0.033782784, -1.110223e-15, -7.489856e-16, 0.9994292)
+bones/21/rotation = Quaternion(-0.06285299, -6.661338e-16, -5.553292e-16, 0.9980228)
+bones/23/rotation = Quaternion(0.042759866, -0.0013746158, -0.03210132, 0.9985686)
+bones/24/rotation = Quaternion(0.019452063, 1.3877788e-17, 5.478609e-18, 0.9998108)
+bones/25/rotation = Quaternion(-0.12952833, -7.2164497e-16, 1.3103891e-16, 0.9915757)
+bones/27/rotation = Quaternion(0.09597879, -0.006919314, -0.071571805, 0.99278283)
+bones/28/rotation = Quaternion(0.0030722788, -8.326673e-17, -5.8633984e-15, 0.9999953)
+bones/29/rotation = Quaternion(0.07989849, 3.552714e-15, -2.2919461e-14, 0.99680305)
+bones/31/rotation = Quaternion(0.5546226, -0.43444243, 0.5693221, 0.42370507)
+bones/32/rotation = Quaternion(-0.110965535, -0.0023282522, 0.020847548, 0.9936029)
+bones/33/rotation = Quaternion(-0.02754232, 0.0016297951, -0.059048314, 0.9978738)
+bones/34/rotation = Quaternion(0.050639555, -0.036451582, 0.020205904, 0.997847)
+bones/35/rotation = Quaternion(0.17726876, -0.058847584, -0.30951685, 0.9323691)
+bones/36/rotation = Quaternion(0.031477865, -5.3290705e-15, 1.16839776e-14, 0.99950445)
+bones/37/rotation = Quaternion(-0.033537846, -6.661338e-16, 5.065257e-18, 0.99943745)
+bones/39/rotation = Quaternion(0.0566872, -0.006509999, -0.11390498, 0.9918518)
+bones/40/rotation = Quaternion(0.021986656, -2.220446e-15, -4.767531e-15, 0.9997583)
+bones/41/rotation = Quaternion(0.01624182, 0, 2.2956346e-15, 0.9998681)
+bones/43/rotation = Quaternion(0.05106309, -0.001223631, -0.023924982, 0.9984081)
+bones/44/rotation = Quaternion(0.041802116, -4.9960036e-16, 5.569593e-16, 0.9991259)
+bones/45/rotation = Quaternion(-0.0149336895, -7.2164507e-16, -3.182553e-16, 0.99988854)
+bones/47/rotation = Quaternion(0.04454621, 0.0019444951, 0.043566294, 0.99805504)
+bones/48/rotation = Quaternion(-0.0013483455, -5.7245875e-16, 1.8322e-16, 0.9999991)
+bones/49/rotation = Quaternion(-0.01844937, -2.5812687e-15, 5.8235214e-16, 0.9998298)
+bones/51/rotation = Quaternion(0.053609587, 0.0034428542, 0.0639963, 0.9965033)
+bones/52/rotation = Quaternion(0.05604649, -5.3290714e-15, -2.9255034e-14, 0.9984282)
+bones/53/rotation = Quaternion(0.07569756, 0, 1.458091e-14, 0.9971309)
+bones/55/rotation = Quaternion(-0.0015928089, -0.038820833, 0.9984049, -0.040964298)
+bones/56/rotation = Quaternion(0.006746198, -6.184279e-05, -0.009166486, 0.9999353)
+bones/57/rotation = Quaternion(0.46621582, -0.07153971, 0.03785975, 0.8809606)
+bones/60/rotation = Quaternion(0.0014844314, -0.036164977, 0.998504, 0.0409847)
+bones/61/rotation = Quaternion(-0.00020400572, -1.8778265e-06, 0.0092043895, 0.9999576)
+bones/62/rotation = Quaternion(0.47244653, 0.0699769, -0.03766405, 0.87776935)
+bones/63/rotation = Quaternion(0.31227186, 0.06305582, -0.020777857, 0.94767004)
+
+[node name="LeftArmIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="1"]
+root_bone = &"mixamorig6_LeftArm"
+tip_bone = &"mixamorig6_LeftHand"
+target_node = NodePath("../../LeftArmTarget")
+script = ExtResource("3_iilqs")
+
+[node name="RightArmIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="2"]
+root_bone = &"mixamorig6_RightArm"
+tip_bone = &"mixamorig6_RightHand"
+target_node = NodePath("../../RightArmTarget")
+script = ExtResource("3_iilqs")
+
+[node name="LeftLegIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="3"]
+root_bone = &"mixamorig6_LeftUpLeg"
+tip_bone = &"mixamorig6_LeftFoot"
+override_tip_basis = false
+use_magnet = true
+magnet = Vector3(0.1, 0, 1)
+target_node = NodePath("../../LeftLegTarget")
+script = ExtResource("3_iilqs")
+
+[node name="RightLegIK" type="SkeletonIK3D" parent="MixamoRacer/Skeleton3D" index="4"]
+root_bone = &"mixamorig6_RightUpLeg"
+tip_bone = &"mixamorig6_RightFoot"
+override_tip_basis = false
+use_magnet = true
+magnet = Vector3(-0.1, 0, 1)
+target_node = NodePath("../../RightLegTarget")
+script = ExtResource("3_iilqs")
+
+[node name="LeftArmTarget" type="Marker3D" parent="MixamoRacer"]
+unique_name_in_owner = true
+transform = Transform3D(1.9106855e-15, -4.371139e-08, -1, -1, -4.371139e-08, 0, -4.371139e-08, 1, -4.371139e-08, 0.32995626, 0.024693012, -0.011440575)
+
+[node name="RightArmTarget" type="Marker3D" parent="MixamoRacer"]
+unique_name_in_owner = true
+transform = Transform3D(1.9106855e-15, -4.371139e-08, -1, -1, -4.371139e-08, 0, -4.371139e-08, 1, -4.371139e-08, -0.29720128, 0.024560153, -0.011)
+
+[node name="LeftLegTarget" type="Marker3D" parent="MixamoRacer"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, 0.123870164, -0.551, 0)
+
+[node name="RightLegTarget" type="Marker3D" parent="MixamoRacer"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, -0.124, -0.551, 0)
+
+[node name="ButtTarget" type="Marker3D" parent="MixamoRacer"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13939053, 0)
+
+[editable path="MixamoRacer"]

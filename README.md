@@ -39,7 +39,13 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-
+- [ ] Create animated character that sits on bike using IK
+  - [ ] Basic IK control
+  - [x] Procedural animations (move legs here, move arms there, etc.)
+    - [ ] Playable using animationplayer when doing tricks
+  - [ ] Riding animations (lean, wheelie v1, stoppie)
+  - [ ] Stopped (1 leg down)
+  - [ ] 1 complex trick (heel clicker)
 - [ ] Refactor
   - [ ] Simpify physics logic
   - [ ] Simplify gearing logic
@@ -56,12 +62,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Tune "feeling" of riding the bike & doing tricks
   - [ ] Bike should fall when too slow
   - [ ] Counter steering
-- [ ] Create animated character that sits on bike using IK
-  - [ ] Procedural animations (move legs here, move arms there, etc.)
-    - [ ] Playable using animationplayer when doing tricks
-  - [ ] Riding animations (lean, wheelie v1, stoppie)
-  - [ ] Stopped (1 leg down)
-  - [ ] 1 complex trick (heel clicker)
+
 - [ ] Ragdoll character on crash + bike falls w/ physics
 - [ ] Complex movement / input system
 - [ ] State machine?
