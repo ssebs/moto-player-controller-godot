@@ -2,7 +2,7 @@ class_name PlayerController extends CharacterBody3D
 
 #region Onready Node References
 # Meshes / Character / Animations
-@onready var mesh: Node3D = %Mesh
+@onready var mesh: Node3D = %BikeMesh
 @onready var player_animation: PlayerAnimationController = %PlayerAnimationController
 @onready var tail_light: MeshInstance3D = %TailLight
 # @onready var character_skeleton: Skeleton3D = $CharacterMesh/Male_Shirt/HumanArmature/Skeleton3D
