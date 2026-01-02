@@ -5,6 +5,7 @@ signal tire_screech_stop
 signal stoppie_stopped # Emitted when bike comes to rest during a stoppie
 signal boost_started
 signal boost_ended
+signal boost_earned # Emitted when a boost is earned from tricks
 
 # Shared state
 var state: BikeState
@@ -37,9 +38,12 @@ var front_wheel_marker: Marker3D
 # Boost tuning
 @export var boost_speed_multiplier: float = 1.5
 @export var boost_duration: float = 2.0
+@export var starting_boosts: int = 2
+@export var wheelie_time_for_boost: float = 5.0 # seconds
 
 # Boost state
 var boost_timer: float = 0.0
+var wheelie_time_held: float = 0.0
 
 # Input state (from signals)
 var throttle: float = 0.0
@@ -82,6 +86,7 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhys
 func _bike_update(delta):
     current_delta = delta
     _update_boost(delta)
+    _update_wheelie_distance(delta)
     var is_airborne = !controller.is_on_floor()
     handle_wheelie_stoppie(
         delta,
@@ -265,7 +270,10 @@ func _on_trick_changed(btn_pressed: bool):
         return
     if state.is_boosting:
         return
+    if state.boost_count <= 0:
+        return
 
+    state.boost_count -= 1
     state.is_boosting = true
     boost_timer = boost_duration
     boost_started.emit()
@@ -279,6 +287,17 @@ func _update_boost(delta):
     if boost_timer <= 0:
         state.is_boosting = false
         boost_ended.emit()
+
+
+func _update_wheelie_distance(delta):
+    if is_in_wheelie():
+        wheelie_time_held += delta
+        if wheelie_time_held >= wheelie_time_for_boost:
+            wheelie_time_held -= wheelie_time_for_boost
+            state.boost_count += 1
+            boost_earned.emit()
+    else:
+        wheelie_time_held = 0.0
 
 
 func get_boosted_max_speed(base_max_speed: float) -> float:
@@ -297,7 +316,9 @@ func _bike_reset():
     state.pitch_angle = 0.0
     state.fishtail_angle = 0.0
     state.is_boosting = false
+    state.boost_count = starting_boosts
     boost_timer = 0.0
+    wheelie_time_held = 0.0
     skid_spawn_timer = 0.0
     front_skid_spawn_timer = 0.0
     last_throttle_input = 0.0

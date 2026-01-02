@@ -57,7 +57,7 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
   - [ ] NOS
     - [x] Naruto run animation
     - [x] Increase max rpm sound
-    - [ ] Limited boosts, tricks to increase boost bar.
+    - [x] Limited boosts, tricks to increase boost bar.
     - [ ] Stop all turning during, you can only boost forward
 - [ ] Refactor
   - [ ] Simpify physics logic

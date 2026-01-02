@@ -28,6 +28,8 @@ class_name PlayerController extends CharacterBody3D
 @onready var clutch_bar: ProgressBar = %ClutchBar
 @onready var difficulty_label: Label = %DifficultyLabel
 @onready var speed_lines_effect: ColorRect = %SpeedLinesEffect
+@onready var boost_label: Label = %BoostLabel
+@onready var boost_toast: Label = %BoostToast
 
 # Components
 @onready var bike_input: BikeInput = %BikeInput
@@ -57,7 +59,7 @@ func _ready():
     bike_gearing._bike_setup(state, bike_input, bike_physics, bike_tricks)
     bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, self)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
-    bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label, speed_lines_effect)
+    bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label, speed_lines_effect, boost_label, boost_toast)
     player_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel)
 
     # Connect component signals
@@ -69,6 +71,7 @@ func _ready():
     bike_tricks.stoppie_stopped.connect(_on_stoppie_stopped)
     bike_tricks.boost_started.connect(_on_boost_started)
     bike_tricks.boost_ended.connect(_on_boost_ended)
+    bike_tricks.boost_earned.connect(_on_boost_earned)
     bike_physics.brake_stopped.connect(_on_brake_stopped)
     bike_crash.crashed.connect(_on_crashed)
     bike_crash.respawn_requested.connect(_respawn)
@@ -166,3 +169,7 @@ func _on_boost_started():
 func _on_boost_ended():
     bike_ui.hide_speed_lines()
     nos_sound.stop()
+
+
+func _on_boost_earned():
+    bike_ui.show_boost_toast()

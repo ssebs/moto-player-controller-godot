@@ -1,24 +1,30 @@
-[gd_scene load_steps=9 format=3 uid="uid://j2ul15tv0gig"]
+[gd_scene load_steps=10 format=3 uid="uid://j2ul15tv0gig"]
 
 [ext_resource type="PackedScene" uid="uid://cn1f0g4b2vnrf" path="res://assets/city.glb" id="1_114d3"]
 [ext_resource type="Script" uid="uid://dcgws53fimvpw" path="res://scenes/level/main_level.gd" id="1_sc48v"]
 [ext_resource type="PackedScene" uid="uid://bmqevs0vheol7" path="res://scenes/bike/player_controller.tscn" id="2_p3kgh"]
 [ext_resource type="PackedScene" uid="uid://bdv4bgnhiss2w" path="res://scenes/level/main_menu.tscn" id="3_hv5hi"]
+[ext_resource type="Shader" uid="uid://d3wh0vlxw230r" path="res://scenes/level/sky.gdshader" id="4_o6ikn"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_p3kgh"]
-sky_top_color = Color(0.32572097, 0.30821416, 0.29118663, 1)
-sky_horizon_color = Color(0.5686974, 0.5550983, 0.53547907, 1)
-ground_bottom_color = Color(0.23657593, 0.19968641, 0.13823685, 1)
-ground_horizon_color = Color(0.5686974, 0.5550983, 0.53547907, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_atywb"]
+shader = ExtResource("4_o6ikn")
+shader_parameter/sky_color = Color(0.2754989, 0.31298247, 0.3754213, 1)
+shader_parameter/star_base_color = Color(0.915, 1, 0.7, 1)
+shader_parameter/star_hue_offset = 0.2350000111625
+shader_parameter/star_intensity = 0.08
+shader_parameter/star_twinkle_speed = 0.8
+shader_parameter/star_twinkle_intensity = 0.2
+shader_parameter/layer_scale = 20.0
+shader_parameter/layer_scale_step = 10.0
+shader_parameter/layers_count = 3
 
 [sub_resource type="Sky" id="Sky_hv5hi"]
-sky_material = SubResource("ProceduralSkyMaterial_p3kgh")
+sky_material = SubResource("ShaderMaterial_atywb")
 
 [sub_resource type="Environment" id="Environment_sc48v"]
 background_mode = 2
 sky = SubResource("Sky_hv5hi")
 tonemap_mode = 2
-glow_enabled = true
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_114d3"]
 
@@ -33,7 +39,7 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
-light_color = Color(0.80128664, 0.57155055, 0.36251286, 1)
+light_color = Color(0.93662876, 0.78549045, 0.6625095, 1)
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -173,6 +179,30 @@ use_collision = true
 collision_layer = 3
 size = Vector3(298.64545, 1, 68.31112)
 
+[node name="LevelBorderCollider" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -272.41718, 0.5, 0)
+use_collision = true
+collision_layer = 3
+size = Vector3(0.1, 100, 2000)
+
+[node name="LevelBorderCollider4" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 483.96387, 0.5, 0)
+use_collision = true
+collision_layer = 3
+size = Vector3(0.1, 100, 2000)
+
+[node name="LevelBorderCollider2" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.5, 308.07608)
+use_collision = true
+collision_layer = 3
+size = Vector3(0.1, 100, 2000)
+
+[node name="LevelBorderCollider3" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.5, -187.84547)
+use_collision = true
+collision_layer = 3
+size = Vector3(0.1, 100, 2000)
+
 [node name="Colliders" type="Node3D" parent="."]
 visible = false
 
@@ -209,14 +239,14 @@ size = Vector3(315.751, 0.15, 2.154)
 [node name="bridge2" type="CSGBox3D" parent="Colliders"]
 transform = Transform3D(-0.9950555, 0.09931974, -8.742278e-08, 0.09931974, 0.9950555, 0, 8.699051e-08, -8.682807e-09, -1, 320.10132, 7.7677493, -151.53696)
 use_collision = true
-size = Vector3(159.61584, 0.1, 20)
+size = Vector3(159.616, 0.1, 30)
 
 [node name="bridge4" type="CSGBox3D" parent="Colliders"]
 transform = Transform3D(0.9950556, -0.09931976, 1.7484555e-07, 0.09931976, 0.9950556, -2.3682798e-16, -1.7398102e-07, 1.7365618e-08, 1, -98.6071, 7.7677493, -151.53696)
 use_collision = true
-size = Vector3(159.61584, 0.1, 20)
+size = Vector3(159.616, 0.1, 30)
 
 [node name="bridge3" type="CSGBox3D" parent="Colliders"]
 transform = Transform3D(-0.99999994, 0, 8.742278e-08, 0, 0.99999994, 0, -8.742277e-08, 0, -1, 110.747925, 15.693, -151.537)
 use_collision = true
-size = Vector3(259.87003, 0.1, 20)
+size = Vector3(259.87, 0.1, 30)

@@ -18,6 +18,7 @@ var fishtail_angle: float = 0.0
 
 # Boost state
 var is_boosting: bool = false
+var boost_count: int = 2
 
 # Crash state
 var is_crashed: bool = false

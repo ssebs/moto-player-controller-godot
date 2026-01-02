@@ -15,6 +15,11 @@ var bike_gearing: BikeGearing
 @onready var clutch_bar: ProgressBar = null
 @onready var difficulty_label: Label = null
 @onready var speed_lines_effect: ColorRect = null
+@onready var boost_label: Label = null
+@onready var boost_toast: Label = null
+
+var toast_timer: float = 0.0
+const TOAST_DURATION: float = 1.5
 
 # Input state (from signals)
 var throttle: float = 0.0
@@ -24,7 +29,7 @@ func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
         crash: BikeCrash, tricks: BikeTricks,
         gear: Label, spd: Label, throttle_b: ProgressBar, rpm_b: ProgressBar,
         brake: ProgressBar, clutch: ProgressBar, difficulty: Label,
-        speed_lines: ColorRect
+        speed_lines: ColorRect, boost_lbl: Label, boost_tst: Label
     ):
     state = bike_state
     bike_input = input
@@ -40,14 +45,21 @@ func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
     clutch_bar = clutch
     difficulty_label = difficulty
     speed_lines_effect = speed_lines
+    boost_label = boost_lbl
+    boost_toast = boost_tst
+
+    # Hide toast initially
+    if boost_toast:
+        boost_toast.visible = false
 
     input.throttle_changed.connect(func(v): throttle = v)
     input.front_brake_changed.connect(func(v): front_brake = v)
     input.difficulty_toggled.connect(_on_difficulty_toggled)
 
 
-func _bike_update(_delta):
+func _bike_update(delta):
     update_ui(bike_gearing.get_rpm_ratio())
+    _update_toast(delta)
 
 
 func update_ui(rpm_ratio: float):
@@ -67,6 +79,9 @@ func _update_labels():
         gear_label.text = "Gear: %d" % state.current_gear
 
     speed_label.text = "Speed: %d" % int(state.speed)
+
+    if boost_label:
+        boost_label.text = "Boost: %d" % state.boost_count
 
 
 func _update_bars(rpm_ratio: float):
@@ -153,5 +168,21 @@ func hide_speed_lines():
         speed_lines_effect.visible = false
 
 
+func show_boost_toast():
+    if boost_toast:
+        boost_toast.visible = true
+        toast_timer = TOAST_DURATION
+
+
+func _update_toast(delta):
+    if toast_timer > 0:
+        toast_timer -= delta
+        if toast_timer <= 0 and boost_toast:
+            boost_toast.visible = false
+
+
 func _bike_reset():
     hide_speed_lines()
+    toast_timer = 0.0
+    if boost_toast:
+        boost_toast.visible = false

@@ -494,5 +494,22 @@ layout_mode = 2
 size_flags_horizontal = 8
 text = "Easy"
 
+[node name="BoostLabel" type="Label" parent="MotoUI/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Boost: 2"
+
+[node name="BoostToast" type="Label" parent="MotoUI"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.2, 1, 0.4, 1)
+theme_override_font_sizes/font_size = 24
+text = "+1 Boost!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [editable path="BikeMesh/IKCharacterMesh"]
 [editable path="BikeMesh/IKCharacterMesh/MixamoRacer"]
