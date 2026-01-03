@@ -47,8 +47,8 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, b_tricks: BikeTri
     bike_tricks.boost_started.connect(_on_boost_started)
     bike_tricks.boost_ended.connect(_on_boost_ended)
 
-    # Set initial training wheels visibility
-    _update_training_wheels_visibility()
+    # Setup training wheel mods with state reference
+    _setup_training_wheels()
 
 
 func _bike_update(_delta):
@@ -73,6 +73,16 @@ func _update_training_wheels_visibility():
             training_wheels.show()
         else:
             training_wheels.hide()
+
+
+func _setup_training_wheels():
+    if not training_wheels:
+        return
+    _update_training_wheels_visibility()
+
+    for child in training_wheels.get_children():
+        if child is TrainingWheelsMod:
+            child.setup(state)
 
 
 func _on_boost_started():

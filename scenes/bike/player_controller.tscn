@@ -339,6 +339,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.94790524, 0.958052)
 mesh = SubResource("BoxMesh_sdhfr")
 surface_material_override/0 = ExtResource("3_n1tms")
 
+[node name="Mods" type="Node3D" parent="BikeMesh"]
+
+[node name="TrainingWheels" type="Node3D" parent="BikeMesh/Mods"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.07463604, 0.68403995)
+
+[node name="TrainingWheelsMod" parent="BikeMesh/Mods/TrainingWheels" instance=ExtResource("5_voh27")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.335, 0.117)
+is_left_wheel = false
+
+[node name="TrainingWheelsMod2" parent="BikeMesh/Mods/TrainingWheels" instance=ExtResource("5_voh27")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.15, 0.335, 0.117)
+
 [node name="Functionality" type="Node" parent="."]
 
 [node name="PlayerAnimationController" type="Node" parent="Functionality"]
@@ -407,15 +420,6 @@ volume_db = -20.0
 [node name="RearWheelMarker" type="Marker3D" parent="BikeMarkers"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.68403995)
-
-[node name="TrainingWheels" type="Node3D" parent="BikeMarkers/RearWheelMarker"]
-unique_name_in_owner = true
-
-[node name="TrainingWheelsMod" parent="BikeMarkers/RearWheelMarker/TrainingWheels" instance=ExtResource("5_voh27")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.538, 0.2, 0)
-
-[node name="TrainingWheelsMod2" parent="BikeMarkers/RearWheelMarker/TrainingWheels" instance=ExtResource("5_voh27")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.538, 0.2, 0)
 
 [node name="FrontWheelMarker" type="Marker3D" parent="BikeMarkers"]
 unique_name_in_owner = true
