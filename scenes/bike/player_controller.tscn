@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://bmqevs0vheol7"]
+[gd_scene load_steps=29 format=3 uid="uid://bmqevs0vheol7"]
 
 [ext_resource type="Script" uid="uid://c331s8cm2gjtp" path="res://scenes/bike/player_controller.gd" id="1_5uol1"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_ujl86"]
@@ -6,6 +6,7 @@
 [ext_resource type="Material" uid="uid://bfxhki5bfmyn1" path="res://scenes/bike/tail_light_material.tres" id="3_n1tms"]
 [ext_resource type="Script" uid="uid://ct5kbf1mujm7r" path="res://scenes/bike/components/player_animation_controller.gd" id="4_n1tms"]
 [ext_resource type="Script" uid="uid://l500tpp42su8" path="res://scenes/bike/components/bike_gearing.gd" id="5_gearing"]
+[ext_resource type="PackedScene" uid="uid://bn73ermusily2" path="res://scenes/bike/mods/training_wheels_mod.tscn" id="5_voh27"]
 [ext_resource type="Script" uid="uid://bpqhimqk1dt2d" path="res://scenes/bike/components/bike_tricks.gd" id="7_tricks"]
 [ext_resource type="Script" uid="uid://cgy5mk1x6lanu" path="res://scenes/bike/components/bike_physics.gd" id="8_physics"]
 [ext_resource type="Script" uid="uid://bbk0xwdxhsifa" path="res://scenes/bike/components/bike_crash.gd" id="9_crash"]
@@ -406,6 +407,15 @@ volume_db = -20.0
 [node name="RearWheelMarker" type="Marker3D" parent="BikeMarkers"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.68403995)
+
+[node name="TrainingWheels" type="Node3D" parent="BikeMarkers/RearWheelMarker"]
+unique_name_in_owner = true
+
+[node name="TrainingWheelsMod" parent="BikeMarkers/RearWheelMarker/TrainingWheels" instance=ExtResource("5_voh27")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.538, 0.2, 0)
+
+[node name="TrainingWheelsMod2" parent="BikeMarkers/RearWheelMarker/TrainingWheels" instance=ExtResource("5_voh27")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.538, 0.2, 0)
 
 [node name="FrontWheelMarker" type="Marker3D" parent="BikeMarkers"]
 unique_name_in_owner = true

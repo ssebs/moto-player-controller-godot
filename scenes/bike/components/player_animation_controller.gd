@@ -10,6 +10,7 @@ var character_mesh: IKCharacterMesh
 var anim_player: AnimationPlayer
 var rear_wheel: Marker3D
 var front_wheel: Marker3D
+var training_wheels: Node3D
 
 # Local state
 var tail_light_material: StandardMaterial3D = null
@@ -21,7 +22,8 @@ const LEAN_THRESHOLD := 0.1 # Minimum lean angle to trigger animation
 
 func _bike_setup(bike_state: BikeState, bike_input: BikeInput, b_tricks: BikeTricks,
                 animation_player: AnimationPlayer, b_mesh: Node3D, c_mesh: IKCharacterMesh,
-                tail_light: MeshInstance3D, p_rear_wheel: Marker3D, p_front_wheel: Marker3D
+                tail_light: MeshInstance3D, p_rear_wheel: Marker3D, p_front_wheel: Marker3D,
+                p_training_wheels: Node3D
     ):
     state = bike_state
     bike_mesh = b_mesh
@@ -30,6 +32,7 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, b_tricks: BikeTri
     anim_player = animation_player
     rear_wheel = p_rear_wheel
     front_wheel = p_front_wheel
+    training_wheels = p_training_wheels
 
     # Setup tail light material reference
     if tail_light:
@@ -38,10 +41,14 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, b_tricks: BikeTri
     # Connect to input signals
     bike_input.front_brake_changed.connect(_on_front_brake_changed)
     bike_input.rear_brake_changed.connect(_on_rear_brake_changed)
+    bike_input.difficulty_toggled.connect(_on_difficulty_toggled)
 
     # Connect to boost signals from tricks
     bike_tricks.boost_started.connect(_on_boost_started)
     bike_tricks.boost_ended.connect(_on_boost_ended)
+
+    # Set initial training wheels visibility
+    _update_training_wheels_visibility()
 
 
 func _bike_update(_delta):
@@ -54,6 +61,18 @@ func _on_front_brake_changed(value: float):
 
 func _on_rear_brake_changed(value: float):
     _update_brake_light(value)
+
+
+func _on_difficulty_toggled():
+    _update_training_wheels_visibility()
+
+
+func _update_training_wheels_visibility():
+    if training_wheels:
+        if state.is_easy_mode:
+            training_wheels.show()
+        else:
+            training_wheels.hide()
 
 
 func _on_boost_started():

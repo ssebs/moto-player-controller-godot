@@ -7,6 +7,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var player_animation: PlayerAnimationController = %PlayerAnimationController
 @onready var anim_player: AnimationPlayer = %AnimationPlayer
 @onready var tail_light: MeshInstance3D = %TailLight
+@onready var training_wheels: Node3D = %TrainingWheels
 
 # Markers
 @onready var rear_wheel: Marker3D = %RearWheelMarker
@@ -60,7 +61,7 @@ func _ready():
     bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, self)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
     bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label, speed_lines_effect, boost_label, boost_toast)
-    player_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel)
+    player_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel, training_wheels)
 
     # Connect component signals
     bike_gearing.gear_grind.connect(_on_gear_grind)

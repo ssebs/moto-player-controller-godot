@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://bn73ermusily2"]
+
+[ext_resource type="Material" uid="uid://drxiuuclvghll" path="res://scenes/bike/mods/tire_material.tres" id="1_ff4h1"]
+[ext_resource type="Material" uid="uid://bhopjocmujp43" path="res://scenes/bike/mods/wheel_material.tres" id="2_j51pb"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_jsokk"]
+size = Vector3(0.05, 0.44, 0.05)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_jsokk"]
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.1
+radial_segments = 12
+rings = 0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ff4h1"]
+top_radius = 0.15
+bottom_radius = 0.15
+height = 0.01
+radial_segments = 12
+rings = 0
+
+[node name="TrainingWheelsMod" type="Node3D"]
+
+[node name="stick" type="MeshInstance3D" parent="."]
+transform = Transform3D(-6.005695e-08, -0.8545132, -0.5194296, -1.464697e-08, 0.5194296, -0.8545132, 1, -4.371139e-08, -4.371139e-08, -0.19947065, 0.09486645, 0)
+material_override = ExtResource("1_ff4h1")
+mesh = SubResource("BoxMesh_jsokk")
+skeleton = NodePath("../tire")
+
+[node name="tire" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.371139e-08, -1, 0, -4.371139e-08, 1.9106855e-15, -1, 1, -4.371139e-08, -4.371139e-08, 0, 0, 0)
+mesh = SubResource("CylinderMesh_jsokk")
+surface_material_override/0 = ExtResource("1_ff4h1")
+
+[node name="wheel" type="MeshInstance3D" parent="."]
+transform = Transform3D(-4.371139e-08, -1, 0, -4.371139e-08, 1.9106855e-15, -1, 1, -4.371139e-08, -4.371139e-08, 0.05287534, 0, 0)
+mesh = SubResource("CylinderMesh_ff4h1")
+surface_material_override/0 = ExtResource("2_j51pb")
