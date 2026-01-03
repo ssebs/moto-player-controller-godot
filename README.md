@@ -37,54 +37,48 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 # Planning / Tasks
 
 ## In Progress:
-- [ ] Create animated character that sits on bike using IK
-  - [x] Basic IK control
-  - [x] Procedural animations (move legs here, move arms there, etc.)
-    - [x] Playable using animationplayer when doing tricks
-  - [ ] State machine for biker state
-    - > ENUM - code based, not Node based.
-    - [ ] Riding on ground
-    - [ ] In air
-    - [ ] Mid trick
-    - [ ] Crashing
-    - [ ] Idle (stopped)
-  - [ ] Riding animations
-    - [x] lean
-    - [ ] wheelie v1
-    - [ ] stoppie
+- [ ] State machine for biker state & animations
+  - > ENUM - code based, not Node based.
+    - _physics has switch statement for each state to have update
+    - set_state func to allow for 1 time calls (play animation, etc.)
+  - Player States:
+    - Idle
+    - Riding on ground
+    - In air
+    - Trick in air
+    - Trick on ground
+    - Crashing
+    - Crashed (press A to reset)
+- [WIP] Riding animations
+  - [x] lean
+  - [ ] wheelie v1
+  - [ ] stoppie
   - [ ] Stopped (1 leg down)
   - [ ] 1 complex trick (heel clicker)
-  - [ ] NOS
-    - [x] Naruto run animation
-    - [x] Increase max rpm sound
-    - [x] Limited boosts, tricks to increase boost bar.
-    - [ ] Stop all turning during, you can only boost forward
-- [ ] Refactor
-  - [ ] Simpify physics logic
-  - [ ] Simplify gearing logic
-  - [ ] Simplify tricks logic
-  - [ ] Simplify crash checks logic
-  - [ ] Bike stats / mesh / marker positions for tricks should be in a resource
+  - [ ] NOS disable turning during, you can only boost forward
+- [ ] Bike stats / mesh / marker positions for tricks should be in a resource
+- [ ] Ragdoll character on crash
+- [ ] Bike crash physics (swich to Rigidbody?)
+
 
 ## Bugs
 
 - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
+- [ ] Redline sound (bang limiter)
+- [ ] Should be more stable at higher speeds
 
 ## TODO:
-
+- [ ] Multiple bike models w/ diff stats
+  - [ ] Sport bike (move stats to resource)
+  - [ ] Pocket bike (only 2 gears, lower stats, etc.)
+  - [ ] Move BikeMarkers to this
 - [ ] Tune "feeling" of riding the bike & doing tricks
-  - [ ] Bike should fall when too slow
+  - [ ] Bike should fall when too slow, but should be stable at speed (don't have tip-in over 30)
   - [ ] Counter steering
-- [ ] Ragdoll character on crash + bike falls w/ physics
-- [ ] Complex movement / input system
 - [ ] Difficulty settings
   - **Easy** - Automatic, can't fall off bike unless crashing into object / during trick
   - **Medium** - Manual, can't fall easily from mistakes (e.g. death wobble), clutch not required
   - **Hard** - Manual, can fall easily from mistakes, clutch required
-- [ ] Some tricks:
-  - [x] Basic Wheelie (sitting)
-  - [x] Basic stoppie
-  - [ ] Heel clicker (legs over bars & touch)
 - [ ] All Tricks:
   - [ ] Standing wheelie
   - [ ] One leg over wheelie
@@ -104,8 +98,28 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
     - [ ] hardflip
     - [ ] 360flip
     - [ ] nollie lazerflip
+- [ ] Fix all bugs
+- [ ] Final refactor
+  - [ ] Signals that emit from player controller for use in MP
+  - [ ] Simpify physics logic
+  - [ ] Simplify gearing logic
+  - [ ] Simplify tricks logic
+  - [ ] Simplify crash checks logic
+  - [ ] Simplify state machines / animation logic
 
 ## Done:
+- [x] Basic tricks
+  - [x] Basic Wheelie (sitting)
+  - [x] Basic stoppie
+- [x] Create animated character that sits on bike using IK
+  - [x] Basic IK control
+  - [x] Procedural animations (move legs here, move arms there, etc.)
+    - [x] Playable using animationplayer when doing tricks
+- [x] boost
+  - [x] Naruto run animation
+  - [x] Increase max rpm sound
+  - [x] Limited boosts, tricks to increase boost bar.
+- [x] Some Refactor
   - [x] setup should be in order: (state, bike_input, [others]). 
   - [x] Add custom "_bike_update()" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
   - [x] Move all handler calls to bike_update
