@@ -59,20 +59,22 @@ func _ready():
     bike_tricks._bike_setup(state, bike_input, bike_physics, bike_gearing, bike_crash, self, rear_wheel, front_wheel)
     bike_gearing._bike_setup(state, bike_input, bike_physics, bike_tricks)
     bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, self)
-    bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops)
+    bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops, nos_sound)
     bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label, speed_lines_effect, boost_label, boost_toast)
     player_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel, training_wheels)
 
-    # Connect component signals
-    bike_gearing.gear_grind.connect(_on_gear_grind)
-    bike_gearing.gear_changed.connect(_on_gear_changed)
-    bike_gearing.engine_stalled.connect(_on_engine_stalled)
-    bike_tricks.tire_screech_start.connect(_on_tire_screech_start)
-    bike_tricks.tire_screech_stop.connect(_on_tire_screech_stop)
+    # Connect component signals - direct connections where possible
+    bike_gearing.gear_grind.connect(bike_audio.play_gear_grind)
+    bike_gearing.gear_changed.connect(bike_audio.on_gear_changed)
+    bike_gearing.engine_stalled.connect(bike_audio.stop_engine)
+    bike_tricks.tire_screech_start.connect(bike_audio.play_tire_screech)
+    bike_tricks.tire_screech_stop.connect(bike_audio.stop_tire_screech)
     bike_tricks.stoppie_stopped.connect(_on_stoppie_stopped)
     bike_tricks.boost_started.connect(_on_boost_started)
+    bike_tricks.boost_started.connect(bike_audio.play_nos)
     bike_tricks.boost_ended.connect(_on_boost_ended)
-    bike_tricks.boost_earned.connect(_on_boost_earned)
+    bike_tricks.boost_ended.connect(bike_audio.stop_nos)
+    bike_tricks.boost_earned.connect(bike_ui.show_boost_toast)
     bike_physics.brake_stopped.connect(_on_brake_stopped)
     bike_crash.crashed.connect(_on_crashed)
     bike_crash.respawn_requested.connect(_respawn)
@@ -138,9 +140,9 @@ func _update_player_state():
         return
 
     var is_airborne = not is_on_floor()
-    var is_ground_trick = abs(state.pitch_angle) > deg_to_rad(5) or abs(state.fishtail_angle) > deg_to_rad(5)
-    var is_air_trick = is_airborne and abs(state.pitch_angle) > deg_to_rad(5)
-    var has_input = bike_input.throttle > 0.1 or bike_input.front_brake > 0.1 or bike_input.rear_brake > 0.1
+    var is_ground_trick = bike_tricks.is_in_ground_trick()
+    var is_air_trick = bike_tricks.is_in_air_trick(is_airborne)
+    var has_input = bike_input.has_input()
 
     var target: BikeState.PlayerState
     if is_airborne:
@@ -157,26 +159,6 @@ func _update_player_state():
 
 
 # Signal handlers
-func _on_gear_grind():
-    bike_audio.play_gear_grind()
-
-
-func _on_gear_changed(_new_gear: int):
-    bike_audio.on_gear_changed()
-
-
-func _on_engine_stalled():
-    bike_audio.stop_engine()
-
-
-func _on_tire_screech_start(volume: float):
-    bike_audio.play_tire_screech(volume)
-
-
-func _on_tire_screech_stop():
-    bike_audio.stop_tire_screech()
-
-
 func _on_stoppie_stopped():
     bike_physics._bike_reset()
     state.speed = 0.0
@@ -189,10 +171,7 @@ func _on_brake_stopped():
     velocity = Vector3.ZERO
 
 
-func _on_crashed(pitch_dir: float, lean_dir: float):
-    if lean_dir != 0 and pitch_dir == 0:
-        state.speed *= 0.7
-
+func _on_crashed(_pitch_dir: float, lean_dir: float):
     # Play tire screech for lowside crashes
     if lean_dir != 0:
         bike_audio.play_tire_screech(1.0)
@@ -200,13 +179,7 @@ func _on_crashed(pitch_dir: float, lean_dir: float):
 
 func _on_boost_started():
     bike_ui.show_speed_lines()
-    nos_sound.play()
 
 
 func _on_boost_ended():
     bike_ui.hide_speed_lines()
-    nos_sound.stop()
-
-
-func _on_boost_earned():
-    bike_ui.show_boost_toast()

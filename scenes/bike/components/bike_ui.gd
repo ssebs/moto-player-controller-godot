@@ -21,10 +21,6 @@ var bike_gearing: BikeGearing
 var toast_timer: float = 0.0
 const TOAST_DURATION: float = 1.5
 
-# Input state (from signals)
-var throttle: float = 0.0
-var front_brake: float = 0.0
-
 func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
         crash: BikeCrash, tricks: BikeTricks,
         gear: Label, spd: Label, throttle_b: ProgressBar, rpm_b: ProgressBar,
@@ -52,13 +48,11 @@ func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
     if boost_toast:
         boost_toast.visible = false
 
-    input.throttle_changed.connect(func(v): throttle = v)
-    input.front_brake_changed.connect(func(v): front_brake = v)
     input.difficulty_toggled.connect(_on_difficulty_toggled)
 
 
 func _bike_update(delta):
-    update_ui(bike_gearing.get_rpm_ratio())
+    update_ui(state.rpm_ratio)
     _update_toast(delta)
 
 
@@ -88,7 +82,7 @@ func _update_bars(rpm_ratio: float):
     if !throttle_bar or !brake_danger_bar:
         return
 
-    throttle_bar.value = throttle
+    throttle_bar.value = bike_input.throttle
 
     if rpm_ratio > 0.9:
         throttle_bar.modulate = Color(1.0, 0.2, 0.2) # Red at redline
@@ -105,7 +99,7 @@ func _update_bars(rpm_ratio: float):
         else:
             rpm_bar.modulate = Color(0.2, 0.6, 1.0) # Blue for normal range
 
-    brake_danger_bar.value = front_brake
+    brake_danger_bar.value = bike_input.front_brake
 
     if state.brake_danger_level > 0.1:
         var danger_color = Color(1.0, 1.0 - state.brake_danger_level, 0.0)

@@ -7,6 +7,7 @@ signal gear_grind # Tried to shift without clutch
 
 # Shared state
 var state: BikeState
+var bike_input: BikeInput
 var bike_physics: BikePhysics
 var bike_tricks: BikeTricks
 
@@ -27,8 +28,7 @@ var bike_tricks: BikeTricks
 @export var rpm_blend_speed: float = 12.0 # How fast RPM changes when clutch engaged
 @export var rev_match_speed: float = 8.0 # How fast RPM adjusts during easy mode shifts
 
-# Input state (from signals)
-var throttle: float = 0.0
+# Input state (from signals - clutch needs special handling)
 var clutch_held: bool = false
 var clutch_just_pressed: bool = false
 
@@ -36,12 +36,12 @@ var clutch_just_pressed: bool = false
 var clutch_hold_time: float = 0.0
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics, tricks: BikeTricks):
+func _bike_setup(bike_state: BikeState, input: BikeInput, physics: BikePhysics, tricks: BikeTricks):
     state = bike_state
+    bike_input = input
     bike_physics = physics
     bike_tricks = tricks
 
-    bike_input.throttle_changed.connect(func(v): throttle = v)
     bike_input.clutch_held_changed.connect(_on_clutch_input)
     bike_input.gear_up_pressed.connect(_on_gear_up)
     bike_input.gear_down_pressed.connect(_on_gear_down)
@@ -53,11 +53,14 @@ func _bike_update(delta):
             if not state.is_stalled:
                 state.is_stalled = true
                 engine_stalled.emit()
+            state.rpm_ratio = 0.0
             return
         _:
             # Engine runs normally in all other states
             update_clutch(delta)
             update_rpm(delta)
+            # Cache RPM ratio for other components to use
+            state.rpm_ratio = get_rpm_ratio()
 
 func _on_clutch_input(held: bool, just_pressed: bool):
     clutch_held = held
@@ -112,7 +115,7 @@ func update_rpm(delta: float):
     if state.is_stalled:
         state.current_rpm = 0.0
         # Restart engine with throttle + clutch while stalled
-        if state.clutch_value > 0.5 and throttle > 0.3:
+        if state.clutch_value > 0.5 and bike_input.throttle > 0.3:
             state.is_stalled = false
             state.current_rpm = idle_rpm
             engine_started.emit()
@@ -126,7 +129,7 @@ func update_rpm(delta: float):
     var wheel_rpm = speed_ratio * max_rpm
 
     # Throttle-driven RPM (instant - no smoothing, engine revs freely)
-    var throttle_rpm = lerpf(idle_rpm, max_rpm, throttle)
+    var throttle_rpm = lerpf(idle_rpm, max_rpm, bike_input.throttle)
 
     # Blend between throttle RPM and wheel RPM based on clutch engagement
     # engagement = 0: clutch in, engine free-revs (fast response)
@@ -177,13 +180,13 @@ func get_power_output() -> float:
     var base_ratio = gear_ratios[num_gears - 1]
     var torque_multiplier = gear_ratio / base_ratio
 
-    var effective_throttle = bike_tricks.get_boosted_throttle(throttle)
+    var effective_throttle = bike_tricks.get_boosted_throttle(bike_input.throttle)
     return effective_throttle * power_curve * torque_multiplier * engagement
 
 
 func is_clutch_dump(last_clutch: float) -> bool:
     """Returns true if clutch was just dumped while revving"""
-    return last_clutch > 0.7 and state.clutch_value < 0.3 and throttle > 0.5
+    return last_clutch > 0.7 and state.clutch_value < 0.3 and bike_input.throttle > 0.5
 
 
 func _bike_reset():

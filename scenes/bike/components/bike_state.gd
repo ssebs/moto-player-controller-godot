@@ -49,6 +49,7 @@ var current_gear: int = 1
 var current_rpm: float = 1000.0
 var clutch_value: float = 0.0
 var is_stalled: bool = false
+var rpm_ratio: float = 0.0  # Cached per frame by BikeGearing
 
 # Tricks state
 var pitch_angle: float = 0.0
@@ -59,7 +60,6 @@ var is_boosting: bool = false
 var boost_count: int = 2
 
 # Crash state
-var is_crashed: bool = false
 var brake_danger_level: float = 0.0
 var brake_grab_level: float = 0.0
 

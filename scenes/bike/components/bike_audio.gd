@@ -2,6 +2,7 @@ class_name BikeAudio extends Node
 
 # Shared state
 var state: BikeState
+var bike_input: BikeInput
 var bike_gearing: BikeGearing
 
 # Local state
@@ -10,6 +11,7 @@ var bike_gearing: BikeGearing
 @onready var tire_screech: AudioStreamPlayer = null
 @onready var engine_grind: AudioStreamPlayer = null
 @onready var exhaust_pops: AudioStreamPlayer = null
+@onready var nos_sound: AudioStreamPlayer = null
 
 # Audio settings
 @export var engine_min_pitch: float = 0.25
@@ -20,39 +22,37 @@ var bike_gearing: BikeGearing
 @export var fishtail_volume: float = 0.4
 
 # Exhaust pop settings
-@export var exhaust_pop_threshold: float = 0.7  # RPM ratio above which pops can occur
-@export var exhaust_pop_chance: float = 0.15    # Chance per frame when conditions met
+@export var exhaust_pop_threshold: float = 0.7 # RPM ratio above which pops can occur
+@export var exhaust_pop_chance: float = 0.15 # Chance per frame when conditions met
 @export var exhaust_pop_volume: float = 0.2
-@export var exhaust_pop_cooldown: float = 0.2   # Min time between pops
-
-# Input state (from signals)
-var throttle: float = 0.0
+@export var exhaust_pop_cooldown: float = 0.2 # Min time between pops
 
 # Exhaust pop tracking
 var last_rpm_ratio: float = 0.0
 var exhaust_pop_timer: float = 0.0
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGearing,
+func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
         engine: AudioStreamPlayer, screech: AudioStreamPlayer,
-        grind: AudioStreamPlayer, pops: AudioStreamPlayer):
+        grind: AudioStreamPlayer, pops: AudioStreamPlayer, nos: AudioStreamPlayer = null):
     state = bike_state
+    bike_input = input
     bike_gearing = gearing
 
     engine_sound = engine
     tire_screech = screech
     engine_grind = grind
     exhaust_pops = pops
+    nos_sound = nos
 
-    bike_input.throttle_changed.connect(func(v): throttle = v)
     state.state_changed.connect(_on_state_changed)
 
 
 func _bike_update(delta):
     match state.player_state:
         BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
-            return  # Audio handled by state change callback
+            return # Audio handled by state change callback
         _:
-            update_engine_audio(delta, bike_gearing.get_rpm_ratio())
+            update_engine_audio(delta, state.rpm_ratio)
 
 
 func _on_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
@@ -81,7 +81,7 @@ func update_engine_audio(delta: float, rpm_ratio: float):
         last_rpm_ratio = 0.0
         return
 
-    if state.speed > 0.5 or throttle > 0:
+    if state.speed > 0.5 or bike_input.throttle > 0:
         if !engine_sound.playing:
             engine_sound.play()
 
@@ -104,7 +104,7 @@ func update_engine_audio(delta: float, rpm_ratio: float):
     last_rpm_ratio = rpm_ratio
 
 
-func on_gear_changed():
+func on_gear_changed(_new_gear: int):
     # Stop pops when shifting to a new gear
     _stop_exhaust_pops()
 
@@ -153,8 +153,22 @@ func stop_engine():
         engine_sound.stop()
 
 
+func play_nos():
+    if !nos_sound:
+        return
+    if !nos_sound.playing:
+        nos_sound.play()
+
+
+func stop_nos():
+    if !nos_sound:
+        return
+    if nos_sound.playing:
+        nos_sound.stop()
+
+
 func _bike_reset():
     stop_engine()
     stop_tire_screech()
     _stop_exhaust_pops()
-
+    stop_nos()

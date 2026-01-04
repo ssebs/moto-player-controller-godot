@@ -7,6 +7,7 @@ signal force_stoppie_requested(target_pitch: float, rate: float)
 
 # Shared state
 var state: BikeState
+var bike_input: BikeInput
 var controller: CharacterBody3D
 var bike_physics: BikePhysics
 var bike_tricks: Node  # BikeTricks - avoid circular reference
@@ -22,10 +23,6 @@ var bike_tricks: Node  # BikeTricks - avoid circular reference
 @export var crash_deceleration: float = 20.0
 @export var crash_rotation_speed: float = 3.0
 
-# Input state (from signals)
-var front_brake: float = 0.0
-var steer: float = 0.0
-
 # Local state
 var crash_timer: float = 0.0
 var crash_pitch_direction: float = 0.0
@@ -34,17 +31,15 @@ var front_brake_hold_time: float = 0.0
 
 # Brake grab detection
 var last_front_brake: float = 0.0
-var brake_grab_level: float = 0.0 # How aggressively brake was grabbed (0-1)
 var brake_grab_threshold: float = 4.0 # Rate per second that counts as "grabbing"
 
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhysics, tricks: Node, ctrl: CharacterBody3D):
+func _bike_setup(bike_state: BikeState, input: BikeInput, physics: BikePhysics, tricks: Node, ctrl: CharacterBody3D):
     state = bike_state
+    bike_input = input
     bike_physics = physics
     bike_tricks = tricks
     controller = ctrl
-    bike_input.front_brake_changed.connect(func(v): front_brake = v)
-    bike_input.steer_changed.connect(func(v): steer = v)
 
 func _bike_update(delta):
     if state.player_state == BikeState.PlayerState.CRASHING or state.player_state == BikeState.PlayerState.CRASHED:
@@ -125,17 +120,17 @@ func check_crash_conditions(delta) -> String:
 func _update_brake_danger(delta) -> bool:
     """Returns true if brake crash should occur"""
     # Detect brake grab (how fast brake input is increasing)
-    var brake_rate = (front_brake - last_front_brake) / delta if delta > 0 else 0.0
-    last_front_brake = front_brake
+    var brake_rate = (bike_input.front_brake - last_front_brake) / delta if delta > 0 else 0.0
+    last_front_brake = bike_input.front_brake
 
     # Only care about increasing brake input at speed
     if brake_rate > brake_grab_threshold and state.speed > 10:
         # Accumulate grab level based on how aggressive the grab is
         var grab_intensity = (brake_rate - brake_grab_threshold) / brake_grab_threshold
-        brake_grab_level = clamp(brake_grab_level + grab_intensity * delta * 5.0, 0.0, 1.0)
-    elif front_brake < 0.3:
+        state.brake_grab_level = clamp(state.brake_grab_level + grab_intensity * delta * 5.0, 0.0, 1.0)
+    elif bike_input.front_brake < 0.3:
         # Only decay grab level when brake is mostly released
-        brake_grab_level = move_toward(brake_grab_level, 0.0, 3.0 * delta)
+        state.brake_grab_level = move_toward(state.brake_grab_level, 0.0, 3.0 * delta)
     # else: brake is held but not increasing - maintain current grab level
 
     var turn_factor = abs(state.steering_angle) / bike_physics.max_steering_angle
@@ -143,7 +138,7 @@ func _update_brake_danger(delta) -> bool:
     var instability = max(turn_factor, lean_factor)
 
     # Instant crash if brake grabbed while turning
-    if brake_grab_level > brake_grab_crash_threshold and state.speed > 20:
+    if state.brake_grab_level > brake_grab_crash_threshold and state.speed > 20:
         if instability > 0.4:
             # Lowside crash from grabbing brake in turn
             crash_pitch_direction = 0
@@ -152,7 +147,7 @@ func _update_brake_danger(delta) -> bool:
             return true
 
     # Original hold-time based danger (for sustained hard braking)
-    if front_brake > 0.7 and state.speed > 25:
+    if bike_input.front_brake > 0.7 and state.speed > 25:
         front_brake_hold_time += delta
 
         var speed_factor = clamp((state.speed - 25) / (bike_physics.max_speed - 25), 0.0, 1.0)
@@ -160,7 +155,7 @@ func _update_brake_danger(delta) -> bool:
         var crash_time_threshold = base_threshold * (1.0 - instability * 0.5)
 
         # Brake grab makes danger build faster
-        var grab_multiplier = 1.0 + brake_grab_level * 1.5
+        var grab_multiplier = 1.0 + state.brake_grab_level * 1.5
         state.brake_danger_level = clamp((front_brake_hold_time * grab_multiplier) / crash_time_threshold, 0.0, 1.0)
 
         if front_brake_hold_time > crash_time_threshold:
@@ -182,8 +177,8 @@ func _update_brake_danger(delta) -> bool:
 
 func _check_force_stoppie():
     """Emit signal to force stoppie when brake danger maxed while going straight"""
-    if front_brake > 0.8 and state.speed > 25 and state.brake_danger_level >= 1.0:
-        var turn_factor = abs(steer)
+    if bike_input.front_brake > 0.8 and state.speed > 25 and state.brake_danger_level >= 1.0:
+        var turn_factor = abs(bike_input.steer)
         if turn_factor <= 0.2:
             var target_pitch = -crash_stoppie_threshold * 1.2
             force_stoppie_requested.emit(target_pitch, 4.0)
@@ -192,6 +187,11 @@ func _check_force_stoppie():
 func trigger_crash():
     state.request_state_change(BikeState.PlayerState.CRASHING)
     crash_timer = 0.0
+
+    # Speed reduction for lowside crashes
+    if is_lowside_crash():
+        state.speed *= 0.7
+
     crashed.emit(crash_pitch_direction, crash_lean_direction)
 
 
@@ -222,7 +222,7 @@ func is_lowside_crash() -> bool:
 
 func is_front_wheel_locked() -> bool:
     """Returns true if front brake was grabbed hard enough to lock wheel (skid)"""
-    return brake_grab_level > brake_grab_crash_threshold
+    return state.brake_grab_level > brake_grab_crash_threshold
 
 
 func get_brake_vibration() -> Vector2:
@@ -262,5 +262,5 @@ func _bike_reset():
     front_brake_hold_time = 0.0
     state.brake_danger_level = 0.0
     last_front_brake = 0.0
-    brake_grab_level = 0.0
+    state.brake_grab_level = 0.0
     respawned.emit()

@@ -59,6 +59,7 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 - [ ] Bike stats / mesh / marker positions for tricks should be in a resource
 - [ ] Ragdoll character on crash
 - [ ] Bike crash physics (swich to Rigidbody?)
+- [ ] Camera controller
 
 
 ## Bugs

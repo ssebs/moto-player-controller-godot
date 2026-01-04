@@ -96,5 +96,11 @@ func add_vibration(weak: float, strong: float):
 func stop_vibration():
 	Input.stop_joy_vibration(0)
 
+
+func has_input() -> bool:
+	"""Returns true if any significant input is being applied"""
+	return throttle > 0.1 or front_brake > 0.1 or rear_brake > 0.1
+
+
 func _bike_reset():
 	stop_vibration()
