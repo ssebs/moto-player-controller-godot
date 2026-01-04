@@ -353,37 +353,38 @@ is_left_wheel = false
 [node name="TrainingWheelsMod2" parent="BikeMesh/Mods/TrainingWheels" instance=ExtResource("5_voh27")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.15, 0.335, 0.117)
 
-[node name="Functionality" type="Node" parent="."]
+[node name="FunctionalityComponents" type="Node" parent="."]
+unique_name_in_owner = true
 
-[node name="BikeAnimation" type="Node" parent="Functionality"]
+[node name="BikeAnimation" type="Node" parent="FunctionalityComponents"]
 unique_name_in_owner = true
 script = ExtResource("6_voh27")
 
-[node name="BikeInput" type="Node" parent="Functionality"]
+[node name="BikeInput" type="Node" parent="FunctionalityComponents"]
 unique_name_in_owner = true
 script = ExtResource("13_input")
 
-[node name="BikePhysics" type="Node" parent="Functionality"]
+[node name="BikePhysics" type="Node" parent="FunctionalityComponents"]
 unique_name_in_owner = true
 script = ExtResource("8_physics")
 
-[node name="BikeGearing" type="Node" parent="Functionality"]
+[node name="BikeGearing" type="Node" parent="FunctionalityComponents"]
 unique_name_in_owner = true
 script = ExtResource("5_gearing")
 
-[node name="BikeTricks" type="Node" parent="Functionality"]
+[node name="BikeTricks" type="Node" parent="FunctionalityComponents"]
 unique_name_in_owner = true
 script = ExtResource("7_tricks")
 
-[node name="BikeCrash" type="Node" parent="Functionality"]
+[node name="BikeCrash" type="Node" parent="FunctionalityComponents"]
 unique_name_in_owner = true
 script = ExtResource("9_crash")
 
-[node name="BikeAudio" type="Node" parent="Functionality"]
+[node name="BikeAudio" type="Node" parent="FunctionalityComponents"]
 unique_name_in_owner = true
 script = ExtResource("10_audio")
 
-[node name="BikeUI" type="Node" parent="Functionality"]
+[node name="BikeUI" type="Node" parent="FunctionalityComponents"]
 unique_name_in_owner = true
 script = ExtResource("11_ui")
 

@@ -53,6 +53,7 @@ func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
 
+    # TODO: call this from %FunctionalityComponents.get_children()
     bike_input._bike_setup(self)
     bike_crash._bike_setup(self)
     bike_tricks._bike_setup(self)
@@ -83,6 +84,9 @@ func _physics_process(delta):
     # Update player state based on current conditions (after input)
     _update_player_state()
 
+    # TODO: call this from %FunctionalityComponents.get_children()
+
+
     # Component updates
     bike_gearing._bike_update(delta)
     bike_physics._bike_update(delta)
@@ -105,6 +109,8 @@ func _respawn():
     rotation = spawn_rotation
     velocity = Vector3.ZERO
     bike_mesh.transform = Transform3D.IDENTITY
+
+    # TODO: call this from %FunctionalityComponents.get_children()
 
     # Reset all components
     bike_gearing._bike_reset()

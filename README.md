@@ -35,28 +35,31 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 # Planning / Tasks
 
 ## In Progress:
-
-- [ ] Review state machine / refactor
-- [WIP] Riding animations
-  - [x] lean
-  - [ ] wheelie v1
-  - [ ] stoppie
-  - [ ] Stopped (1 leg down)
-  - [ ] 1 complex trick (heel clicker)
-  - [ ] NOS disable turning during, you can only boost forward
+- [ ] Simplify logic / component level refactor:
+  - [ ] tricks
+  - [ ] crash
+  - [ ] physics
+  - [ ] animation
 - [ ] Bike stats / mesh / marker positions for tricks should be in a resource
 - [ ] Ragdoll character on crash
 - [ ] Bike crash physics (swich to Rigidbody?)
-- [ ] Camera controller
+- [WIP] Riding animations
+  - [x] lean
+  - [ ] wheelie v1 (RB for standing wheelie during wheelie)
+  - [ ] stoppie
+  - [ ] Stopped (1 leg down)
+  - [ ] 1 complex trick (heel clicker) (only in-air)
 
 ## Bugs
 
+- [ ] NOS disable turning during, you can only boost forward
 - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
 - [ ] Redline sound (bang limiter)
-- [ ] Should be more stable at higher speeds
+- [ ] Should be more stable at higher speeds (countersteering at speed feels off, no turn in should occur)
 
 ## TODO:
 
+- [ ] Camera controller
 - [ ] Multiple bike models w/ diff stats
   - [ ] Sport bike (move stats to resource)
   - [ ] Pocket bike (only 2 gears, lower stats, etc.)
@@ -97,7 +100,7 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
   - [ ] Simplify state machines / animation logic
 
 ## Done:
-
+- [x] Review state machine / refactor
 - [x] State machine for biker state & animations
   - > ENUM - code based, not Node based.
     - \_physics has switch statement for each state to have update
