@@ -7,6 +7,54 @@ signal boost_started
 signal boost_ended
 signal boost_earned # Emitted when a boost is earned from tricks
 
+# TODO: use this dict, and potentially use a more complex system. (resource?)
+enum TrickRequirements {IN_AIR, ON_GROUND, DURING_WHEELIE}
+const TrickTypes = {
+    "wheelie": {
+        "sitting": {
+            "mult": 1.0,
+            "name": "Sitting Wheelie",
+            "reqs": [TrickRequirements.ON_GROUND]
+        },
+        "standing": {
+            "mult": 1.2,
+            "name": "Standing Wheelie",
+            "reqs": [TrickRequirements.DURING_WHEELIE]
+        }
+    },
+    "stoppie": {
+        "basic": {
+            "mult": 1.0,
+            "name": "Stoppie",
+            "reqs": [TrickRequirements.DURING_WHEELIE]
+        }
+    },
+    "fishtail": {
+        "skid": { # Rear brake skid
+            "mult": 1.0,
+            "name": "Fishtail",
+            "reqs": [TrickRequirements.ON_GROUND]
+        },
+        "drift": { # Gas pressed while rear is out
+            "mult": 1.0,
+            "name": "Drift",
+            "reqs": [TrickRequirements.ON_GROUND]
+        }
+    },
+    "boost": {
+        "speedboost": {
+            "mult": 0.0,
+            "name": "Speed boost"
+        }
+    },
+    "heelclicker": {
+        "in_air": {
+            "mult": 2.0,
+            "name": "Heel Clicker",
+            "reqs": [TrickRequirements.IN_AIR]
+        }
+    }
+}
 
 # Rotation tuning
 @export var max_wheelie_angle: float = deg_to_rad(80)

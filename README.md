@@ -35,20 +35,16 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 # Planning / Tasks
 
 ## In Progress:
-- [ ] Simplify logic / component level refactor:
+
+- [WIP] Simplify logic / component level refactor:
   - [ ] tricks
+    - [ ] Decide how tricks should be tracked / checked.
+      - [ ] enum? dict? see @bike_tricks.gd
   - [ ] crash
   - [ ] physics
   - [ ] animation
 - [ ] Bike stats / mesh / marker positions for tricks should be in a resource
-- [ ] Ragdoll character on crash
-- [ ] Bike crash physics (swich to Rigidbody?)
-- [WIP] Riding animations
-  - [x] lean
-  - [ ] wheelie v1 (RB for standing wheelie during wheelie)
-  - [ ] stoppie
-  - [ ] Stopped (1 leg down)
-  - [ ] 1 complex trick (heel clicker) (only in-air)
+
 
 ## Bugs
 
@@ -58,7 +54,14 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 - [ ] Should be more stable at higher speeds (countersteering at speed feels off, no turn in should occur)
 
 ## TODO:
-
+- [ ] Ragdoll character on crash
+- [ ] Bike crash physics (swich to Rigidbody?)
+- [WIP] Riding animations
+  - [x] lean
+  - [ ] wheelie v1 (RB for standing wheelie during wheelie)
+  - [ ] stoppie
+  - [ ] Stopped (1 leg down)
+  - [ ] 1 complex trick (heel clicker) (only in-air)
 - [ ] Camera controller
 - [ ] Multiple bike models w/ diff stats
   - [ ] Sport bike (move stats to resource)
