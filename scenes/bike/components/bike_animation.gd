@@ -1,4 +1,4 @@
-class_name PlayerAnimationController extends Node
+class_name BikeAnimation extends Node
 
 # Shared state
 var state: BikeState

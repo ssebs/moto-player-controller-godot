@@ -4,9 +4,9 @@
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_ujl86"]
 [ext_resource type="PackedScene" uid="uid://gobjlpuvfmm8" path="res://scenes/character/ik_char_mesh.tscn" id="2_wi4rf"]
 [ext_resource type="Material" uid="uid://bfxhki5bfmyn1" path="res://scenes/bike/tail_light_material.tres" id="3_n1tms"]
-[ext_resource type="Script" uid="uid://ct5kbf1mujm7r" path="res://scenes/bike/components/player_animation_controller.gd" id="4_n1tms"]
 [ext_resource type="Script" uid="uid://l500tpp42su8" path="res://scenes/bike/components/bike_gearing.gd" id="5_gearing"]
 [ext_resource type="PackedScene" uid="uid://bn73ermusily2" path="res://scenes/bike/mods/training_wheels_mod.tscn" id="5_voh27"]
+[ext_resource type="Script" uid="uid://jx4j084pg5ad" path="res://scenes/bike/components/bike_animation.gd" id="6_voh27"]
 [ext_resource type="Script" uid="uid://bpqhimqk1dt2d" path="res://scenes/bike/components/bike_tricks.gd" id="7_tricks"]
 [ext_resource type="Script" uid="uid://cgy5mk1x6lanu" path="res://scenes/bike/components/bike_physics.gd" id="8_physics"]
 [ext_resource type="Script" uid="uid://bbk0xwdxhsifa" path="res://scenes/bike/components/bike_crash.gd" id="9_crash"]
@@ -355,9 +355,9 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.1
 
 [node name="Functionality" type="Node" parent="."]
 
-[node name="PlayerAnimationController" type="Node" parent="Functionality"]
+[node name="BikeAnimation" type="Node" parent="Functionality"]
 unique_name_in_owner = true
-script = ExtResource("4_n1tms")
+script = ExtResource("6_voh27")
 
 [node name="BikeInput" type="Node" parent="Functionality"]
 unique_name_in_owner = true

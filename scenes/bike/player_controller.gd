@@ -4,7 +4,6 @@ class_name PlayerController extends CharacterBody3D
 # Meshes / Character / Animations
 @onready var bike_mesh: Node3D = %BikeMesh
 @onready var character_mesh: Node3D = %IKCharacterMesh
-@onready var player_animation: PlayerAnimationController = %PlayerAnimationController
 @onready var anim_player: AnimationPlayer = %AnimationPlayer
 @onready var tail_light: MeshInstance3D = %TailLight
 @onready var training_wheels: Node3D = %TrainingWheels
@@ -40,6 +39,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var bike_crash: BikeCrash = %BikeCrash
 @onready var bike_audio: BikeAudio = %BikeAudio
 @onready var bike_ui: BikeUI = %BikeUI
+@onready var bike_animation: BikeAnimation = %BikeAnimation
 #endregion
 
 # Shared state
@@ -61,7 +61,7 @@ func _ready():
     bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, self)
     bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops, nos_sound)
     bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label, speed_lines_effect, boost_label, boost_toast)
-    player_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel, training_wheels)
+    bike_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel, training_wheels)
 
     # Connect component signals - direct connections where possible
     bike_gearing.gear_grind.connect(bike_audio.play_gear_grind)
@@ -84,12 +84,12 @@ func _physics_process(delta):
     # Handle crash states first (before input)
     if state.player_state == BikeState.PlayerState.CRASHED:
         bike_crash._bike_update(delta)
-        player_animation.apply_mesh_rotation()
+        bike_animation.apply_mesh_rotation()
         return
 
     if state.player_state == BikeState.PlayerState.CRASHING:
         bike_crash._bike_update(delta)
-        player_animation._bike_update(delta)
+        bike_animation._bike_update(delta)
         return
 
     # Input first, so state detection has current values
@@ -112,7 +112,7 @@ func _physics_process(delta):
     move_and_slide()
 
     # Align to ground & bike_mesh rotation
-    player_animation._bike_update(delta)
+    bike_animation._bike_update(delta)
 
 
 func _respawn():
@@ -128,7 +128,7 @@ func _respawn():
     bike_crash._bike_reset()
     bike_input._bike_reset()
     bike_audio._bike_reset()
-    player_animation._bike_reset()
+    bike_animation._bike_reset()
 
     # Reset to idle state
     state.player_state = BikeState.PlayerState.IDLE
