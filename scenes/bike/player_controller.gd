@@ -53,15 +53,15 @@ func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
 
-    # Setup all components with shared state and input signals
-    bike_input._bike_setup(state, bike_input)
-    bike_crash._bike_setup(state, bike_input, bike_physics, bike_tricks, self)
-    bike_tricks._bike_setup(state, bike_input, bike_physics, bike_gearing, bike_crash, self, rear_wheel, front_wheel)
-    bike_gearing._bike_setup(state, bike_input, bike_physics, bike_tricks)
-    bike_physics._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, self)
-    bike_audio._bike_setup(state, bike_input, bike_gearing, engine_sound, tire_screech, engine_grind, exhaust_pops, nos_sound)
-    bike_ui._bike_setup(state, bike_input, bike_gearing, bike_crash, bike_tricks, gear_label, speed_label, throttle_bar, rpm_bar, brake_danger_bar, clutch_bar, difficulty_label, speed_lines_effect, boost_label, boost_toast)
-    bike_animation._bike_setup(state, bike_input, bike_tricks, anim_player, bike_mesh, character_mesh, tail_light, rear_wheel, front_wheel, training_wheels)
+    # Setup all components with player controller reference
+    bike_input._bike_setup(self)
+    bike_crash._bike_setup(self)
+    bike_tricks._bike_setup(self)
+    bike_gearing._bike_setup(self)
+    bike_physics._bike_setup(self)
+    bike_audio._bike_setup(self)
+    bike_ui._bike_setup(self)
+    bike_animation._bike_setup(self)
 
     # Connect component signals - direct connections where possible
     bike_gearing.gear_grind.connect(bike_audio.play_gear_grind)

@@ -5,12 +5,8 @@ signal respawn_requested
 signal respawned
 signal force_stoppie_requested(target_pitch: float, rate: float)
 
-# Shared state
-var state: BikeState
-var bike_input: BikeInput
-var controller: CharacterBody3D
-var bike_physics: BikePhysics
-var bike_tricks: Node  # BikeTricks - avoid circular reference
+# Player controller reference
+var player_controller: PlayerController
 
 # Crash thresholds
 @export var crash_wheelie_threshold: float = deg_to_rad(75)
@@ -34,29 +30,25 @@ var last_front_brake: float = 0.0
 var brake_grab_threshold: float = 4.0 # Rate per second that counts as "grabbing"
 
 
-func _bike_setup(bike_state: BikeState, input: BikeInput, physics: BikePhysics, tricks: Node, ctrl: CharacterBody3D):
-    state = bike_state
-    bike_input = input
-    bike_physics = physics
-    bike_tricks = tricks
-    controller = ctrl
+func _bike_setup(p_controller: PlayerController):
+    player_controller = p_controller
 
 func _bike_update(delta):
-    if state.player_state == BikeState.PlayerState.CRASHING or state.player_state == BikeState.PlayerState.CRASHED:
+    if player_controller.state.player_state == BikeState.PlayerState.CRASHING or player_controller.state.player_state == BikeState.PlayerState.CRASHED:
         _update_crash_state(delta)
         return
 
-    if controller.is_on_floor():
+    if player_controller.is_on_floor():
         check_crash_conditions(delta)
     _check_collision_crash()
 
 
 func _check_collision_crash():
-    if state.player_state == BikeState.PlayerState.CRASHING or state.player_state == BikeState.PlayerState.CRASHED:
+    if player_controller.state.player_state == BikeState.PlayerState.CRASHING or player_controller.state.player_state == BikeState.PlayerState.CRASHED:
         return
 
-    for i in controller.get_slide_collision_count():
-        var collision = controller.get_slide_collision(i)
+    for i in player_controller.get_slide_collision_count():
+        var collision = player_controller.get_slide_collision(i)
         var collider = collision.get_collider()
 
         # Check if collider is on layer 2 (bit 1)
@@ -68,8 +60,8 @@ func _check_collision_crash():
 
         if is_crash_layer:
             var normal = collision.get_normal()
-            if state.speed > 5:
-                var local_normal = controller.global_transform.basis.inverse() * normal
+            if player_controller.state.speed > 5:
+                var local_normal = player_controller.global_transform.basis.inverse() * normal
                 trigger_collision_crash(local_normal)
                 return
 
@@ -79,37 +71,37 @@ func check_crash_conditions(delta) -> String:
     var crash_reason = ""
 
     # Wheelie too far
-    if state.pitch_angle > crash_wheelie_threshold:
+    if player_controller.state.pitch_angle > crash_wheelie_threshold:
         crash_reason = "wheelie"
         crash_pitch_direction = 1
         crash_lean_direction = 0
 
     # Stoppie too far
-    elif state.pitch_angle < -crash_stoppie_threshold:
+    elif player_controller.state.pitch_angle < -crash_stoppie_threshold:
         crash_reason = "stoppie"
         crash_pitch_direction = -1
         crash_lean_direction = 0
 
     # Turning while in a stoppie - lowside crash
-    elif state.pitch_angle < deg_to_rad(-15) and abs(state.steering_angle) > deg_to_rad(15):
+    elif player_controller.state.pitch_angle < deg_to_rad(-15) and abs(player_controller.state.steering_angle) > deg_to_rad(15):
         crash_reason = "stoppie_turn"
         crash_pitch_direction = 0
-        crash_lean_direction = sign(state.steering_angle)
+        crash_lean_direction = sign(player_controller.state.steering_angle)
 
     # Front brake danger
     _update_brake_danger(delta)
 
     # Falling over (gyro instability)
-    if crash_reason == "" and abs(state.fall_angle) >= crash_lean_threshold:
+    if crash_reason == "" and abs(player_controller.state.fall_angle) >= crash_lean_threshold:
         crash_reason = "fall"
         crash_pitch_direction = 0
-        crash_lean_direction = sign(state.fall_angle)
+        crash_lean_direction = sign(player_controller.state.fall_angle)
 
     # Total lean too far
-    if crash_reason == "" and abs(state.lean_angle + state.fall_angle) >= crash_lean_threshold:
+    if crash_reason == "" and abs(player_controller.state.lean_angle + player_controller.state.fall_angle) >= crash_lean_threshold:
         crash_reason = "lean"
         crash_pitch_direction = 0
-        crash_lean_direction = sign(state.lean_angle + state.fall_angle)
+        crash_lean_direction = sign(player_controller.state.lean_angle + player_controller.state.fall_angle)
 
     if crash_reason != "":
         trigger_crash()
@@ -120,49 +112,49 @@ func check_crash_conditions(delta) -> String:
 func _update_brake_danger(delta) -> bool:
     """Returns true if brake crash should occur"""
     # Detect brake grab (how fast brake input is increasing)
-    var brake_rate = (bike_input.front_brake - last_front_brake) / delta if delta > 0 else 0.0
-    last_front_brake = bike_input.front_brake
+    var brake_rate = (player_controller.bike_input.front_brake - last_front_brake) / delta if delta > 0 else 0.0
+    last_front_brake = player_controller.bike_input.front_brake
 
     # Only care about increasing brake input at speed
-    if brake_rate > brake_grab_threshold and state.speed > 10:
+    if brake_rate > brake_grab_threshold and player_controller.state.speed > 10:
         # Accumulate grab level based on how aggressive the grab is
         var grab_intensity = (brake_rate - brake_grab_threshold) / brake_grab_threshold
-        state.brake_grab_level = clamp(state.brake_grab_level + grab_intensity * delta * 5.0, 0.0, 1.0)
-    elif bike_input.front_brake < 0.3:
+        player_controller.state.brake_grab_level = clamp(player_controller.state.brake_grab_level + grab_intensity * delta * 5.0, 0.0, 1.0)
+    elif player_controller.bike_input.front_brake < 0.3:
         # Only decay grab level when brake is mostly released
-        state.brake_grab_level = move_toward(state.brake_grab_level, 0.0, 3.0 * delta)
+        player_controller.state.brake_grab_level = move_toward(player_controller.state.brake_grab_level, 0.0, 3.0 * delta)
     # else: brake is held but not increasing - maintain current grab level
 
-    var turn_factor = abs(state.steering_angle) / bike_physics.max_steering_angle
-    var lean_factor = abs(state.lean_angle) / crash_lean_threshold
+    var turn_factor = abs(player_controller.state.steering_angle) / player_controller.bike_physics.max_steering_angle
+    var lean_factor = abs(player_controller.state.lean_angle) / crash_lean_threshold
     var instability = max(turn_factor, lean_factor)
 
     # Instant crash if brake grabbed while turning
-    if state.brake_grab_level > brake_grab_crash_threshold and state.speed > 20:
+    if player_controller.state.brake_grab_level > brake_grab_crash_threshold and player_controller.state.speed > 20:
         if instability > 0.4:
             # Lowside crash from grabbing brake in turn
             crash_pitch_direction = 0
-            crash_lean_direction = - sign(state.steering_angle) if state.steering_angle != 0 else sign(state.lean_angle)
+            crash_lean_direction = - sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
             trigger_crash()
             return true
 
     # Original hold-time based danger (for sustained hard braking)
-    if bike_input.front_brake > 0.7 and state.speed > 25:
+    if player_controller.bike_input.front_brake > 0.7 and player_controller.state.speed > 25:
         front_brake_hold_time += delta
 
-        var speed_factor = clamp((state.speed - 25) / (bike_physics.max_speed - 25), 0.0, 1.0)
+        var speed_factor = clamp((player_controller.state.speed - 25) / (player_controller.bike_physics.max_speed - 25), 0.0, 1.0)
         var base_threshold = 0.8 * (1.0 - speed_factor * 0.3)
         var crash_time_threshold = base_threshold * (1.0 - instability * 0.5)
 
         # Brake grab makes danger build faster
-        var grab_multiplier = 1.0 + state.brake_grab_level * 1.5
-        state.brake_danger_level = clamp((front_brake_hold_time * grab_multiplier) / crash_time_threshold, 0.0, 1.0)
+        var grab_multiplier = 1.0 + player_controller.state.brake_grab_level * 1.5
+        player_controller.state.brake_danger_level = clamp((front_brake_hold_time * grab_multiplier) / crash_time_threshold, 0.0, 1.0)
 
         if front_brake_hold_time > crash_time_threshold:
             if instability > 0.5:
                 # Lowside crash
                 crash_pitch_direction = 0
-                crash_lean_direction = - sign(state.steering_angle) if state.steering_angle != 0 else sign(state.lean_angle)
+                crash_lean_direction = - sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
                 trigger_crash()
                 return true
             else:
@@ -170,27 +162,27 @@ func _update_brake_danger(delta) -> bool:
                 _check_force_stoppie()
     else:
         front_brake_hold_time = 0.0
-        state.brake_danger_level = move_toward(state.brake_danger_level, 0.0, 5.0 * delta)
+        player_controller.state.brake_danger_level = move_toward(player_controller.state.brake_danger_level, 0.0, 5.0 * delta)
 
     return false
 
 
 func _check_force_stoppie():
     """Emit signal to force stoppie when brake danger maxed while going straight"""
-    if bike_input.front_brake > 0.8 and state.speed > 25 and state.brake_danger_level >= 1.0:
-        var turn_factor = abs(bike_input.steer)
+    if player_controller.bike_input.front_brake > 0.8 and player_controller.state.speed > 25 and player_controller.state.brake_danger_level >= 1.0:
+        var turn_factor = abs(player_controller.bike_input.steer)
         if turn_factor <= 0.2:
             var target_pitch = -crash_stoppie_threshold * 1.2
             force_stoppie_requested.emit(target_pitch, 4.0)
 
 
 func trigger_crash():
-    state.request_state_change(BikeState.PlayerState.CRASHING)
+    player_controller.state.request_state_change(BikeState.PlayerState.CRASHING)
     crash_timer = 0.0
 
     # Speed reduction for lowside crashes
     if is_lowside_crash():
-        state.speed *= 0.7
+        player_controller.state.speed *= 0.7
 
     crashed.emit(crash_pitch_direction, crash_lean_direction)
 
@@ -200,19 +192,19 @@ func _update_crash_state(delta):
 
     # Apply crash physics - rotate bike to ground
     if crash_pitch_direction != 0:
-        bike_tricks.force_pitch(crash_pitch_direction * deg_to_rad(90), crash_rotation_speed, delta)
+        player_controller.bike_tricks.force_pitch(crash_pitch_direction * deg_to_rad(90), crash_rotation_speed, delta)
     elif crash_lean_direction != 0:
-        state.fall_angle = move_toward(state.fall_angle, crash_lean_direction * deg_to_rad(90), crash_rotation_speed * delta)
+        player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, crash_lean_direction * deg_to_rad(90), crash_rotation_speed * delta)
 
         # Slide along ground while falling
-        if state.speed > 0.1:
-            var forward = -controller.global_transform.basis.z
-            controller.velocity = forward * state.speed
-            state.speed = move_toward(state.speed, 0, crash_deceleration * delta)
-            controller.move_and_slide()
+        if player_controller.state.speed > 0.1:
+            var forward = -player_controller.global_transform.basis.z
+            player_controller.velocity = forward * player_controller.state.speed
+            player_controller.state.speed = move_toward(player_controller.state.speed, 0, crash_deceleration * delta)
+            player_controller.move_and_slide()
 
     if crash_timer >= respawn_delay:
-        state.request_state_change(BikeState.PlayerState.CRASHED)
+        player_controller.state.request_state_change(BikeState.PlayerState.CRASHED)
         respawn_requested.emit()
 
 
@@ -222,15 +214,15 @@ func is_lowside_crash() -> bool:
 
 func is_front_wheel_locked() -> bool:
     """Returns true if front brake was grabbed hard enough to lock wheel (skid)"""
-    return state.brake_grab_level > brake_grab_crash_threshold
+    return player_controller.state.brake_grab_level > brake_grab_crash_threshold
 
 
 func get_brake_vibration() -> Vector2:
     """Returns vibration intensity (weak, strong) for brake danger"""
-    if state.brake_danger_level > 0.1:
+    if player_controller.state.brake_danger_level > 0.1:
         var intensity = 3.0
-        var weak = state.brake_danger_level * intensity
-        var strong = state.brake_danger_level * state.brake_danger_level * intensity
+        var weak = player_controller.state.brake_danger_level * intensity
+        var strong = player_controller.state.brake_danger_level * player_controller.state.brake_danger_level * intensity
         return Vector2(weak, strong)
     return Vector2.ZERO
 
@@ -260,7 +252,7 @@ func _bike_reset():
     crash_pitch_direction = 0.0
     crash_lean_direction = 0.0
     front_brake_hold_time = 0.0
-    state.brake_danger_level = 0.0
+    player_controller.state.brake_danger_level = 0.0
     last_front_brake = 0.0
-    state.brake_grab_level = 0.0
+    player_controller.state.brake_grab_level = 0.0
     respawned.emit()

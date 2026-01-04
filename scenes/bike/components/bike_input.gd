@@ -11,8 +11,8 @@ signal gear_down_pressed
 signal difficulty_toggled
 signal trick_changed(value: float)
 
-# Shared state
-var state: BikeState
+# Player controller reference
+var player_controller: PlayerController
 
 # Vibration settings
 @export var vibration_duration: float = 0.15
@@ -54,9 +54,9 @@ var trick: bool = false:
 			trick = value
 			trick_changed.emit(value)
 
-func _bike_setup(_bike_state: BikeState, _bike_input: BikeInput):
+func _bike_setup(p_controller: PlayerController):
+	player_controller = p_controller
 	# TODO: MP check for authority
-	pass
 
 func _bike_update(_delta):
 	_update_input()

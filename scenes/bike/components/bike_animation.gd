@@ -1,16 +1,7 @@
 class_name BikeAnimation extends Node
 
-# Shared state
-var state: BikeState
-
-# Mesh references
-var bike_mesh: Node3D
-var bike_tricks: BikeTricks
-var character_mesh: IKCharacterMesh
-var anim_player: AnimationPlayer
-var rear_wheel: Marker3D
-var front_wheel: Marker3D
-var training_wheels: Node3D
+# Player controller reference
+var player_controller: PlayerController
 
 # Local state
 var tail_light_material: StandardMaterial3D = null
@@ -20,35 +11,24 @@ enum LeanState {CENTER, LEANING_LEFT, HELD_LEFT, RETURNING_LEFT, LEANING_RIGHT, 
 var lean_state: LeanState = LeanState.CENTER
 const LEAN_THRESHOLD := 0.1 # Minimum lean angle to trigger animation
 
-func _bike_setup(bike_state: BikeState, bike_input: BikeInput, b_tricks: BikeTricks,
-                animation_player: AnimationPlayer, b_mesh: Node3D, c_mesh: IKCharacterMesh,
-                tail_light: MeshInstance3D, p_rear_wheel: Marker3D, p_front_wheel: Marker3D,
-                p_training_wheels: Node3D
-    ):
-    state = bike_state
-    bike_mesh = b_mesh
-    bike_tricks = b_tricks
-    character_mesh = c_mesh
-    anim_player = animation_player
-    rear_wheel = p_rear_wheel
-    front_wheel = p_front_wheel
-    training_wheels = p_training_wheels
+func _bike_setup(p_controller: PlayerController):
+    player_controller = p_controller
 
     # Setup tail light material reference
-    if tail_light:
-        tail_light_material = tail_light.get_surface_override_material(0)
+    if player_controller.tail_light:
+        tail_light_material = player_controller.tail_light.get_surface_override_material(0)
 
     # Connect to input signals
-    bike_input.front_brake_changed.connect(_on_front_brake_changed)
-    bike_input.rear_brake_changed.connect(_on_rear_brake_changed)
-    bike_input.difficulty_toggled.connect(_on_difficulty_toggled)
+    player_controller.bike_input.front_brake_changed.connect(_on_front_brake_changed)
+    player_controller.bike_input.rear_brake_changed.connect(_on_rear_brake_changed)
+    player_controller.bike_input.difficulty_toggled.connect(_on_difficulty_toggled)
 
     # Connect to boost signals from tricks
-    bike_tricks.boost_started.connect(_on_boost_started)
-    bike_tricks.boost_ended.connect(_on_boost_ended)
+    player_controller.bike_tricks.boost_started.connect(_on_boost_started)
+    player_controller.bike_tricks.boost_ended.connect(_on_boost_ended)
 
     # Connect to player state changes
-    state.state_changed.connect(_on_player_state_changed)
+    player_controller.state.state_changed.connect(_on_player_state_changed)
 
     # Setup training wheel mods with state reference
     _setup_training_wheels()
@@ -71,39 +51,39 @@ func _on_difficulty_toggled():
 
 
 func _update_training_wheels_visibility():
-    if training_wheels:
-        if state.is_easy_mode:
-            training_wheels.show()
+    if player_controller.training_wheels:
+        if player_controller.state.is_easy_mode:
+            player_controller.training_wheels.show()
         else:
-            training_wheels.hide()
+            player_controller.training_wheels.hide()
 
 
 func _setup_training_wheels():
-    if not training_wheels:
+    if not player_controller.training_wheels:
         return
     _update_training_wheels_visibility()
 
-    for child in training_wheels.get_children():
+    for child in player_controller.training_wheels.get_children():
         if child is TrainingWheelsMod:
-            child.setup(state)
+            child.setup(player_controller.state)
 
 
 func _on_boost_started():
-    if anim_player.is_playing():
+    if player_controller.anim_player.is_playing():
         return
-    anim_player.play("naruto_run_start")
-    anim_player.animation_finished.connect(_on_boost_anim_finished)
+    player_controller.anim_player.play("naruto_run_start")
+    player_controller.anim_player.animation_finished.connect(_on_boost_anim_finished)
 
 
 func _on_boost_ended():
-    if anim_player.animation_finished.is_connected(_on_boost_anim_finished):
-        anim_player.animation_finished.disconnect(_on_boost_anim_finished)
-    anim_player.play_backwards("naruto_run_start")
+    if player_controller.anim_player.animation_finished.is_connected(_on_boost_anim_finished):
+        player_controller.anim_player.animation_finished.disconnect(_on_boost_anim_finished)
+    player_controller.anim_player.play_backwards("naruto_run_start")
 
 
 func _on_boost_anim_finished(anim_name: String):
     if anim_name == "naruto_run_start":
-        anim_player.play("naruto_run_loop")
+        player_controller.anim_player.play("naruto_run_loop")
 
 func _update_brake_light(value: float):
     if tail_light_material:
@@ -111,87 +91,87 @@ func _update_brake_light(value: float):
 
 
 func update_lean_animation():
-    var total_lean = state.lean_angle + state.fall_angle
+    var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
     var is_leaning_left = total_lean > LEAN_THRESHOLD
     var is_leaning_right = total_lean < -LEAN_THRESHOLD
 
     match lean_state:
         LeanState.CENTER:
             if is_leaning_left:
-                anim_player.play("lean_left")
+                player_controller.anim_player.play("lean_left")
                 lean_state = LeanState.LEANING_LEFT
             elif is_leaning_right:
-                anim_player.play("lean_right")
+                player_controller.anim_player.play("lean_right")
                 lean_state = LeanState.LEANING_RIGHT
 
         LeanState.LEANING_LEFT:
-            if not anim_player.is_playing():
+            if not player_controller.anim_player.is_playing():
                 lean_state = LeanState.HELD_LEFT
             elif not is_leaning_left:
                 # Started returning before animation finished
-                anim_player.play_backwards("lean_left")
+                player_controller.anim_player.play_backwards("lean_left")
                 lean_state = LeanState.RETURNING_LEFT
 
         LeanState.HELD_LEFT:
             if not is_leaning_left:
-                anim_player.play_backwards("lean_left")
+                player_controller.anim_player.play_backwards("lean_left")
                 lean_state = LeanState.RETURNING_LEFT
 
         LeanState.RETURNING_LEFT:
-            if not anim_player.is_playing():
+            if not player_controller.anim_player.is_playing():
                 lean_state = LeanState.CENTER
             elif is_leaning_left:
                 # Changed direction, go back to leaning
-                anim_player.play("lean_left")
+                player_controller.anim_player.play("lean_left")
                 lean_state = LeanState.LEANING_LEFT
 
         LeanState.LEANING_RIGHT:
-            if not anim_player.is_playing():
+            if not player_controller.anim_player.is_playing():
                 lean_state = LeanState.HELD_RIGHT
             elif not is_leaning_right:
-                anim_player.play_backwards("lean_right")
+                player_controller.anim_player.play_backwards("lean_right")
                 lean_state = LeanState.RETURNING_RIGHT
 
         LeanState.HELD_RIGHT:
             if not is_leaning_right:
-                anim_player.play_backwards("lean_right")
+                player_controller.anim_player.play_backwards("lean_right")
                 lean_state = LeanState.RETURNING_RIGHT
 
         LeanState.RETURNING_RIGHT:
-            if not anim_player.is_playing():
+            if not player_controller.anim_player.is_playing():
                 lean_state = LeanState.CENTER
             elif is_leaning_right:
-                anim_player.play("lean_right")
+                player_controller.anim_player.play("lean_right")
                 lean_state = LeanState.LEANING_RIGHT
 
 
 func apply_mesh_rotation():
-    bike_mesh.transform = Transform3D.IDENTITY
+    player_controller.bike_mesh.transform = Transform3D.IDENTITY
 
-    if state.ground_pitch != 0:
-        bike_mesh.rotate_x(-state.ground_pitch)
+    if player_controller.state.ground_pitch != 0:
+        player_controller.bike_mesh.rotate_x(-player_controller.state.ground_pitch)
 
     var pivot: Vector3
-    if state.pitch_angle >= 0:
-        pivot = rear_wheel.position
+    if player_controller.state.pitch_angle >= 0:
+        pivot = player_controller.rear_wheel.position
     else:
-        pivot = front_wheel.position
+        pivot = player_controller.front_wheel.position
 
-    if state.pitch_angle != 0:
+    if player_controller.state.pitch_angle != 0:
         _rotate_mesh_around_pivot(pivot, Vector3.RIGHT)
 
 
-    var total_lean = state.lean_angle + state.fall_angle
+    var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
     if total_lean != 0:
-        bike_mesh.rotate_z(total_lean)
+        player_controller.bike_mesh.rotate_z(total_lean)
 
 
 func _rotate_mesh_around_pivot(pivot: Vector3, axis: Vector3):
-    var t = bike_mesh.transform
+    var t = player_controller.bike_mesh.transform
     t.origin -= pivot
-    t = t.rotated(axis, state.pitch_angle)
+    t = t.rotated(axis, player_controller.state.pitch_angle)
     t.origin += pivot
-    bike_mesh.transform = t
+    player_controller.bike_mesh.transform = t
 
 
 func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
@@ -200,7 +180,7 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
         BikeState.PlayerState.CRASHED:
             # Reset animations on respawn
             lean_state = LeanState.CENTER
-            anim_player.stop()
+            player_controller.anim_player.stop()
 
     # Handle state entry
     match new_state:
@@ -217,4 +197,4 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
 func _bike_reset():
     _update_brake_light(0)
     lean_state = LeanState.CENTER
-    anim_player.stop()
+    player_controller.anim_player.stop()

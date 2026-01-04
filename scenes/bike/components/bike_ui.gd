@@ -1,58 +1,23 @@
 class_name BikeUI extends Node
 
-# Shared state
-var state: BikeState
-var bike_input: BikeInput
-var bike_crash: BikeCrash
-var bike_tricks: BikeTricks
-var bike_gearing: BikeGearing
-
-@onready var gear_label: Label = null
-@onready var speed_label: Label = null
-@onready var throttle_bar: ProgressBar = null
-@onready var rpm_bar: ProgressBar = null
-@onready var brake_danger_bar: ProgressBar = null
-@onready var clutch_bar: ProgressBar = null
-@onready var difficulty_label: Label = null
-@onready var speed_lines_effect: ColorRect = null
-@onready var boost_label: Label = null
-@onready var boost_toast: Label = null
+# Player controller reference
+var player_controller: PlayerController
 
 var toast_timer: float = 0.0
 const TOAST_DURATION: float = 1.5
 
-func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
-        crash: BikeCrash, tricks: BikeTricks,
-        gear: Label, spd: Label, throttle_b: ProgressBar, rpm_b: ProgressBar,
-        brake: ProgressBar, clutch: ProgressBar, difficulty: Label,
-        speed_lines: ColorRect, boost_lbl: Label, boost_tst: Label
-    ):
-    state = bike_state
-    bike_input = input
-    bike_gearing = gearing
-    bike_crash = crash
-    bike_tricks = tricks
-
-    gear_label = gear
-    speed_label = spd
-    throttle_bar = throttle_b
-    rpm_bar = rpm_b
-    brake_danger_bar = brake
-    clutch_bar = clutch
-    difficulty_label = difficulty
-    speed_lines_effect = speed_lines
-    boost_label = boost_lbl
-    boost_toast = boost_tst
+func _bike_setup(p_controller: PlayerController):
+    player_controller = p_controller
 
     # Hide toast initially
-    if boost_toast:
-        boost_toast.visible = false
+    if player_controller.boost_toast:
+        player_controller.boost_toast.visible = false
 
-    input.difficulty_toggled.connect(_on_difficulty_toggled)
+    player_controller.bike_input.difficulty_toggled.connect(_on_difficulty_toggled)
 
 
 func _bike_update(delta):
-    update_ui(state.rpm_ratio)
+    update_ui(player_controller.state.rpm_ratio)
     _update_toast(delta)
 
 
@@ -64,119 +29,119 @@ func update_ui(rpm_ratio: float):
 
 
 func _update_labels():
-    if !gear_label or !speed_label:
+    if !player_controller.gear_label or !player_controller.speed_label:
         return
 
-    if state.is_stalled:
-        gear_label.text = "STALLED\nGear: %d" % state.current_gear
+    if player_controller.state.is_stalled:
+        player_controller.gear_label.text = "STALLED\nGear: %d" % player_controller.state.current_gear
     else:
-        gear_label.text = "Gear: %d" % state.current_gear
+        player_controller.gear_label.text = "Gear: %d" % player_controller.state.current_gear
 
-    speed_label.text = "Speed: %d" % int(state.speed)
+    player_controller.speed_label.text = "Speed: %d" % int(player_controller.state.speed)
 
-    if boost_label:
-        boost_label.text = "Boost: %d" % state.boost_count
+    if player_controller.boost_label:
+        player_controller.boost_label.text = "Boost: %d" % player_controller.state.boost_count
 
 
 func _update_bars(rpm_ratio: float):
-    if !throttle_bar or !brake_danger_bar:
+    if !player_controller.throttle_bar or !player_controller.brake_danger_bar:
         return
 
-    throttle_bar.value = bike_input.throttle
+    player_controller.throttle_bar.value = player_controller.bike_input.throttle
 
     if rpm_ratio > 0.9:
-        throttle_bar.modulate = Color(1.0, 0.2, 0.2) # Red at redline
+        player_controller.throttle_bar.modulate = Color(1.0, 0.2, 0.2) # Red at redline
     else:
-        throttle_bar.modulate = Color(0.2, 0.8, 0.2) # Green
+        player_controller.throttle_bar.modulate = Color(0.2, 0.8, 0.2) # Green
 
     # RPM gauge
-    if rpm_bar:
-        rpm_bar.value = rpm_ratio
+    if player_controller.rpm_bar:
+        player_controller.rpm_bar.value = rpm_ratio
         if rpm_ratio > 0.9:
-            rpm_bar.modulate = Color(1.0, 0.2, 0.2) # Red at redline
+            player_controller.rpm_bar.modulate = Color(1.0, 0.2, 0.2) # Red at redline
         elif rpm_ratio > 0.7:
-            rpm_bar.modulate = Color(1.0, 0.8, 0.2) # Yellow/orange approaching redline
+            player_controller.rpm_bar.modulate = Color(1.0, 0.8, 0.2) # Yellow/orange approaching redline
         else:
-            rpm_bar.modulate = Color(0.2, 0.6, 1.0) # Blue for normal range
+            player_controller.rpm_bar.modulate = Color(0.2, 0.6, 1.0) # Blue for normal range
 
-    brake_danger_bar.value = bike_input.front_brake
+    player_controller.brake_danger_bar.value = player_controller.bike_input.front_brake
 
-    if state.brake_danger_level > 0.1:
-        var danger_color = Color(1.0, 1.0 - state.brake_danger_level, 0.0)
-        brake_danger_bar.modulate = danger_color
+    if player_controller.state.brake_danger_level > 0.1:
+        var danger_color = Color(1.0, 1.0 - player_controller.state.brake_danger_level, 0.0)
+        player_controller.brake_danger_bar.modulate = danger_color
     else:
-        brake_danger_bar.modulate = Color(0.3, 0.5, 0.9)
+        player_controller.brake_danger_bar.modulate = Color(0.3, 0.5, 0.9)
 
-    if clutch_bar:
-        clutch_bar.value = state.clutch_value
-        clutch_bar.modulate = Color(0.8, 0.6, 0.2) # Orange/yellow
+    if player_controller.clutch_bar:
+        player_controller.clutch_bar.value = player_controller.state.clutch_value
+        player_controller.clutch_bar.modulate = Color(0.8, 0.6, 0.2) # Orange/yellow
 
 
 # TODO: move this
 func _update_vibration():
-    if !bike_input:
+    if !player_controller.bike_input:
         return
 
     var weak_total = 0.0
     var strong_total = 0.0
 
     # Get vibration from components
-    if bike_crash:
-        var brake_vibe = bike_crash.get_brake_vibration()
+    if player_controller.bike_crash:
+        var brake_vibe = player_controller.bike_crash.get_brake_vibration()
         weak_total += brake_vibe.x
         strong_total += brake_vibe.y
 
-    if bike_tricks:
-        var fishtail_vibe = bike_tricks.get_fishtail_vibration()
+    if player_controller.bike_tricks:
+        var fishtail_vibe = player_controller.bike_tricks.get_fishtail_vibration()
         weak_total += fishtail_vibe.x
         strong_total += fishtail_vibe.y
 
     # Apply vibration through input component
-    bike_input.add_vibration(weak_total, strong_total)
+    player_controller.bike_input.add_vibration(weak_total, strong_total)
 
 
 # TODO: refactor, this is the only thing that uses signals from bike_input
 func _on_difficulty_toggled():
-    state.is_easy_mode = !state.is_easy_mode
+    player_controller.state.is_easy_mode = !player_controller.state.is_easy_mode
     _update_difficulty_display()
 
 
 func _update_difficulty_display():
-    if !difficulty_label:
+    if !player_controller.difficulty_label:
         return
-    if state.is_easy_mode:
-        difficulty_label.text = "Easy"
-        difficulty_label.modulate = Color(0.2, 0.8, 0.2)
+    if player_controller.state.is_easy_mode:
+        player_controller.difficulty_label.text = "Easy"
+        player_controller.difficulty_label.modulate = Color(0.2, 0.8, 0.2)
     else:
-        difficulty_label.text = "Hard"
-        difficulty_label.modulate = Color(1.0, 0.3, 0.3)
+        player_controller.difficulty_label.text = "Hard"
+        player_controller.difficulty_label.modulate = Color(1.0, 0.3, 0.3)
 
 
 func show_speed_lines():
-    if speed_lines_effect:
-        speed_lines_effect.visible = true
+    if player_controller.speed_lines_effect:
+        player_controller.speed_lines_effect.visible = true
 
 
 func hide_speed_lines():
-    if speed_lines_effect:
-        speed_lines_effect.visible = false
+    if player_controller.speed_lines_effect:
+        player_controller.speed_lines_effect.visible = false
 
 
 func show_boost_toast():
-    if boost_toast:
-        boost_toast.visible = true
+    if player_controller.boost_toast:
+        player_controller.boost_toast.visible = true
         toast_timer = TOAST_DURATION
 
 
 func _update_toast(delta):
     if toast_timer > 0:
         toast_timer -= delta
-        if toast_timer <= 0 and boost_toast:
-            boost_toast.visible = false
+        if toast_timer <= 0 and player_controller.boost_toast:
+            player_controller.boost_toast.visible = false
 
 
 func _bike_reset():
     hide_speed_lines()
     toast_timer = 0.0
-    if boost_toast:
-        boost_toast.visible = false
+    if player_controller.boost_toast:
+        player_controller.boost_toast.visible = false

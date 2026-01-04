@@ -1,17 +1,7 @@
 class_name BikeAudio extends Node
 
-# Shared state
-var state: BikeState
-var bike_input: BikeInput
-var bike_gearing: BikeGearing
-
-# Local state
-
-@onready var engine_sound: AudioStreamPlayer = null
-@onready var tire_screech: AudioStreamPlayer = null
-@onready var engine_grind: AudioStreamPlayer = null
-@onready var exhaust_pops: AudioStreamPlayer = null
-@onready var nos_sound: AudioStreamPlayer = null
+# Player controller reference
+var player_controller: PlayerController
 
 # Audio settings
 @export var engine_min_pitch: float = 0.25
@@ -31,28 +21,18 @@ var bike_gearing: BikeGearing
 var last_rpm_ratio: float = 0.0
 var exhaust_pop_timer: float = 0.0
 
-func _bike_setup(bike_state: BikeState, input: BikeInput, gearing: BikeGearing,
-        engine: AudioStreamPlayer, screech: AudioStreamPlayer,
-        grind: AudioStreamPlayer, pops: AudioStreamPlayer, nos: AudioStreamPlayer = null):
-    state = bike_state
-    bike_input = input
-    bike_gearing = gearing
+func _bike_setup(p_controller: PlayerController):
+    player_controller = p_controller
 
-    engine_sound = engine
-    tire_screech = screech
-    engine_grind = grind
-    exhaust_pops = pops
-    nos_sound = nos
-
-    state.state_changed.connect(_on_state_changed)
+    player_controller.state.state_changed.connect(_on_state_changed)
 
 
 func _bike_update(delta):
-    match state.player_state:
+    match player_controller.state.player_state:
         BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
             return # Audio handled by state change callback
         _:
-            update_engine_audio(delta, state.rpm_ratio)
+            update_engine_audio(delta, player_controller.state.rpm_ratio)
 
 
 func _on_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
@@ -71,26 +51,26 @@ func _on_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.Pl
 
 
 func update_engine_audio(delta: float, rpm_ratio: float):
-    if !engine_sound:
+    if !player_controller.engine_sound:
         return
 
-    if state.is_stalled:
-        if engine_sound.playing:
-            engine_sound.stop()
+    if player_controller.state.is_stalled:
+        if player_controller.engine_sound.playing:
+            player_controller.engine_sound.stop()
         _stop_exhaust_pops()
         last_rpm_ratio = 0.0
         return
 
-    if state.speed > 0.5 or bike_input.throttle > 0:
-        if !engine_sound.playing:
-            engine_sound.play()
+    if player_controller.state.speed > 0.5 or player_controller.bike_input.throttle > 0:
+        if !player_controller.engine_sound.playing:
+            player_controller.engine_sound.play()
 
-        var max_pitch = engine_boost_max_pitch if state.is_boosting else engine_max_pitch
+        var max_pitch = engine_boost_max_pitch if player_controller.state.is_boosting else engine_max_pitch
         var target_pitch = lerpf(engine_min_pitch, max_pitch, clamp(rpm_ratio, 0.0, 1.0))
-        engine_sound.pitch_scale = target_pitch
+        player_controller.engine_sound.pitch_scale = target_pitch
     else:
-        if engine_sound.playing:
-            engine_sound.stop()
+        if player_controller.engine_sound.playing:
+            player_controller.engine_sound.stop()
 
     # Exhaust pops when RPM drops from high revs (engine braking / letting off throttle)
     exhaust_pop_timer -= delta
@@ -110,61 +90,61 @@ func on_gear_changed(_new_gear: int):
 
 
 func _play_exhaust_pop():
-    if !exhaust_pops:
+    if !player_controller.exhaust_pops:
         return
-    exhaust_pops.volume_db = linear_to_db(exhaust_pop_volume)
-    exhaust_pops.pitch_scale = randf_range(0.8, 1.2)
-    exhaust_pops.play()
+    player_controller.exhaust_pops.volume_db = linear_to_db(exhaust_pop_volume)
+    player_controller.exhaust_pops.pitch_scale = randf_range(0.8, 1.2)
+    player_controller.exhaust_pops.play()
 
 
 func _stop_exhaust_pops():
-    if !exhaust_pops:
+    if !player_controller.exhaust_pops:
         return
-    if exhaust_pops.playing:
-        exhaust_pops.stop()
+    if player_controller.exhaust_pops.playing:
+        player_controller.exhaust_pops.stop()
 
 
 func play_tire_screech(volume: float):
-    if !tire_screech:
+    if !player_controller.tire_screech:
         return
-    if !tire_screech.playing:
-        tire_screech.volume_db = linear_to_db(volume)
-        tire_screech.play()
+    if !player_controller.tire_screech.playing:
+        player_controller.tire_screech.volume_db = linear_to_db(volume)
+        player_controller.tire_screech.play()
 
 
 func stop_tire_screech():
-    if !tire_screech:
+    if !player_controller.tire_screech:
         return
-    if tire_screech.playing:
-        tire_screech.stop()
+    if player_controller.tire_screech.playing:
+        player_controller.tire_screech.stop()
 
 
 func play_gear_grind():
-    if !engine_grind:
+    if !player_controller.engine_grind:
         return
-    engine_grind.volume_db = linear_to_db(gear_grind_volume)
-    engine_grind.play()
+    player_controller.engine_grind.volume_db = linear_to_db(gear_grind_volume)
+    player_controller.engine_grind.play()
 
 
 func stop_engine():
-    if !engine_sound:
+    if !player_controller.engine_sound:
         return
-    if engine_sound.playing:
-        engine_sound.stop()
+    if player_controller.engine_sound.playing:
+        player_controller.engine_sound.stop()
 
 
 func play_nos():
-    if !nos_sound:
+    if !player_controller.nos_sound:
         return
-    if !nos_sound.playing:
-        nos_sound.play()
+    if !player_controller.nos_sound.playing:
+        player_controller.nos_sound.play()
 
 
 func stop_nos():
-    if !nos_sound:
+    if !player_controller.nos_sound:
         return
-    if nos_sound.playing:
-        nos_sound.stop()
+    if player_controller.nos_sound.playing:
+        player_controller.nos_sound.stop()
 
 
 func _bike_reset():
