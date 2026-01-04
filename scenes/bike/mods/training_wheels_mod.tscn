@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://bn73ermusily2"]
 
-[ext_resource type="Material" uid="uid://drxiuuclvghll" path="res://scenes/bike/mods/tire_material.tres" id="1_ff4h1"]
-[ext_resource type="Material" uid="uid://bhopjocmujp43" path="res://scenes/bike/mods/wheel_material.tres" id="2_j51pb"]
+[ext_resource type="Material" uid="uid://drxiuuclvghll" path="res://assets/materials/tire_material.tres" id="1_ff4h1"]
+[ext_resource type="Material" uid="uid://bhopjocmujp43" path="res://assets/materials/wheel_material.tres" id="2_j51pb"]
 [ext_resource type="Script" uid="uid://d27ovtoab78dh" path="res://scenes/bike/mods/training_wheels_mod.gd" id="3_script"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_jsokk"]

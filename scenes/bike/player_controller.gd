@@ -53,7 +53,6 @@ func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
 
-    # Setup all components with player controller reference
     bike_input._bike_setup(self)
     bike_crash._bike_setup(self)
     bike_tricks._bike_setup(self)

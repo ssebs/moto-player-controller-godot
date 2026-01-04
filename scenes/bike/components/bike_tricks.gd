@@ -24,7 +24,7 @@ signal boost_earned # Emitted when a boost is earned from tricks
 @export var fishtail_recovery_speed: float = 3.0
 
 # Skid marks
-@export var skidmark_texture = preload("res://assets/skidmarktex.png")
+@export var skidmark_texture = preload("res://assets/textures/skidmarktex.png")
 @export var skid_volume: float = 0.5
 
 # Boost tuning

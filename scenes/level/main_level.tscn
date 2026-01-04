@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://j2ul15tv0gig"]
+[gd_scene load_steps=11 format=3 uid="uid://j2ul15tv0gig"]
 
-[ext_resource type="PackedScene" uid="uid://cn1f0g4b2vnrf" path="res://assets/city.glb" id="1_114d3"]
+[ext_resource type="PackedScene" uid="uid://cn1f0g4b2vnrf" path="res://assets/level/city.glb" id="1_114d3"]
 [ext_resource type="Script" uid="uid://dcgws53fimvpw" path="res://scenes/level/main_level.gd" id="1_sc48v"]
 [ext_resource type="PackedScene" uid="uid://bmqevs0vheol7" path="res://scenes/bike/player_controller.tscn" id="2_p3kgh"]
 [ext_resource type="PackedScene" uid="uid://bdv4bgnhiss2w" path="res://scenes/level/main_menu.tscn" id="3_hv5hi"]
 [ext_resource type="Shader" uid="uid://d3wh0vlxw230r" path="res://scenes/level/sky.gdshader" id="4_o6ikn"]
+[ext_resource type="ArrayOccluder3D" uid="uid://dkwpsptgimbyr" path="res://scenes/level/main_level.occ" id="6_atywb"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_atywb"]
 shader = ExtResource("4_o6ikn")
@@ -30,6 +31,9 @@ tonemap_mode = 2
 
 [node name="MainLevel" type="Node3D"]
 script = ExtResource("1_sc48v")
+
+[node name="OccluderInstance3D" type="OccluderInstance3D" parent="."]
+occluder = ExtResource("6_atywb")
 
 [node name="MainMenu" parent="." instance=ExtResource("3_hv5hi")]
 unique_name_in_owner = true
