@@ -33,7 +33,7 @@ func request_state_change(new_state: PlayerState) -> bool:
 		return false
 	var old = player_state
 	player_state = new_state
-	print("StateChange: %s => %s" % [old, new_state])
+	# print("StateChange: %s => %s" % [old, new_state])
 	state_changed.emit(old, new_state)
 	return true
 

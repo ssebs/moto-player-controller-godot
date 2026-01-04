@@ -22,6 +22,18 @@ func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
     player_controller.state.state_changed.connect(_on_state_changed)
+    player_controller.bike_crash.crashed.connect(_on_crashed)
+
+    # Gearing signals
+    player_controller.bike_gearing.gear_grind.connect(play_gear_grind)
+    player_controller.bike_gearing.gear_changed.connect(on_gear_changed)
+    player_controller.bike_gearing.engine_stalled.connect(stop_engine)
+
+    # Tricks signals
+    player_controller.bike_tricks.tire_screech_start.connect(play_tire_screech)
+    player_controller.bike_tricks.tire_screech_stop.connect(stop_tire_screech)
+    player_controller.bike_tricks.boost_started.connect(play_nos)
+    player_controller.bike_tricks.boost_ended.connect(stop_nos)
 
 
 func _bike_update(delta):
@@ -42,9 +54,14 @@ func _on_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.Pl
     match new_state:
         BikeState.PlayerState.CRASHING:
             stop_engine()
-            # Tire screech handled by crash signal in player_controller
         BikeState.PlayerState.CRASHED:
             stop_tire_screech()
+
+
+func _on_crashed(_pitch_dir: float, lean_dir: float):
+    # Play tire screech for lowside crashes
+    if lean_dir != 0:
+        play_tire_screech(1.0)
 
 
 func update_engine_audio(delta: float, rpm_ratio: float):

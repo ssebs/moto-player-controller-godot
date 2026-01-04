@@ -37,6 +37,8 @@ var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
+    brake_stopped.connect(_on_brake_stopped)
+
 
 func _bike_update(delta):
     match player_controller.state.player_state:
@@ -251,6 +253,11 @@ func apply_movement(delta):
     player_controller.velocity = forward * player_controller.state.speed
     player_controller.velocity.y = vertical_velocity
     player_controller.velocity = apply_gravity(delta, player_controller.velocity, player_controller.is_on_floor())
+
+
+func _on_brake_stopped():
+    _bike_reset()
+    player_controller.velocity = Vector3.ZERO
 
 
 func _bike_reset():

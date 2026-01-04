@@ -11,6 +11,9 @@ func _bike_setup(p_controller: PlayerController):
         player_controller.boost_toast.visible = false
 
     player_controller.bike_input.difficulty_toggled.connect(_on_difficulty_toggled)
+    player_controller.bike_tricks.boost_started.connect(_on_boost_started)
+    player_controller.bike_tricks.boost_ended.connect(_on_boost_ended)
+    player_controller.bike_tricks.boost_earned.connect(show_boost_toast)
 
 
 func _bike_update(delta):
@@ -112,6 +115,14 @@ func _update_difficulty_display():
     else:
         player_controller.difficulty_label.text = "Hard"
         player_controller.difficulty_label.modulate = Color(1.0, 0.3, 0.3)
+
+
+func _on_boost_started():
+    show_speed_lines()
+
+
+func _on_boost_ended():
+    hide_speed_lines()
 
 
 func show_speed_lines():

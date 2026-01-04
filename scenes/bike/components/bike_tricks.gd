@@ -55,6 +55,7 @@ func _bike_setup(p_controller: PlayerController):
 
     player_controller.bike_input.trick_changed.connect(_on_trick_changed)
     player_controller.bike_crash.force_stoppie_requested.connect(_on_force_stoppie_requested)
+    stoppie_stopped.connect(_on_stoppie_stopped)
 
 func _bike_update(delta):
     current_delta = delta
@@ -320,6 +321,13 @@ func get_boosted_throttle(base_throttle: float) -> float:
     if player_controller.state.is_boosting:
         return 1.0
     return base_throttle
+
+
+func _on_stoppie_stopped():
+    player_controller.bike_physics._bike_reset()
+    player_controller.state.speed = 0.0
+    player_controller.state.fall_angle = 0.0
+    player_controller.velocity = Vector3.ZERO
 
 
 func _bike_reset():

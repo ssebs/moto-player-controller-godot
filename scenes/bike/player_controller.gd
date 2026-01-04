@@ -63,20 +63,6 @@ func _ready():
     bike_ui._bike_setup(self)
     bike_animation._bike_setup(self)
 
-    # Connect component signals - direct connections where possible
-    bike_gearing.gear_grind.connect(bike_audio.play_gear_grind)
-    bike_gearing.gear_changed.connect(bike_audio.on_gear_changed)
-    bike_gearing.engine_stalled.connect(bike_audio.stop_engine)
-    bike_tricks.tire_screech_start.connect(bike_audio.play_tire_screech)
-    bike_tricks.tire_screech_stop.connect(bike_audio.stop_tire_screech)
-    bike_tricks.stoppie_stopped.connect(_on_stoppie_stopped)
-    bike_tricks.boost_started.connect(_on_boost_started)
-    bike_tricks.boost_started.connect(bike_audio.play_nos)
-    bike_tricks.boost_ended.connect(_on_boost_ended)
-    bike_tricks.boost_ended.connect(bike_audio.stop_nos)
-    bike_tricks.boost_earned.connect(bike_ui.show_boost_toast)
-    bike_physics.brake_stopped.connect(_on_brake_stopped)
-    bike_crash.crashed.connect(_on_crashed)
     bike_crash.respawn_requested.connect(_respawn)
 
 
@@ -157,31 +143,3 @@ func _update_player_state():
 
     state.request_state_change(target)
 
-
-
-# MOVE THESE TO THEIR OWN SCRIPTS!!
-# Signal handlers
-func _on_stoppie_stopped():
-    bike_physics._bike_reset()
-    state.speed = 0.0
-    state.fall_angle = 0.0
-    velocity = Vector3.ZERO
-
-
-func _on_brake_stopped():
-    bike_physics._bike_reset()
-    velocity = Vector3.ZERO
-
-
-func _on_crashed(_pitch_dir: float, lean_dir: float):
-    # Play tire screech for lowside crashes
-    if lean_dir != 0:
-        bike_audio.play_tire_screech(1.0)
-
-
-func _on_boost_started():
-    bike_ui.show_speed_lines()
-
-
-func _on_boost_ended():
-    bike_ui.hide_speed_lines()
