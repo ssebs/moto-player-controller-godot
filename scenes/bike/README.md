@@ -4,10 +4,13 @@
 
 - **Main** `player_controller.gd` script attached to scene
   - Has all onready Node references
-- **Component scripts** are a Node + script.
+- **Component scripts** inherit from `BikeComponent` base class (`_bike_component.gd`)
   - Each of these controls something about the bike (e.g. audio, gearing, ui, etc.)
-  - Any vars that need to be passed in should use the `_bike_setup()` func
-    - > Which is called in the main script's `_ready()` function.
+  - Base class provides:
+    - `player_controller` reference
+    - `_bike_setup(p_controller)` - override to receive PlayerController and additional params
+    - `_bike_update(delta)` - override for per-frame logic
+    - `_bike_reset()` - override for respawn reset
   - **Signals** are exposed to the main script to handle & pipe between components as needed.
   - Structure - See `player_animation_controller.gd` as best reference.
     - Component Signals

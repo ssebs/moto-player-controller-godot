@@ -1,7 +1,4 @@
-class_name BikeAnimation extends Node
-
-# Player controller reference
-var player_controller: PlayerController
+class_name BikeAnimation extends BikeComponent
 
 # Local state
 var tail_light_material: StandardMaterial3D = null

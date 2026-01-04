@@ -1,12 +1,9 @@
-class_name BikeGearing extends Node
+class_name BikeGearing extends BikeComponent
 
 signal gear_changed(new_gear: int)
 signal engine_stalled
 signal engine_started
 signal gear_grind # Tried to shift without clutch
-
-# Player controller reference
-var player_controller: PlayerController
 
 
 # Gear system

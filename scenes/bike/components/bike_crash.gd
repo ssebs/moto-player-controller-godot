@@ -1,12 +1,9 @@
-class_name BikeCrash extends Node
+class_name BikeCrash extends BikeComponent
 
 signal crashed(pitch_direction: float, lean_direction: float)
 signal respawn_requested
 signal respawned
 signal force_stoppie_requested(target_pitch: float, rate: float)
-
-# Player controller reference
-var player_controller: PlayerController
 
 # Crash thresholds
 @export var crash_wheelie_threshold: float = deg_to_rad(75)
@@ -172,7 +169,7 @@ func _check_force_stoppie():
     if player_controller.bike_input.front_brake > 0.8 and player_controller.state.speed > 25 and player_controller.state.brake_danger_level >= 1.0:
         var turn_factor = abs(player_controller.bike_input.steer)
         if turn_factor <= 0.2:
-            var target_pitch = -crash_stoppie_threshold * 1.2
+            var target_pitch = - crash_stoppie_threshold * 1.2
             force_stoppie_requested.emit(target_pitch, 4.0)
 
 
@@ -198,7 +195,7 @@ func _update_crash_state(delta):
 
         # Slide along ground while falling
         if player_controller.state.speed > 0.1:
-            var forward = -player_controller.global_transform.basis.z
+            var forward = - player_controller.global_transform.basis.z
             player_controller.velocity = forward * player_controller.state.speed
             player_controller.state.speed = move_toward(player_controller.state.speed, 0, crash_deceleration * delta)
             player_controller.move_and_slide()

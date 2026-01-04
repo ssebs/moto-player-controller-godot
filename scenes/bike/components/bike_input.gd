@@ -1,4 +1,4 @@
-class_name BikeInput extends Node
+class_name BikeInput extends BikeComponent
 
 signal throttle_changed(value: float)
 signal front_brake_changed(value: float)
@@ -11,8 +11,6 @@ signal gear_down_pressed
 signal difficulty_toggled
 signal trick_changed(value: float)
 
-# Player controller reference
-var player_controller: PlayerController
 
 # Vibration settings
 @export var vibration_duration: float = 0.15

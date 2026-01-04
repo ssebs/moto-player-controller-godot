@@ -158,6 +158,8 @@ func _update_player_state():
     state.request_state_change(target)
 
 
+
+# MOVE THESE TO THEIR OWN SCRIPTS!!
 # Signal handlers
 func _on_stoppie_stopped():
     bike_physics._bike_reset()

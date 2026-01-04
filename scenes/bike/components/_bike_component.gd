@@ -1,12 +1,12 @@
-# class_name BikeComponent extends Node
+class_name BikeComponent extends Node
 
-# var player_controller: PlayerController
+var player_controller: PlayerController
 
-# func bike_setup(p_controller: PlayerController):
-#     player_controller = p_controller
+func _bike_setup(p_controller: PlayerController):
+    player_controller = p_controller
 
-# func bike_update(delta):
-#     pass
+func _bike_update(_delta: float):
+    pass
 
-# func bike_reset():
-#     pass
+func _bike_reset():
+    pass

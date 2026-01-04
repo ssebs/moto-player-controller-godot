@@ -1,7 +1,4 @@
-class_name BikeAudio extends Node
-
-# Player controller reference
-var player_controller: PlayerController
+class_name BikeAudio extends BikeComponent
 
 # Audio settings
 @export var engine_min_pitch: float = 0.25

@@ -1,7 +1,4 @@
-class_name BikeUI extends Node
-
-# Player controller reference
-var player_controller: PlayerController
+class_name BikeUI extends BikeComponent
 
 var toast_timer: float = 0.0
 const TOAST_DURATION: float = 1.5

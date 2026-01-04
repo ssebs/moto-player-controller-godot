@@ -1,4 +1,4 @@
-class_name BikeTricks extends Node
+class_name BikeTricks extends BikeComponent
 
 signal tire_screech_start(volume: float)
 signal tire_screech_stop
@@ -7,8 +7,6 @@ signal boost_started
 signal boost_ended
 signal boost_earned # Emitted when a boost is earned from tricks
 
-# Player controller reference
-var player_controller: PlayerController
 
 # Rotation tuning
 @export var max_wheelie_angle: float = deg_to_rad(80)
@@ -64,7 +62,7 @@ func _bike_update(delta):
 
     match player_controller.state.player_state:
         BikeState.PlayerState.IDLE:
-            pass  # No trick updates when idle
+            pass # No trick updates when idle
         BikeState.PlayerState.RIDING:
             _update_riding(delta)
         BikeState.PlayerState.AIRBORNE:
@@ -74,7 +72,7 @@ func _bike_update(delta):
         BikeState.PlayerState.TRICK_GROUND:
             _update_trick_ground(delta)
         BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
-            pass  # Handled by crash system
+            pass # Handled by crash system
 
 
 func _update_riding(delta):

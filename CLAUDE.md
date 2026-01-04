@@ -10,14 +10,24 @@ Godot 4.5 motorcycle physics simulation and player controller. Uses GDScript wit
 
 ### Component System
 
-The player controller ([player_controller.gd](scenes/bike/player_controller.gd)) delegates to six specialized components in `scenes/bike/components/`:
+See [scenes/bike/README.md](scenes/bike/README.md) for detailed bike architecture documentation.
+
+The player controller ([player_controller.gd](scenes/bike/player_controller.gd)) delegates to specialized components in `scenes/bike/components/`.
+
+All components inherit from `BikeComponent` base class (`_bike_component.gd`) which provides:
+- `player_controller` reference
+- `_bike_setup(p_controller)` - override to receive PlayerController
+- `_bike_update(delta)` - override for per-frame logic
+- `_bike_reset()` - override for respawn reset
 
 | Component | Responsibility |
 |-----------|----------------|
+| `BikeInput` | Input handling, emits signals for throttle/brake/steer/lean/clutch/gear changes |
 | `BikePhysics` | Speed, acceleration, braking, steering, lean angles, countersteering/fall physics, gravity |
 | `BikeGearing` | 6-speed transmission, RPM, clutch with rev-matching, gear shifting |
 | `BikeTricks` | Wheelies, stoppies, fishtail/skid physics, skid mark spawning |
 | `BikeCrash` | Crash detection thresholds, respawn timer, collision handling |
+| `BikeAnimation` | Mesh rotation, visual feedback for bike state |
 | `BikeAudio` | Engine pitch scaling, tire screech, gear grinding sounds |
 | `BikeUI` | HUD elements, controller vibration feedback |
 
@@ -54,11 +64,11 @@ Uses Godot's unique name syntax (`%NodeName`) for reliable node access. Componen
 
 ### Component Structure
 
-Each component follows this pattern (see `player_animation_controller.gd` as reference):
+Each component extends `BikeComponent` and follows this pattern:
 1. Component signals (at top)
-2. Shared state vars (`BikeState`, other component refs)
+2. Shared state vars (other component refs as needed)
 3. Local vars
-4. `_bike_setup(bike_state, bike_input, ...)` - receives dependencies
+4. `_bike_setup(p_controller)` - call `super()`, then setup signal connections
 5. Signal handlers
 6. `_bike_update(delta)` - called from main `_physics_process()`
 7. `_bike_reset()` - reset to default values for respawn

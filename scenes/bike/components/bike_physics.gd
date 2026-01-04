@@ -1,9 +1,6 @@
-class_name BikePhysics extends Node
+class_name BikePhysics extends BikeComponent
 
 signal brake_stopped
-
-# Player controller reference
-var player_controller: PlayerController
 
 # Movement tuning
 @export var max_speed: float = 120.0
@@ -52,7 +49,7 @@ func _bike_update(delta):
         BikeState.PlayerState.TRICK_GROUND:
             _update_trick_ground(delta)
         BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
-            pass  # Handled by crash system
+            pass # Handled by crash system
 
 
 func _update_idle(delta):
@@ -231,7 +228,7 @@ func is_turning() -> bool:
 func align_to_ground(delta):
     if player_controller.is_on_floor():
         var floor_normal = player_controller.get_floor_normal()
-        var forward_dir = -player_controller.global_transform.basis.z
+        var forward_dir = - player_controller.global_transform.basis.z
         var forward_dot = forward_dir.dot(floor_normal)
         var target_pitch = asin(clamp(forward_dot, -1.0, 1.0))
         player_controller.state.ground_pitch = lerp(player_controller.state.ground_pitch, target_pitch, ground_align_speed * delta)
@@ -240,7 +237,7 @@ func align_to_ground(delta):
 
 
 func apply_movement(delta):
-    var forward = -player_controller.global_transform.basis.z
+    var forward = - player_controller.global_transform.basis.z
 
     if player_controller.state.speed > 0.5:
         var turn_rate = get_turn_rate()
