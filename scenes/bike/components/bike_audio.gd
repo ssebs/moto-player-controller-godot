@@ -44,9 +44,30 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGear
     exhaust_pops = pops
 
     bike_input.throttle_changed.connect(func(v): throttle = v)
+    state.state_changed.connect(_on_state_changed)
+
 
 func _bike_update(delta):
-    update_engine_audio(delta, bike_gearing.get_rpm_ratio())
+    match state.player_state:
+        BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
+            return  # Audio handled by state change callback
+        _:
+            update_engine_audio(delta, bike_gearing.get_rpm_ratio())
+
+
+func _on_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
+    # Handle state exit
+    match old_state:
+        BikeState.PlayerState.TRICK_GROUND:
+            stop_tire_screech()
+
+    # Handle state entry
+    match new_state:
+        BikeState.PlayerState.CRASHING:
+            stop_engine()
+            # Tire screech handled by crash signal in player_controller
+        BikeState.PlayerState.CRASHED:
+            stop_tire_screech()
 
 
 func update_engine_audio(delta: float, rpm_ratio: float):

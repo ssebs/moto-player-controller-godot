@@ -86,22 +86,49 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhys
 func _bike_update(delta):
     current_delta = delta
     _update_boost(delta)
+
+    match state.player_state:
+        BikeState.PlayerState.IDLE:
+            pass  # No trick updates when idle
+        BikeState.PlayerState.RIDING:
+            _update_riding(delta)
+        BikeState.PlayerState.AIRBORNE:
+            _update_airborne(delta)
+        BikeState.PlayerState.TRICK_AIR:
+            _update_trick_air(delta)
+        BikeState.PlayerState.TRICK_GROUND:
+            _update_trick_ground(delta)
+        BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
+            pass  # Handled by crash system
+
+
+func _update_riding(delta):
+    # Check for skidding, can initiate ground tricks
     _update_wheelie_distance(delta)
-    var is_airborne = !controller.is_on_floor()
-    handle_wheelie_stoppie(
-        delta,
-        bike_gearing.get_rpm_ratio(),
-        bike_crash.is_front_wheel_locked(),
-        is_airborne
-    )
-    handle_skidding(
-        delta,
-        bike_crash.is_front_wheel_locked(),
-        rear_wheel_marker.global_position,
-        front_wheel_marker.global_position,
-        controller.global_rotation,
-        controller.is_on_floor()
-    )
+    handle_wheelie_stoppie(delta, bike_gearing.get_rpm_ratio(), bike_crash.is_front_wheel_locked(), false)
+    handle_skidding(delta, bike_crash.is_front_wheel_locked(),
+        rear_wheel_marker.global_position, front_wheel_marker.global_position,
+        controller.global_rotation, true)
+
+
+func _update_airborne(delta):
+    # Can initiate air tricks with pitch control
+    handle_wheelie_stoppie(delta, bike_gearing.get_rpm_ratio(), false, true)
+
+
+func _update_trick_air(delta):
+    # Actively controlling pitch in air
+    _update_wheelie_distance(delta)
+    handle_wheelie_stoppie(delta, bike_gearing.get_rpm_ratio(), false, true)
+
+
+func _update_trick_ground(delta):
+    # Wheelie/stoppie/fishtail active
+    _update_wheelie_distance(delta)
+    handle_wheelie_stoppie(delta, bike_gearing.get_rpm_ratio(), bike_crash.is_front_wheel_locked(), false)
+    handle_skidding(delta, bike_crash.is_front_wheel_locked(),
+        rear_wheel_marker.global_position, front_wheel_marker.global_position,
+        controller.global_rotation, true)
 
 func handle_wheelie_stoppie(delta, rpm_ratio: float,
                              front_wheel_locked: bool = false, is_airborne: bool = false):

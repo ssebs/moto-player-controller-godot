@@ -60,6 +60,33 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, gearing: BikeGear
 
 
 func _bike_update(delta):
+    match state.player_state:
+        BikeState.PlayerState.IDLE:
+            _update_idle(delta)
+        BikeState.PlayerState.RIDING:
+            _update_riding(delta)
+        BikeState.PlayerState.AIRBORNE, BikeState.PlayerState.TRICK_AIR:
+            _update_airborne(delta)
+        BikeState.PlayerState.TRICK_GROUND:
+            _update_trick_ground(delta)
+        BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
+            pass  # Handled by crash system
+
+
+func _update_idle(delta):
+    # Keep bike stable at rest, handle braking to full stop
+    state.fall_angle = move_toward(state.fall_angle, 0, fall_rate * 2.0 * delta)
+    handle_acceleration(
+        delta,
+        bike_gearing.get_power_output(),
+        bike_gearing.get_max_speed_for_gear(),
+        bike_crash.is_front_wheel_locked()
+    )
+    align_to_ground(delta)
+
+
+func _update_riding(delta):
+    # Normal riding physics
     handle_acceleration(
         delta,
         bike_gearing.get_power_output(),
@@ -71,6 +98,17 @@ func _bike_update(delta):
     handle_fall_physics(delta)
     check_brake_stop()
     align_to_ground(delta)
+
+
+func _update_airborne(delta):
+    # In air - can shift weight but no ground physics
+    update_lean(delta)
+    # Gravity is handled in apply_movement()
+
+
+func _update_trick_ground(delta):
+    # Same as riding - wheelie/stoppie physics handled by BikeTricks
+    _update_riding(delta)
 
 
 func handle_acceleration(delta, power_output: float, gear_max_speed: float,

@@ -344,6 +344,7 @@ surface_material_override/0 = ExtResource("3_n1tms")
 [node name="TrainingWheels" type="Node3D" parent="BikeMesh/Mods"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.07463604, 0.68403995)
+visible = false
 
 [node name="TrainingWheelsMod" parent="BikeMesh/Mods/TrainingWheels" instance=ExtResource("5_voh27")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.335, 0.117)

@@ -79,13 +79,22 @@ func _ready():
 
 
 func _physics_process(delta):
-    if state.is_crashed:
+    # Handle crash states first (before input)
+    if state.player_state == BikeState.PlayerState.CRASHED:
         bike_crash._bike_update(delta)
         player_animation.apply_mesh_rotation()
         return
 
-    # Input
+    if state.player_state == BikeState.PlayerState.CRASHING:
+        bike_crash._bike_update(delta)
+        player_animation._bike_update(delta)
+        return
+
+    # Input first, so state detection has current values
     bike_input._bike_update(delta)
+
+    # Update player state based on current conditions (after input)
+    _update_player_state()
 
     # Component updates
     bike_gearing._bike_update(delta)
@@ -118,6 +127,33 @@ func _respawn():
     bike_input._bike_reset()
     bike_audio._bike_reset()
     player_animation._bike_reset()
+
+    # Reset to idle state
+    state.player_state = BikeState.PlayerState.IDLE
+
+
+func _update_player_state():
+    # Don't auto-transition out of crash states - they have explicit exits
+    if state.player_state in [BikeState.PlayerState.CRASHED, BikeState.PlayerState.CRASHING]:
+        return
+
+    var is_airborne = not is_on_floor()
+    var is_ground_trick = abs(state.pitch_angle) > deg_to_rad(5) or abs(state.fishtail_angle) > deg_to_rad(5)
+    var is_air_trick = is_airborne and abs(state.pitch_angle) > deg_to_rad(5)
+    var has_input = bike_input.throttle > 0.1 or bike_input.front_brake > 0.1 or bike_input.rear_brake > 0.1
+
+    var target: BikeState.PlayerState
+    if is_airborne:
+        target = BikeState.PlayerState.TRICK_AIR if is_air_trick else BikeState.PlayerState.AIRBORNE
+    elif is_ground_trick:
+        target = BikeState.PlayerState.TRICK_GROUND
+    elif state.speed < 0.5 and not has_input:
+        # Only go to IDLE if stopped AND no input
+        target = BikeState.PlayerState.IDLE
+    else:
+        target = BikeState.PlayerState.RIDING
+
+    state.request_state_change(target)
 
 
 # Signal handlers

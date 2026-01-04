@@ -47,6 +47,9 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, b_tricks: BikeTri
     bike_tricks.boost_started.connect(_on_boost_started)
     bike_tricks.boost_ended.connect(_on_boost_ended)
 
+    # Connect to player state changes
+    state.state_changed.connect(_on_player_state_changed)
+
     # Setup training wheel mods with state reference
     _setup_training_wheels()
 
@@ -189,6 +192,26 @@ func _rotate_mesh_around_pivot(pivot: Vector3, axis: Vector3):
     t = t.rotated(axis, state.pitch_angle)
     t.origin += pivot
     bike_mesh.transform = t
+
+
+func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
+    # Handle state exit
+    match old_state:
+        BikeState.PlayerState.CRASHED:
+            # Reset animations on respawn
+            lean_state = LeanState.CENTER
+            anim_player.stop()
+
+    # Handle state entry
+    match new_state:
+        BikeState.PlayerState.IDLE:
+            lean_state = LeanState.CENTER
+        BikeState.PlayerState.CRASHING:
+            # Could trigger crash animation here
+            pass
+        BikeState.PlayerState.CRASHED:
+            # Could show "press to respawn" animation
+            pass
 
 
 func _bike_reset():

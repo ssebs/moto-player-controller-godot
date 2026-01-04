@@ -47,7 +47,7 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhys
     bike_input.steer_changed.connect(func(v): steer = v)
 
 func _bike_update(delta):
-    if state.is_crashed:
+    if state.player_state == BikeState.PlayerState.CRASHING or state.player_state == BikeState.PlayerState.CRASHED:
         _update_crash_state(delta)
         return
 
@@ -57,7 +57,7 @@ func _bike_update(delta):
 
 
 func _check_collision_crash():
-    if state.is_crashed:
+    if state.player_state == BikeState.PlayerState.CRASHING or state.player_state == BikeState.PlayerState.CRASHED:
         return
 
     for i in controller.get_slide_collision_count():
@@ -190,7 +190,7 @@ func _check_force_stoppie():
 
 
 func trigger_crash():
-    state.is_crashed = true
+    state.request_state_change(BikeState.PlayerState.CRASHING)
     crash_timer = 0.0
     crashed.emit(crash_pitch_direction, crash_lean_direction)
 
@@ -212,6 +212,7 @@ func _update_crash_state(delta):
             controller.move_and_slide()
 
     if crash_timer >= respawn_delay:
+        state.request_state_change(BikeState.PlayerState.CRASHED)
         respawn_requested.emit()
 
 
@@ -227,7 +228,7 @@ func is_front_wheel_locked() -> bool:
 func get_brake_vibration() -> Vector2:
     """Returns vibration intensity (weak, strong) for brake danger"""
     if state.brake_danger_level > 0.1:
-        var intensity = 2.0
+        var intensity = 3.0
         var weak = state.brake_danger_level * intensity
         var strong = state.brake_danger_level * state.brake_danger_level * intensity
         return Vector2(weak, strong)
@@ -255,7 +256,6 @@ func trigger_collision_crash(collision_normal: Vector3):
     trigger_crash()
 
 func _bike_reset():
-    state.is_crashed = false
     crash_timer = 0.0
     crash_pitch_direction = 0.0
     crash_lean_direction = 0.0

@@ -47,8 +47,17 @@ func _bike_setup(bike_state: BikeState, bike_input: BikeInput, physics: BikePhys
     bike_input.gear_down_pressed.connect(_on_gear_down)
 
 func _bike_update(delta):
-    update_clutch(delta)
-    update_rpm(delta)
+    match state.player_state:
+        BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
+            # Engine stalls during crash
+            if not state.is_stalled:
+                state.is_stalled = true
+                engine_stalled.emit()
+            return
+        _:
+            # Engine runs normally in all other states
+            update_clutch(delta)
+            update_rpm(delta)
 
 func _on_clutch_input(held: bool, just_pressed: bool):
     clutch_held = held
