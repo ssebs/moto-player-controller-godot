@@ -6,8 +6,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 
-
-
 - How riding should feel
   - Mix of Sim / Arcade - not as hard as real life, but not as easy as GTA.
   - Fast, but you need to brake to turn during a race.
@@ -37,18 +35,8 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 # Planning / Tasks
 
 ## In Progress:
-- [ ] State machine for biker state & animations
-  - > ENUM - code based, not Node based.
-    - _physics has switch statement for each state to have update
-    - set_state func to allow for 1 time calls (play animation, etc.)
-  - Player States:
-    - Idle
-    - Riding on ground
-    - In air
-    - Trick in air
-    - Trick on ground
-    - Crashing
-    - Crashed (press A to reset)
+
+- [ ] Review state machine / refactor
 - [WIP] Riding animations
   - [x] lean
   - [ ] wheelie v1
@@ -61,7 +49,6 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 - [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] Camera controller
 
-
 ## Bugs
 
 - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
@@ -69,6 +56,7 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 - [ ] Should be more stable at higher speeds
 
 ## TODO:
+
 - [ ] Multiple bike models w/ diff stats
   - [ ] Sport bike (move stats to resource)
   - [ ] Pocket bike (only 2 gears, lower stats, etc.)
@@ -109,6 +97,19 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
   - [ ] Simplify state machines / animation logic
 
 ## Done:
+
+- [x] State machine for biker state & animations
+  - > ENUM - code based, not Node based.
+    - \_physics has switch statement for each state to have update
+    - set_state func to allow for 1 time calls (play animation, etc.)
+  - Player States:
+    - Idle
+    - Riding on ground
+    - In air
+    - Trick in air
+    - Trick on ground
+    - Crashing
+    - Crashed (press A to reset)
 - [x] Basic tricks
   - [x] Basic Wheelie (sitting)
   - [x] Basic stoppie
@@ -121,8 +122,8 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
   - [x] Increase max rpm sound
   - [x] Limited boosts, tricks to increase boost bar.
 - [x] Some Refactor
-  - [x] setup should be in order: (state, bike_input, [others]). 
-  - [x] Add custom "_bike_update()" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
+  - [x] setup should be in order: (state, bike_input, [others]).
+  - [x] Add custom "\_bike_update()" physics update function - instead of calling handleX and handleY in physics on player_controller, call 1 func that does all of that.
   - [x] Move all handler calls to bike_update
   - [x] Confirm event loop & apply refactor to support it
     - Event loop:
