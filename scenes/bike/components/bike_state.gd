@@ -11,6 +11,13 @@ enum PlayerState {
 	CRASHED # Waiting for respawn
 }
 
+# Difficulty levels
+enum PlayerDifficulty {
+	EASY, # Automatic transmission
+	MEDIUM, # Semi-auto (no clutch needed for shifts)
+	HARD # Full manual (clutch required)
+}
+
 signal state_changed(old_state: PlayerState, new_state: PlayerState)
 
 var player_state: PlayerState = PlayerState.IDLE
@@ -64,7 +71,7 @@ var brake_danger_level: float = 0.0
 var brake_grab_level: float = 0.0
 
 # Difficulty
-var is_easy_mode: bool = true
+var difficulty: PlayerDifficulty = PlayerDifficulty.EASY
 
 # Ground alignment
 var ground_pitch: float = 0.0

@@ -49,7 +49,7 @@ func _on_difficulty_toggled():
 
 func _update_training_wheels_visibility():
     if player_controller.training_wheels:
-        if player_controller.state.is_easy_mode:
+        if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
             player_controller.training_wheels.show()
         else:
             player_controller.training_wheels.hide()

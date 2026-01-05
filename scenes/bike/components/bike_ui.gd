@@ -105,19 +105,30 @@ func _update_vibration():
 
 # TODO: refactor, this is the only thing that uses signals from bike_input
 func _on_difficulty_toggled():
-    player_controller.state.is_easy_mode = !player_controller.state.is_easy_mode
+    # Cycle through difficulties: EASY -> MEDIUM -> HARD -> EASY
+    var diff = player_controller.state.difficulty
+    if diff == player_controller.state.PlayerDifficulty.EASY:
+        player_controller.state.difficulty = player_controller.state.PlayerDifficulty.MEDIUM
+    elif diff == player_controller.state.PlayerDifficulty.MEDIUM:
+        player_controller.state.difficulty = player_controller.state.PlayerDifficulty.HARD
+    else:
+        player_controller.state.difficulty = player_controller.state.PlayerDifficulty.EASY
     _update_difficulty_display()
 
 
 func _update_difficulty_display():
     if !player_controller.difficulty_label:
         return
-    if player_controller.state.is_easy_mode:
-        player_controller.difficulty_label.text = "Easy"
-        player_controller.difficulty_label.modulate = Color(0.2, 0.8, 0.2)
-    else:
-        player_controller.difficulty_label.text = "Hard"
-        player_controller.difficulty_label.modulate = Color(1.0, 0.3, 0.3)
+    match player_controller.state.difficulty:
+        player_controller.state.PlayerDifficulty.EASY:
+            player_controller.difficulty_label.text = "Easy"
+            player_controller.difficulty_label.modulate = Color(0.2, 0.8, 0.2)
+        player_controller.state.PlayerDifficulty.MEDIUM:
+            player_controller.difficulty_label.text = "Medium"
+            player_controller.difficulty_label.modulate = Color(0.8, 0.8, 0.2)
+        player_controller.state.PlayerDifficulty.HARD:
+            player_controller.difficulty_label.text = "Hard"
+            player_controller.difficulty_label.modulate = Color(1.0, 0.3, 0.3)
 
 
 func _on_crashed(_pitch_direction: float, _lean_direction: float):

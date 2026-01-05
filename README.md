@@ -35,7 +35,8 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 # Planning / Tasks
 
 ## In Progress:
-
+- [ ] Fix clutch start on easy mode (shouldn't be needed)
+- [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
 - [WIP] Simplify logic / component level refactor:
   - [ ] tricks
     - [ ] Decide how tricks should be tracked / checked.

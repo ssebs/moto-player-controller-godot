@@ -56,8 +56,8 @@ func _bike_update(delta):
             update_rpm(delta)
             # Cache RPM ratio for other components to use
             player_controller.state.rpm_ratio = get_rpm_ratio()
-            # Auto-shift during boost
-            if player_controller.state.is_boosting:
+            # Auto-shift during boost or easy mode
+            if player_controller.state.is_boosting or player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
                 _update_auto_shift()
 
 func _on_clutch_input(held: bool, just_pressed: bool):
@@ -66,7 +66,12 @@ func _on_clutch_input(held: bool, just_pressed: bool):
 
 
 func _on_gear_up():
-    if player_controller.state.clutch_value > gear_shift_threshold || player_controller.state.is_easy_mode:
+    # Easy mode: auto-shift handles this, ignore manual input
+    if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+        return
+    # Medium: no clutch needed, Hard: clutch required
+    var can_shift = player_controller.state.difficulty == player_controller.state.PlayerDifficulty.MEDIUM or player_controller.state.clutch_value > gear_shift_threshold
+    if can_shift:
         if player_controller.state.current_gear < num_gears:
             player_controller.state.current_gear += 1
             gear_changed.emit(player_controller.state.current_gear)
@@ -75,7 +80,12 @@ func _on_gear_up():
 
 
 func _on_gear_down():
-    if player_controller.state.clutch_value > gear_shift_threshold || player_controller.state.is_easy_mode:
+    # Easy mode: auto-shift handles this, ignore manual input
+    if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+        return
+    # Medium: no clutch needed, Hard: clutch required
+    var can_shift = player_controller.state.difficulty == player_controller.state.PlayerDifficulty.MEDIUM or player_controller.state.clutch_value > gear_shift_threshold
+    if can_shift:
         if player_controller.state.current_gear > 1:
             player_controller.state.current_gear -= 1
             gear_changed.emit(player_controller.state.current_gear)
@@ -110,10 +120,18 @@ func get_max_speed_for_gear() -> float:
 
 
 func update_rpm(delta: float):
+    var is_easy_mode := player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY
+
     if player_controller.state.is_stalled:
         player_controller.state.current_rpm = 0.0
+        var should_start = false
         # Restart engine with throttle + clutch while stalled
         if player_controller.state.clutch_value > 0.5 and player_controller.bike_input.throttle > 0.3:
+            should_start = true
+        if is_easy_mode:
+            should_start = true
+        
+        if should_start:
             player_controller.state.is_stalled = false
             player_controller.state.current_rpm = idle_rpm
             engine_started.emit()
@@ -136,11 +154,11 @@ func update_rpm(delta: float):
 
     # When clutch is fully engaged, RPM follows wheel speed
     if engagement > 0.95:
-        if player_controller.state.is_easy_mode:
-            # Easy mode: smooth rev-matching when shifting (RPM blends to new gear's wheel RPM)
+        if player_controller.state.difficulty != player_controller.state.PlayerDifficulty.HARD:
+            # Easy/Medium: smooth rev-matching when shifting (RPM blends to new gear's wheel RPM)
             player_controller.state.current_rpm = lerpf(player_controller.state.current_rpm, wheel_rpm, rev_match_speed * delta)
         else:
-            # Hard mode: RPM locked directly to wheel speed
+            # Hard: RPM locked directly to wheel speed
             player_controller.state.current_rpm = wheel_rpm
     else:
         # RPM blend speed: fast when free-revving, slower when engaged to wheel
@@ -178,7 +196,9 @@ func get_power_output() -> float:
         return 0.0
 
     var engagement = get_clutch_engagement()
-    if engagement < 0.05:
+    if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+        engagement = 1.0
+    elif engagement < 0.05:
         return 0.0
 
     var rpm_ratio = get_rpm_ratio()
