@@ -9,7 +9,7 @@ signal force_stoppie_requested(target_pitch: float, rate: float)
 @export var crash_wheelie_threshold: float = deg_to_rad(75)
 @export var crash_stoppie_threshold: float = deg_to_rad(55)
 @export var crash_lean_threshold: float = deg_to_rad(80)
-@export var respawn_delay: float = 2.0
+@export var respawn_delay: float = 10.0
 @export var brake_grab_crash_threshold: float = 0.9
 
 # Crash physics
@@ -21,6 +21,8 @@ var crash_timer: float = 0.0
 var crash_pitch_direction: float = 0.0
 var crash_lean_direction: float = 0.0
 var front_brake_hold_time: float = 0.0
+var _ragdoll_stopped: bool = false
+var _ragdoll_stop_time: float = 0.0
 
 # Brake grab detection
 var last_front_brake: float = 0.0
@@ -189,7 +191,22 @@ func trigger_crash():
 
 func _update_crash_state(delta):
     crash_timer += delta
+    # Allow pause input to force respawn immediately
+    if Input.is_action_just_pressed("pause"):
+        _do_respawn()
+        return
+    
+    _update_ragdoll(delta)
+    # TODO: bike crash physics
 
+    # # Apply crash physics - rotate bike to ground
+    # if crash_pitch_direction != 0:
+    #     player_controller.bike_tricks.force_pitch(crash_pitch_direction * deg_to_rad(90), crash_rotation_speed, delta)
+    # elif crash_lean_direction != 0:
+    #     player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, crash_lean_direction * deg_to_rad(90), crash_rotation_speed * delta)
+
+
+func _update_ragdoll(delta):
     player_controller.character_mesh.start_ragdoll()
     _switch_to_crash_camera()
 
@@ -200,25 +217,31 @@ func _update_crash_state(delta):
         player_controller.crash_cam_position.global_position = player_controller.crash_cam_position.global_position.lerp(target_pos, 5.0 * delta)
         player_controller.crash_cam_position.look_at(hips_bone.global_position)
 
-    # TODO: bike crash physics
 
-    # # Apply crash physics - rotate bike to ground
-    # if crash_pitch_direction != 0:
-    #     player_controller.bike_tricks.force_pitch(crash_pitch_direction * deg_to_rad(90), crash_rotation_speed, delta)
-    # elif crash_lean_direction != 0:
-    #     player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, crash_lean_direction * deg_to_rad(90), crash_rotation_speed * delta)
+    # Respawn once ragdoll speed drops below 1 (with minimum time to let physics settle)
+    if hips_bone:
+        var ragdoll_velocity = hips_bone.linear_velocity
+        var ragdoll_speed = ragdoll_velocity.length()
 
-    # Slide along ground while falling
-    if player_controller.state.speed > 0.1:
-        var forward = - player_controller.global_transform.basis.z
-        player_controller.velocity = forward * player_controller.state.speed
-        player_controller.state.speed = move_toward(player_controller.state.speed, 0, crash_deceleration * delta)
-        player_controller.move_and_slide()
+        # Wait for ragdoll to slow down, then wait 1 more second before respawning
+        if crash_timer > 1.0 and ragdoll_speed < 1.0:
+            # Track time since ragdoll stopped
+            if not _ragdoll_stopped:
+                _ragdoll_stopped = true
+                _ragdoll_stop_time = crash_timer
+            elif crash_timer - _ragdoll_stop_time >= 1.0:
+                _do_respawn()
+        else:
+            _ragdoll_stopped = false
 
+    # Force respawn after respawn_delay regardless of ragdoll state
     if crash_timer >= respawn_delay:
-        player_controller.state.request_state_change(BikeState.PlayerState.CRASHED)
-        player_controller.character_mesh.stop_ragdoll()
-        respawn_requested.emit()
+        _do_respawn()
+
+func _do_respawn():
+    player_controller.state.request_state_change(BikeState.PlayerState.CRASHED)
+    player_controller.character_mesh.stop_ragdoll()
+    respawn_requested.emit()
 
 
 func is_lowside_crash() -> bool:
@@ -265,6 +288,8 @@ func _bike_reset():
     crash_pitch_direction = 0.0
     crash_lean_direction = 0.0
     front_brake_hold_time = 0.0
+    _ragdoll_stopped = false
+    _ragdoll_stop_time = 0.0
     player_controller.state.brake_danger_level = 0.0
     last_front_brake = 0.0
     player_controller.state.brake_grab_level = 0.0
