@@ -242,6 +242,7 @@ func _update_ragdoll(delta):
 func _do_respawn():
     player_controller.state.request_state_change(BikeState.PlayerState.CRASHED)
     player_controller.character_mesh.stop_ragdoll()
+    player_controller.anim_player.play("RESET")
     respawn_requested.emit()
 
 

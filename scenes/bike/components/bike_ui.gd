@@ -6,11 +6,14 @@ const TOAST_DURATION: float = 1.5
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
-    # Hide toast initially
+    # Hide toasts initially
     if player_controller.boost_toast:
         player_controller.boost_toast.visible = false
+    if player_controller.respawn_label:
+        player_controller.respawn_label.visible = false
 
     player_controller.bike_input.difficulty_toggled.connect(_on_difficulty_toggled)
+    player_controller.bike_crash.crashed.connect(_on_crashed)
     player_controller.bike_tricks.boost_started.connect(_on_boost_started)
     player_controller.bike_tricks.boost_ended.connect(_on_boost_ended)
     player_controller.bike_tricks.boost_earned.connect(show_boost_toast)
@@ -117,6 +120,11 @@ func _update_difficulty_display():
         player_controller.difficulty_label.modulate = Color(1.0, 0.3, 0.3)
 
 
+func _on_crashed(_pitch_direction: float, _lean_direction: float):
+    if player_controller.respawn_label:
+        player_controller.respawn_label.visible = true
+
+
 func _on_boost_started():
     show_speed_lines()
 
@@ -153,3 +161,5 @@ func _bike_reset():
     toast_timer = 0.0
     if player_controller.boost_toast:
         player_controller.boost_toast.visible = false
+    if player_controller.respawn_label:
+        player_controller.respawn_label.visible = false

@@ -36,6 +36,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var speed_lines_effect: ColorRect = %SpeedLinesEffect
 @onready var boost_label: Label = %BoostLabel
 @onready var boost_toast: Label = %BoostToast
+@onready var respawn_label: Label = %RespawnLabel
 
 # Components
 @onready var bike_input: BikeInput = %BikeInput
@@ -141,6 +142,7 @@ func _respawn():
     bike_crash._bike_reset()
     bike_input._bike_reset()
     bike_audio._bike_reset()
+    bike_ui._bike_reset()
     bike_animation._bike_reset()
 
     # Reset to idle state
