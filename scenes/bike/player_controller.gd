@@ -71,13 +71,17 @@ func _ready():
 
 func _physics_process(delta):
     if Input.is_action_just_pressed("trick_down"):
-        should_ragdoll = !should_ragdoll
-        if should_ragdoll:
-            character_mesh.start_ragdoll()
-            bike_itself_mesh.hide()
-        else:
-            character_mesh.stop_ragdoll()
-            bike_itself_mesh.show()
+        pass
+        bike_crash.crashed.emit(Vector3.ZERO, Vector3.ZERO)
+
+
+        # should_ragdoll = !should_ragdoll
+        # if should_ragdoll:
+        #     character_mesh.start_ragdoll()
+        #     bike_itself_mesh.hide() # HACK
+        # else:
+        #     character_mesh.stop_ragdoll()
+        #     bike_itself_mesh.show() # HACK
     
 
     # Handle crash states first (before input)

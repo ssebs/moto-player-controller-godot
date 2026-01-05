@@ -187,21 +187,28 @@ func trigger_crash():
 func _update_crash_state(delta):
     crash_timer += delta
 
-    # Apply crash physics - rotate bike to ground
-    if crash_pitch_direction != 0:
-        player_controller.bike_tricks.force_pitch(crash_pitch_direction * deg_to_rad(90), crash_rotation_speed, delta)
-    elif crash_lean_direction != 0:
-        player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, crash_lean_direction * deg_to_rad(90), crash_rotation_speed * delta)
+    player_controller.character_mesh.start_ragdoll()
 
-        # Slide along ground while falling
-        if player_controller.state.speed > 0.1:
-            var forward = - player_controller.global_transform.basis.z
-            player_controller.velocity = forward * player_controller.state.speed
-            player_controller.state.speed = move_toward(player_controller.state.speed, 0, crash_deceleration * delta)
-            player_controller.move_and_slide()
+    # TODO: Make camera follow
+
+    # TODO: bike crash physics
+
+    # # Apply crash physics - rotate bike to ground
+    # if crash_pitch_direction != 0:
+    #     player_controller.bike_tricks.force_pitch(crash_pitch_direction * deg_to_rad(90), crash_rotation_speed, delta)
+    # elif crash_lean_direction != 0:
+    #     player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, crash_lean_direction * deg_to_rad(90), crash_rotation_speed * delta)
+
+    # Slide along ground while falling
+    if player_controller.state.speed > 0.1:
+        var forward = - player_controller.global_transform.basis.z
+        player_controller.velocity = forward * player_controller.state.speed
+        player_controller.state.speed = move_toward(player_controller.state.speed, 0, crash_deceleration * delta)
+        player_controller.move_and_slide()
 
     if crash_timer >= respawn_delay:
         player_controller.state.request_state_change(BikeState.PlayerState.CRASHED)
+        player_controller.character_mesh.stop_ragdoll()
         respawn_requested.emit()
 
 
