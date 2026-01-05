@@ -21,6 +21,11 @@ class_name IKCharacterMesh extends Node3D
 @export var left_leg_magnet: Vector3 = Vector3(0.1, 0, 1)
 @export var right_leg_magnet: Vector3 = Vector3(-0.1, 0, 1)
 
+# Ragdoll velocity limits
+@export var max_bone_linear_velocity: float = 100.0
+@export var max_bone_angular_velocity: float = 100.0
+
+
 # IK nodes
 @onready var head_ik: SkeletonIK3D = %HeadIK
 @onready var left_arm_ik: SkeletonIK3D = %LeftArmIK
@@ -47,7 +52,9 @@ func _update_ik_magnets():
         right_leg_ik.magnet = right_leg_magnet
 
 func _physics_process(_delta):
-    if !is_ragdoll:
+    if is_ragdoll:
+        _clamp_ragdoll_velocities()
+    else:
         move_butt()
 
 func start_ragdoll(initial_velocity: Vector3 = Vector3.ZERO, velocity_scale: float = 0.5):
@@ -62,6 +69,15 @@ func start_ragdoll(initial_velocity: Vector3 = Vector3.ZERO, velocity_scale: flo
 func stop_ragdoll():
     is_ragdoll = false
     ragdoll_bones.physical_bones_stop_simulation()
+
+func _clamp_ragdoll_velocities():
+    for child in ragdoll_bones.get_children():
+        if child is PhysicalBone3D:
+            if child.linear_velocity.length() > max_bone_linear_velocity:
+                child.linear_velocity = child.linear_velocity.normalized() * max_bone_linear_velocity
+            if child.angular_velocity.length() > max_bone_angular_velocity:
+                child.angular_velocity = child.angular_velocity.normalized() * max_bone_angular_velocity
+
 
 # Move skel's root bone to butt_target
 func move_butt():

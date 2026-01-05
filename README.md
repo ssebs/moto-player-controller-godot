@@ -45,7 +45,6 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
   - [ ] animation
 - [ ] Bike stats / mesh / marker positions for tricks should be in a resource
 
-
 ## Bugs
 
 - [ ] NOS disable turning during, you can only boost forward
@@ -54,7 +53,7 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
 - [ ] Should be more stable at higher speeds (countersteering at speed feels off, no turn in should occur)
 
 ## TODO:
-- [ ] Ragdoll character on crash
+
 - [ ] Bike crash physics (swich to Rigidbody?)
 - [WIP] Riding animations
   - [x] lean
@@ -103,6 +102,8 @@ https://github.com/user-attachments/assets/0680d69a-9cc1-484d-818e-fc2127c24086
   - [ ] Simplify state machines / animation logic
 
 ## Done:
+
+- [x] Ragdoll character on crash
 - [x] Review state machine / refactor
 - [x] State machine for biker state & animations
   - > ENUM - code based, not Node based.
