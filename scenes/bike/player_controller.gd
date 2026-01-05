@@ -2,6 +2,7 @@ class_name PlayerController extends CharacterBody3D
 
 #region Onready Node References
 # Meshes / Character / Animations
+@onready var rotation_root: Node3D = %LeanAndRotationPoint
 @onready var bike_mesh: Node3D = %BikeMesh
 @onready var character_mesh: Node3D = %IKCharacterMesh
 @onready var riding_cam_position: Node3D = %RidingCamPosition
@@ -129,7 +130,7 @@ func _respawn():
     global_position = spawn_position
     rotation = spawn_rotation
     velocity = Vector3.ZERO
-    bike_mesh.transform = Transform3D.IDENTITY
+    rotation_root.transform = Transform3D.IDENTITY
 
     # TODO: call this from %FunctionalityComponents.get_children()
 

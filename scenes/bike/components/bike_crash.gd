@@ -30,6 +30,9 @@ var brake_grab_threshold: float = 4.0 # Rate per second that counts as "grabbing
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
+    _switch_to_riding_camera()
+
+
 func _bike_update(delta):
     if player_controller.state.player_state == BikeState.PlayerState.CRASHING or player_controller.state.player_state == BikeState.PlayerState.CRASHED:
         _update_crash_state(delta)
@@ -190,7 +193,12 @@ func _update_crash_state(delta):
     player_controller.character_mesh.start_ragdoll()
     _switch_to_crash_camera()
 
-    # TODO: Make camera follow
+    # Smoothly follow ragdoll hips position
+    var hips_bone = player_controller.character_mesh.ragdoll_bones.get_node("Physical Bone mixamorig6_Hips")
+    if hips_bone:
+        var target_pos = hips_bone.global_position + Vector3(0, 2, 3)
+        player_controller.crash_cam_position.global_position = player_controller.crash_cam_position.global_position.lerp(target_pos, 5.0 * delta)
+        player_controller.crash_cam_position.look_at(hips_bone.global_position)
 
     # TODO: bike crash physics
 
@@ -210,7 +218,6 @@ func _update_crash_state(delta):
     if crash_timer >= respawn_delay:
         player_controller.state.request_state_change(BikeState.PlayerState.CRASHED)
         player_controller.character_mesh.stop_ragdoll()
-        _switch_to_riding_camera()
         respawn_requested.emit()
 
 

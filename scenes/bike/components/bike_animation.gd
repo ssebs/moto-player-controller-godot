@@ -143,10 +143,10 @@ func update_lean_animation():
 
 
 func apply_mesh_rotation():
-    player_controller.bike_mesh.transform = Transform3D.IDENTITY
+    player_controller.rotation_root.transform = Transform3D.IDENTITY
 
     if player_controller.state.ground_pitch != 0:
-        player_controller.bike_mesh.rotate_x(-player_controller.state.ground_pitch)
+        player_controller.rotation_root.rotate_x(-player_controller.state.ground_pitch)
 
     var pivot: Vector3
     if player_controller.state.pitch_angle >= 0:
@@ -155,20 +155,19 @@ func apply_mesh_rotation():
         pivot = player_controller.front_wheel.position
 
     if player_controller.state.pitch_angle != 0:
-        _rotate_mesh_around_pivot(pivot, Vector3.RIGHT)
-
+        _rotate_around_pivot(player_controller.rotation_root, pivot, Vector3.RIGHT)
 
     var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
     if total_lean != 0:
-        player_controller.bike_mesh.rotate_z(total_lean)
+        player_controller.rotation_root.rotate_z(total_lean)
 
 
-func _rotate_mesh_around_pivot(pivot: Vector3, axis: Vector3):
-    var t = player_controller.bike_mesh.transform
+func _rotate_around_pivot(node: Node3D, pivot: Vector3, axis: Vector3):
+    var t = node.transform
     t.origin -= pivot
     t = t.rotated(axis, player_controller.state.pitch_angle)
     t.origin += pivot
-    player_controller.bike_mesh.transform = t
+    node.transform = t
 
 
 func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
