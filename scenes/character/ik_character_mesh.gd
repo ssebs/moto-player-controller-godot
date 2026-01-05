@@ -4,6 +4,9 @@ class_name IKCharacterMesh extends Node3D
 @export var skel: Skeleton3D
 @export var root_bone_name: String = "mixamorig6_Hips"
 
+@export_tool_button("Enable Ragdoll", "Callable") var tool_ragdoll_on = start_ragdoll
+@export_tool_button("Disable Ragdoll", "Callable") var tool_ragdoll_off = stop_ragdoll
+
 # Target markers
 @export var head_target: Marker3D
 @export var left_arm_target: Marker3D
@@ -26,6 +29,10 @@ class_name IKCharacterMesh extends Node3D
 @onready var left_leg_ik: SkeletonIK3D = %LeftLegIK
 @onready var right_leg_ik: SkeletonIK3D = %RightLegIK
 
+@onready var ragdoll_bones: PhysicalBoneSimulator3D = %PhysicalBoneSimulator3D
+
+var is_ragdoll := false
+
 func _ready():
     _update_ik_magnets()
 
@@ -40,7 +47,16 @@ func _update_ik_magnets():
         right_leg_ik.magnet = right_leg_magnet
 
 func _physics_process(_delta):
-    move_butt()
+    if !is_ragdoll:
+        move_butt()
+
+func start_ragdoll():
+    is_ragdoll = true
+    ragdoll_bones.physical_bones_start_simulation()
+
+func stop_ragdoll():
+    is_ragdoll = false
+    ragdoll_bones.physical_bones_stop_simulation()
 
 # Move skel's root bone to butt_target
 func move_butt():

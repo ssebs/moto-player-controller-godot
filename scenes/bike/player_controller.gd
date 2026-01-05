@@ -4,6 +4,7 @@ class_name PlayerController extends CharacterBody3D
 # Meshes / Character / Animations
 @onready var bike_mesh: Node3D = %BikeMesh
 @onready var character_mesh: Node3D = %IKCharacterMesh
+@onready var bike_itself_mesh: Node3D = %BikeItself
 @onready var anim_player: AnimationPlayer = %AnimationPlayer
 @onready var tail_light: MeshInstance3D = %TailLight
 @onready var training_wheels: Node3D = %TrainingWheels
@@ -49,6 +50,8 @@ class_name PlayerController extends CharacterBody3D
 var spawn_position: Vector3
 var spawn_rotation: Vector3
 
+var should_ragdoll := false
+
 func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
@@ -67,6 +70,16 @@ func _ready():
 
 
 func _physics_process(delta):
+    if Input.is_action_just_pressed("trick_down"):
+        should_ragdoll = !should_ragdoll
+        if should_ragdoll:
+            character_mesh.start_ragdoll()
+            bike_itself_mesh.hide()
+        else:
+            character_mesh.stop_ragdoll()
+            bike_itself_mesh.show()
+    
+
     # Handle crash states first (before input)
     if state.player_state == BikeState.PlayerState.CRASHED:
         bike_crash._bike_update(delta)
@@ -147,4 +160,3 @@ func _update_player_state():
         target = BikeState.PlayerState.RIDING
 
     state.request_state_change(target)
-
