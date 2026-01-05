@@ -4,6 +4,10 @@ class_name PlayerController extends CharacterBody3D
 # Meshes / Character / Animations
 @onready var bike_mesh: Node3D = %BikeMesh
 @onready var character_mesh: Node3D = %IKCharacterMesh
+@onready var riding_cam_position: Node3D = %RidingCamPosition
+@onready var crash_cam_position: Node3D = %CrashCamPosition
+@onready var riding_camera: Camera3D = %RidingCamera
+@onready var crashing_camera: Camera3D = %CrashingCamera
 @onready var bike_itself_mesh: Node3D = %BikeItself
 @onready var anim_player: AnimationPlayer = %AnimationPlayer
 @onready var tail_light: MeshInstance3D = %TailLight
@@ -72,7 +76,7 @@ func _ready():
 func _physics_process(delta):
     if Input.is_action_just_pressed("trick_down"):
         pass
-        bike_crash.crashed.emit(Vector3.ZERO, Vector3.ZERO)
+        bike_crash.trigger_crash()
 
 
         # should_ragdoll = !should_ragdoll

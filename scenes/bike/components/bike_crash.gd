@@ -188,6 +188,7 @@ func _update_crash_state(delta):
     crash_timer += delta
 
     player_controller.character_mesh.start_ragdoll()
+    _switch_to_crash_camera()
 
     # TODO: Make camera follow
 
@@ -209,6 +210,7 @@ func _update_crash_state(delta):
     if crash_timer >= respawn_delay:
         player_controller.state.request_state_change(BikeState.PlayerState.CRASHED)
         player_controller.character_mesh.stop_ragdoll()
+        _switch_to_riding_camera()
         respawn_requested.emit()
 
 
@@ -259,4 +261,12 @@ func _bike_reset():
     player_controller.state.brake_danger_level = 0.0
     last_front_brake = 0.0
     player_controller.state.brake_grab_level = 0.0
+    _switch_to_riding_camera()
     respawned.emit()
+
+
+func _switch_to_crash_camera():
+    player_controller.crashing_camera.make_current()
+
+func _switch_to_riding_camera():
+    player_controller.riding_camera.make_current()
