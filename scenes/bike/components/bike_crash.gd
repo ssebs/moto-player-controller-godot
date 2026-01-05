@@ -207,7 +207,8 @@ func _update_crash_state(delta):
 
 
 func _update_ragdoll(delta):
-    player_controller.character_mesh.start_ragdoll()
+    if not player_controller.character_mesh.is_ragdoll:
+        player_controller.character_mesh.start_ragdoll(player_controller.velocity, 0.5)
     _switch_to_crash_camera()
 
     # Smoothly follow ragdoll hips position

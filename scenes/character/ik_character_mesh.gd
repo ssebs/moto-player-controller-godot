@@ -50,9 +50,14 @@ func _physics_process(_delta):
     if !is_ragdoll:
         move_butt()
 
-func start_ragdoll():
+func start_ragdoll(initial_velocity: Vector3 = Vector3.ZERO, velocity_scale: float = 0.5):
     is_ragdoll = true
     ragdoll_bones.physical_bones_start_simulation()
+
+    # Apply scaled velocity to all physical bones
+    for child in ragdoll_bones.get_children():
+        if child is PhysicalBone3D:
+            child.linear_velocity = initial_velocity * velocity_scale
 
 func stop_ragdoll():
     is_ragdoll = false

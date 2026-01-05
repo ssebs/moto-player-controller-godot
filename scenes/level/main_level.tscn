@@ -41,85 +41,83 @@ unique_name_in_owner = true
 [node name="PlayerController" parent="." instance=ExtResource("2_p3kgh")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
 
-[node name="Physical Bone mixamorig6_Spine1" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="0"]
-transform = Transform3D(0.9914827, -0.10117484, 0.08201102, -0.051755924, -0.883922, -0.4647615, 0.119513504, 0.4565584, -0.88162977, -0.013345985, 1.1467776, -0.11855699)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8707459e-07, 1.1237869e-08, 0.068559796)
-body_offset = Transform3D(0.99999994, 2.3841858e-07, 9.685755e-08, 9.685755e-08, -4.4703484e-08, -1, -2.3841858e-07, 1.0000001, -1.6391277e-07, -1.937151e-07, 0.068559796, 0)
+[node name="Physical Bone mixamorig6_Hips" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="0"]
+transform = Transform3D(1, 4.7090616e-08, 7.322872e-08, 8.336641e-08, -0.76040137, -0.6494535, 2.5100043e-08, 0.6494535, -0.76040137, 2.6231788e-08, 1.0196265, -0.32059056)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.2975308e-09, -2.1704473e-06, 0.05142209)
+body_offset = Transform3D(1, -1.2789769e-13, -3.907985e-14, -3.5527137e-14, 0.09581822, -0.9953989, 1.2079227e-13, 0.9953989, 0.09581822, 2.2975328e-09, 0.051185697, -0.0049250126)
 
-[node name="Physical Bone mixamorig6_Head" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="1"]
-transform = Transform3D(-0.9809579, -0.0147894025, 0.1936566, 0.07646246, 0.88716716, 0.45506915, -0.17853597, 0.4612111, -0.8691429, -0.069898, 1.1703286, 0.24728787)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6289896e-08, -0.003926918, 0.14458162)
-body_offset = Transform3D(-0.9999999, -1.03376806e-07, 1.937151e-07, -2.8312206e-07, 0.33401838, -0.94256663, -3.7252903e-09, -0.9425665, -0.33401847, -4.4703484e-08, 0.13758945, 0.044591546)
+[node name="Physical Bone mixamorig6_Spine" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="1"]
+transform = Transform3D(1, 5.090278e-07, 4.769559e-07, 6.968261e-07, -0.76040214, -0.64945257, 3.2088842e-08, 0.64945257, -0.76040214, 3.0676997e-08, 1.0919847, -0.23587438)
+body_offset = Transform3D(1, 4.6193702e-07, 4.0372723e-07, 4.0372757e-07, -7.748604e-07, -1.0000001, -4.6193674e-07, 1.0000001, -7.748603e-07, 1.4901374e-08, 0.05999416, -5.9604645e-08)
 
-[node name="Physical Bone mixamorig6_LeftShoulder" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="2"]
-transform = Transform3D(-0.04690826, -0.15356053, -0.98702526, 0.90319175, -0.42857963, 0.023753967, -0.42666656, -0.89035875, 0.15879853, 0.0930252, 1.2301295, 0.06342704)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.34747e-09, 1.3943453e-06, 0.06553852)
-body_offset = Transform3D(0.99999994, 3.0826777e-07, -9.685755e-08, -5.5879354e-08, -3.427267e-07, -0.99999994, -2.682209e-07, 0.99999994, -3.5762787e-07, 0, 0.06553851, -1.3709068e-06)
+[node name="Physical Bone mixamorig6_Spine1" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="2"]
+transform = Transform3D(1, 2.8550932e-07, 1.7008601e-07, 3.2756463e-07, -0.76040167, -0.64945316, -5.6091245e-08, 0.64945316, -0.76040167, -1.2016257e-07, 1.1754777, -0.12590551)
+body_offset = Transform3D(1, 2.3841856e-07, 9.685729e-08, 9.685727e-08, 2.9659786e-15, -1.0000001, -2.3841856e-07, 1.0000001, 1.0334667e-14, -1.2621746e-07, 0.07786, 0.007931352)
 
-[node name="Physical Bone mixamorig6_LeftArm" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="3"]
-transform = Transform3D(0.25765747, -0.9460696, -0.19637978, 0.18018135, -0.15263245, 0.97171915, -0.94928783, -0.28575465, 0.13113722, 0.18428305, 1.0970978, 0.03526955)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2285917e-07, 9.1085707e-07, 0.13530001)
-body_offset = Transform3D(1.0004752, -2.0861626e-07, -1.2628734e-06, -1.4007092e-06, -6.750226e-06, -1.000475, 2.682209e-07, 1.000475, -6.735325e-06, 8.940697e-07, 0.1353643, 0)
+[node name="Physical Bone mixamorig6_Head" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="3"]
+transform = Transform3D(-1, 3.7480774e-09, 3.627039e-07, -2.572919e-07, 0.69750535, -0.71657956, -2.556737e-07, -0.71657956, -0.69750535, -7.673743e-08, 1.4402779, 0.16698444)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6685044e-09, -0.003911216, 0.1445295)
+body_offset = Transform3D(-1, 4.032671e-08, 2.9885587e-07, -2.6822087e-07, 0.33402425, -0.9425647, -1.3783558e-07, -0.9425647, -0.33402425, -4.4704272e-08, 0.13753486, 0.044589788)
 
-[node name="Physical Bone mixamorig6_LeftForeArm" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="4"]
-transform = Transform3D(0.5374572, -0.81950915, -0.19885795, 0.21503356, -0.09483343, 0.97199136, -0.8154142, -0.5651649, 0.12525307, 0.23634733, 0.8414389, 0.0015049197)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9143836e-05, 5.8309095e-05, 0.12779301)
-body_offset = Transform3D(1.0005165, 7.1525574e-07, -7.003546e-07, -8.1956387e-07, 2.8163195e-06, -1.0005168, -5.066395e-07, 1.0005164, 2.9057264e-06, 7.927418e-05, 0.12785906, -5.8710575e-05)
+[node name="Physical Bone mixamorig6_LeftShoulder" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="4"]
+transform = Transform3D(-0.027132567, -0.26322648, -0.9643524, 0.7597595, -0.6323716, 0.15123385, -0.6496379, -0.7285725, 0.2171467, 0.12511575, 1.3000503, 0.0024324502)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.818515e-05, 1.8075836e-05, 0.06553348)
+body_offset = Transform3D(1, 1.611188e-07, -8.754432e-08, -8.009374e-08, -1.1920929e-07, -1, -2.514571e-07, 1, -2.3841858e-07, -1.8179417e-05, 0.06553348, -1.8060207e-05)
 
-[node name="Physical Bone mixamorig6_LeftHand" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="5"]
-transform = Transform3D(0.8841006, 0.29517823, 0.36226493, 0.15917595, -0.91910386, 0.360432, 0.4393507, -0.2609943, -0.85956556, 0.2543551, 0.7098436, 0.0031945996)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00012729829, -3.3730175e-05, 0.020494698)
-body_offset = Transform3D(-0.4666607, 0.6087407, 0.6425337, -3.0733645e-07, 0.72636575, -0.6881637, -0.885109, -0.32095128, -0.33876765, -0.013207406, 0.014128208, 0.006819442)
+[node name="Physical Bone mixamorig6_LeftArm" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="5"]
+transform = Transform3D(0.27265358, -0.9473915, -0.1676586, -0.6449271, -0.3092834, 0.6988654, -0.7139532, -0.082420595, -0.69532555, 0.21099378, 1.1955926, 0.08224906)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.94863e-06, -2.1884132e-06, 0.13529226)
+body_offset = Transform3D(1.0004753, -3.761053e-05, -2.8632581e-05, -2.8505921e-05, -6.1541796e-06, -1.000475, 3.7550926e-05, 1.0004753, -6.28829e-06, -6.0796738e-06, 0.13535655, 3.0398369e-06)
 
-[node name="Physical Bone mixamorig6_RightShoulder" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="6"]
-transform = Transform3D(-0.40648755, 0.49298498, 0.76924235, -0.8550368, -0.5019766, -0.13012144, 0.32199374, -0.71062326, 0.6255675, -0.14418022, 1.2498357, 0.014629423)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.953157e-09, 1.3092841e-07, 0.065538265)
-body_offset = Transform3D(1.0000002, -2.682209e-07, 2.9802322e-08, 0, -2.9802322e-08, -1.0000004, 1.4901161e-08, 1.0000002, -1.7881393e-07, 0, 0.06553829, -1.1920929e-07)
+[node name="Physical Bone mixamorig6_LeftHand" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="6"]
+transform = Transform3D(0.12848938, 0.8491745, 0.51224333, 0.9062365, -0.31032026, 0.287118, 0.40277272, 0.42732203, -0.8094258, 0.26625055, 0.9579488, 0.40418848)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0521693e-06, -1.4994293e-06, 0.020525422)
+body_offset = Transform3D(-0.46665746, 0.60874635, 0.64252996, 3.0696392e-06, 0.7263661, -0.6881723, -0.8851061, -0.32094705, -0.33876395, -0.013188243, 0.014126115, 0.0069509745)
 
-[node name="Physical Bone mixamorig6_RightArm" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="7"]
-transform = Transform3D(-0.1129951, 0.9880347, 0.104974054, -0.06279142, -0.1125404, 0.9916612, 0.9916095, 0.10546138, 0.07475662, -0.20880511, 1.124133, -0.03648856)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0212478e-06, -3.6694843e-07, 0.13536093)
-body_offset = Transform3D(0.99986666, -9.009242e-05, -1.3004057e-05, -1.2954697e-05, -4.4703484e-06, -0.9998664, 9.016693e-05, 0.99986637, -4.336238e-06, -2.6077032e-07, 0.13534284, 9.536743e-07)
+[node name="Physical Bone mixamorig6_RightShoulder" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="7"]
+transform = Transform3D(-0.025646163, 0.26336703, 0.9643548, -0.7598031, -0.6320382, 0.15240446, 0.6496473, -0.72881114, 0.21631642, -0.12512505, 1.2999028, 0.002536559)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6324211e-05, 2.0809419e-05, 0.06554228)
+body_offset = Transform3D(1.0000004, -3.3136457e-05, -8.376874e-05, -8.3681196e-05, 8.6426735e-07, -1.0000002, 3.308663e-05, 1.0000004, 8.046627e-07, 2.18153e-05, 0.065542296, -2.0861626e-05)
 
-[node name="Physical Bone mixamorig6_RightForeArm" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="8"]
-transform = Transform3D(0.3191263, 0.9416412, 0.107099764, -0.09891401, -0.07929726, 0.99193144, 0.94253623, -0.3271451, 0.06783566, -0.23670633, 0.8631065, -0.055273045)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0594174e-06, 4.4098584e-07, 0.12782094)
-body_offset = Transform3D(0.999861, -1.9967556e-06, 1.2665987e-07, 1.2293458e-07, 4.313886e-06, -0.99986076, 1.8179417e-06, 0.9998607, 4.477799e-06, 1.0430813e-06, 0.12780315, -1.013279e-06)
+[node name="Physical Bone mixamorig6_RightArm" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="8"]
+transform = Transform3D(0.32465032, 0.9367469, 0.13079563, 0.64072233, -0.3195334, 0.6981213, 0.69575655, -0.14284162, -0.7039313, -0.20601164, 1.1954205, 0.083643444)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0448244e-05, -7.769308e-06, 0.13538384)
+body_offset = Transform3D(0.9998664, -0.00020006299, -3.170222e-05, -3.1735748e-05, -1.2129545e-05, -0.99986655, 0.00020006299, 0.9998666, -1.2151897e-05, 2.4735928e-05, 0.13536578, 9.417534e-06)
 
-[node name="Physical Bone mixamorig6_RightHand" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="9"]
-transform = Transform3D(0.87145805, -0.3529806, -0.3405373, -0.22461003, -0.9044362, 0.36269218, -0.43601754, -0.23958294, -0.8674611, -0.2428797, 0.7282691, -0.044802833)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.4258853e-06, 6.0810708e-06, 0.022069113)
-body_offset = Transform3D(-0.48943236, -0.58297, -0.6485737, 1.7192215e-06, 0.74378747, -0.66855454, 0.87209034, -0.3271918, -0.3640086, 0.014314339, 0.014749885, 0.0080400705)
+[node name="Physical Bone mixamorig6_RightHand" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="9"]
+transform = Transform3D(-0.23806068, -0.879842, -0.41134575, -0.8256851, -0.039683267, 0.5627338, -0.5114403, 0.4736069, -0.7170254, -0.2597752, 0.93870825, 0.3970437)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9103289e-05, -8.610077e-07, 0.02214374)
+body_offset = Transform3D(-0.48944515, -0.5829549, -0.64858574, -1.6987324e-06, 0.7437743, -0.6685097, 0.8721147, -0.32719874, -0.36403894, 0.014370963, 0.014803946, 0.008044243)
 
-[node name="Physical Bone mixamorig6_LeftUpLeg" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="10"]
-transform = Transform3D(-0.9855406, 0.09562078, -0.13988012, -0.16090165, -0.2693976, 0.94949234, 0.053107824, 0.9582702, 0.28088778, 0.12009262, 0.7611322, -0.46495843)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.942163e-06, -8.6119866e-07, 0.20449814)
-body_offset = Transform3D(1.0000004, -3.1143427e-06, 2.1770597e-05, 2.1725893e-05, 3.5557896e-06, -1.0000001, 3.0770898e-06, 1.0000001, 3.6284328e-06, 1.4901161e-06, 0.20449817, 1.1920929e-07)
+[node name="Physical Bone mixamorig6_LeftUpLeg" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="10"]
+transform = Transform3D(-0.5119757, -0.70662683, -0.48842543, -0.844247, 0.30899817, 0.43791226, -0.158518, 0.63655216, -0.7547672, 0.19136398, 0.86574465, -0.25317863)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2132e-05, -6.6838135e-07, 0.2044887)
+body_offset = Transform3D(1.0000002, -8.85129e-06, 1.6480684e-05, 1.6361475e-05, 5.066395e-07, -1, 8.940697e-06, 1, 5.364418e-07, 8.761883e-06, 0.2044887, 5.5879354e-07)
 
-[node name="Physical Bone mixamorig6_LeftLeg" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="11"]
-transform = Transform3D(-0.9509477, 0.2921381, 0.10175347, -0.30830953, -0.92198384, -0.2342884, 0.025370488, -0.2541676, 0.9668274, 0.128866, 0.6126021, -0.71079975)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.2077517e-06, -1.3063592e-05, 0.19486186)
-body_offset = Transform3D(1.0000005, -5.2839518e-05, 1.3336539e-06, 1.385808e-06, 3.2529235e-05, -1.0000001, 5.275011e-05, 1.0000002, 3.247708e-05, 4.9471855e-06, 0.19486189, 6.735325e-06)
+[node name="Physical Bone mixamorig6_LeftLeg" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="11"]
+transform = Transform3D(-0.9898312, 0.03238953, 0.13851056, 0.1298209, -0.19232515, 0.9727064, 0.05814456, 0.98079664, 0.18616459, 0.26426324, 0.5866402, -0.13512152)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2351112e-06, 2.0830146e-05, 0.19487485)
+body_offset = Transform3D(1.0000005, -1.834333e-05, -4.7385693e-06, -4.6491623e-06, 3.655441e-06, -1.0000001, 1.8347055e-05, 1.0000001, 3.6787242e-06, -1.3113022e-06, 0.19487488, -2.1547079e-05)
 
-[node name="Physical Bone mixamorig6_LeftFoot" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="12"]
-transform = Transform3D(-0.82520616, 0.31577882, -0.4683146, -0.4456311, -0.87343144, 0.196292, -0.3470558, 0.3706769, 0.86148185, 0.1544985, 0.6391852, -0.9828521)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.060422e-05, -5.6338404e-06, 0.09709618)
-body_offset = Transform3D(1.0000002, -0.00016146898, 0.00021365285, 0.00021362305, 5.4359436e-05, -1.0000002, 0.00016149879, 1.0000001, 5.4374337e-05, -1.4156103e-07, 0.097096205, 3.5762787e-07)
+[node name="Physical Bone mixamorig6_LeftFoot" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="12"]
+transform = Transform3D(-0.99823356, -0.0472895, -0.035966713, -0.059412464, 0.7920336, 0.6075796, -0.00024529087, 0.6086432, -0.79344404, 0.2407924, 0.3379444, -0.09431545)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5825406e-05, 0.000120134006, 0.09721149)
+body_offset = Transform3D(1.0000005, 0.00015052035, -0.00019363686, -0.00019373745, 0.000653689, -0.9999998, -0.00015036389, 0.99999964, 0.0006537809, 2.9802322e-06, 0.09721139, -0.00018368661)
 
-[node name="Physical Bone mixamorig6_RightUpLeg" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="13"]
-transform = Transform3D(-0.978915, -0.19995423, -0.04175923, 0.08649676, -0.59096444, 0.802047, -0.18505089, 0.78152376, 0.5957993, -0.0829563, 0.793357, -0.5307215)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.068549e-07, -1.803635e-06, 0.20442325)
-body_offset = Transform3D(1.0000001, 0, -9.275973e-07, -9.797513e-07, 2.5108457e-06, -1.0000001, -1.4901161e-08, 1.0000001, 2.4084002e-06, -4.172325e-07, 0.20442328, 1.3113022e-06)
+[node name="Physical Bone mixamorig6_RightUpLeg" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="13"]
+transform = Transform3D(-0.5190158, 0.7022073, 0.48736796, 0.8404665, 0.3153973, 0.44061396, 0.1556878, 0.63830197, -0.75387794, -0.19112435, 0.8672419, -0.25481442)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9445235e-07, -1.7850397e-07, 0.20442726)
+body_offset = Transform3D(0.99999994, -1.4901161e-07, -5.066395e-07, -5.662441e-07, 2.5629997e-06, -1.0000001, 0, 1, 2.6226044e-06, 2.9802322e-07, 0.20442727, -3.5762787e-07)
 
-[node name="Physical Bone mixamorig6_RightLeg" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="14"]
-transform = Transform3D(-0.98673517, 3.796565e-05, -0.16233876, -0.00013027385, -0.9999999, 0.00055796985, -0.16233872, 0.0005717169, 0.986735, -0.04276815, 0.6293019, -0.8449023)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2839238e-07, 3.2768048e-07, 0.19497862)
-body_offset = Transform3D(1.0000002, -1.704393e-08, 7.4505806e-07, 7.4505806e-07, -3.4859067e-07, -1.0000001, 7.275958e-12, 1.0000001, -4.578037e-07, 2.8312206e-07, 0.19497865, -2.3841858e-07)
+[node name="Physical Bone mixamorig6_RightLeg" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="14"]
+transform = Transform3D(-0.99018925, -0.032696884, -0.13585371, -0.12746361, -0.18702811, 0.9740501, -0.05725687, 0.98181033, 0.18102556, -0.264253, 0.58725774, -0.13600999)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2988544e-06, -2.2086842e-06, 0.19497927)
+body_offset = Transform3D(1.0000001, -1.0058284e-07, 1.7285347e-06, 1.758337e-06, -1.6856939e-07, -1.0000002, 9.313226e-08, 1.0000001, -2.8871e-07, -3.6358833e-06, 0.19497931, 2.2649765e-06)
 
-[node name="Physical Bone mixamorig6_RightFoot" parent="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="15"]
-transform = Transform3D(-0.8146625, -0.29836622, 0.4972953, 0.5564996, -0.16088615, 0.81512195, -0.16319695, 0.9407939, 0.29710862, -0.059764467, 0.5494329, -1.0663544)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1358583e-05, -5.755924e-06, 0.09784164)
-body_offset = Transform3D(1.0000002, -1.1920929e-07, -9.536743e-07, -9.536743e-07, 1.5050173e-06, -1.0000002, 2.3841858e-07, 1.0000001, 1.5646219e-06, -1.1265278e-05, 0.097841665, 5.6028366e-06)
+[node name="Physical Bone mixamorig6_RightFoot" parent="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="15"]
+transform = Transform3D(-0.9982238, -0.04693063, -0.036699895, -0.05957375, 0.7922803, 0.60724205, 0.0005783524, 0.6083498, -0.79366887, -0.2341645, 0.3379615, -0.09368672)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.537947e-05, -6.065353e-06, 0.09779603)
+body_offset = Transform3D(1, 0.00012120977, -0.000102095306, -0.00010211021, 3.7327409e-06, -1.0000002, -0.00012122467, 1.0000002, 3.834255e-06, -5.3942204e-06, 0.09779605, 5.6922436e-06)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
@@ -192,10 +190,70 @@ collision_layer = 3
 size = Vector3(83.57348, 1, 40.288177)
 
 [node name="CSGBox3D5" type="CSGBox3D" parent="CrashColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 205.00119, 0.5, -55.853786)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 188.51074, 0.5, -55.853786)
 use_collision = true
 collision_layer = 3
-size = Vector3(74.28238, 1, 69.6393)
+size = Vector3(41.301468, 1, 69.6393)
+
+[node name="CSGBox3D17" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 223.4282, 0.5, -72.79267)
+use_collision = true
+collision_layer = 3
+size = Vector3(37.084587, 1, 31.893816)
+
+[node name="CSGBox3D18" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 237.63278, 0.5, -36.499565)
+use_collision = true
+collision_layer = 3
+size = Vector3(8.785659, 1, 31.013065)
+
+[node name="gaspump1" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 222.65573, 0.5, -32.76452)
+use_collision = true
+collision_layer = 3
+size = Vector3(4.150879, 1, 1)
+
+[node name="gaspump2" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 222.65573, 0.5, -37.33491)
+use_collision = true
+collision_layer = 3
+size = Vector3(4.150879, 1, 1)
+
+[node name="gaspump3" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 222.65573, 0.5, -44.354774)
+use_collision = true
+collision_layer = 3
+size = Vector3(4.150879, 1, 1)
+
+[node name="gaspump4" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 222.65573, 0.5, -48.925167)
+use_collision = true
+collision_layer = 3
+size = Vector3(4.150879, 1, 1)
+
+[node name="gaspump5" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 215.23694, 0.5, -32.76452)
+use_collision = true
+collision_layer = 3
+size = Vector3(4.150879, 1, 1)
+
+[node name="gaspump6" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 215.23694, 0.5, -37.33491)
+use_collision = true
+collision_layer = 3
+size = Vector3(4.150879, 1, 1)
+
+[node name="gaspump7" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 215.23694, 0.5, -44.354774)
+use_collision = true
+collision_layer = 3
+size = Vector3(4.150879, 1, 1)
+
+[node name="gaspump8" type="CSGBox3D" parent="CrashColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 215.23694, 0.5, -48.925167)
+use_collision = true
+collision_layer = 3
+size = Vector3(4.150879, 1, 1)
 
 [node name="CSGBox3D9" type="CSGBox3D" parent="CrashColliders"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 206.41069, 0.5, 87.29924)
@@ -297,34 +355,34 @@ collision_layer = 5
 shape = SubResource("WorldBoundaryShape3D_114d3")
 
 [node name="CSGBox3D15" type="CSGBox3D" parent="Colliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 324.928, 0.045, -8.506)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 324.928, 0.06, -8.506)
 use_collision = true
 collision_layer = 5
-size = Vector3(143.837, 0.15, 2.154)
+size = Vector3(143.837, 0.11, 2.154)
 
 [node name="CSGBox3D16" type="CSGBox3D" parent="Colliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 206.563, 0.045, -8.506)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 206.563, 0.06, -8.506)
 use_collision = true
 collision_layer = 5
-size = Vector3(76.211, 0.15, 2.154)
+size = Vector3(76.211, 0.11, 2.154)
 
 [node name="CSGBox3D18" type="CSGBox3D" parent="Colliders"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 155.782, 0.045, -71.104)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 155.782, 0.06, -71.104)
 use_collision = true
 collision_layer = 5
-size = Vector3(99.072, 0.15, 2.154)
+size = Vector3(99.072, 0.11, 2.154)
 
 [node name="CSGBox3D19" type="CSGBox3D" parent="Colliders"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 155.782, 0.045, 126.425)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 155.782, 0.06, 126.425)
 use_collision = true
 collision_layer = 5
-size = Vector3(244.319, 0.15, 2.154)
+size = Vector3(244.319, 0.11, 2.154)
 
 [node name="CSGBox3D17" type="CSGBox3D" parent="Colliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.354, 0.045, -8.506)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.354, 0.06, -8.506)
 use_collision = true
 collision_layer = 5
-size = Vector3(315.751, 0.15, 2.154)
+size = Vector3(315.751, 0.11, 2.154)
 
 [node name="bridge2" type="CSGBox3D" parent="Colliders"]
 transform = Transform3D(-0.9950555, 0.09931974, -8.742278e-08, 0.09931974, 0.9950555, 0, 8.699051e-08, -8.682807e-09, -1, 320.10132, 7.7677493, -151.53696)
@@ -345,5 +403,5 @@ collision_layer = 5
 size = Vector3(259.87, 0.1, 30)
 
 [editable path="PlayerController"]
-[editable path="PlayerController/BikeMesh/IKCharacterMesh"]
-[editable path="PlayerController/BikeMesh/IKCharacterMesh/MixamoRacer"]
+[editable path="PlayerController/LeanAndRotationPoint/IKCharacterMesh"]
+[editable path="PlayerController/LeanAndRotationPoint/IKCharacterMesh/MixamoRacer"]
