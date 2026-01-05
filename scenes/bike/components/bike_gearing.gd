@@ -22,6 +22,10 @@ signal gear_grind # Tried to shift without clutch
 @export var rpm_blend_speed: float = 12.0 # How fast RPM changes when clutch engaged
 @export var rev_match_speed: float = 8.0 # How fast RPM adjusts during easy mode shifts
 
+# Auto-shift tuning (during boost)
+@export var auto_shift_up_rpm: float = 0.85 # RPM ratio to shift up
+@export var auto_shift_down_rpm: float = 0.35 # RPM ratio to shift down
+
 # Input state (from signals - clutch needs special handling)
 var clutch_held: bool = false
 var clutch_just_pressed: bool = false
@@ -52,6 +56,9 @@ func _bike_update(delta):
             update_rpm(delta)
             # Cache RPM ratio for other components to use
             player_controller.state.rpm_ratio = get_rpm_ratio()
+            # Auto-shift during boost
+            if player_controller.state.is_boosting:
+                _update_auto_shift()
 
 func _on_clutch_input(held: bool, just_pressed: bool):
     clutch_held = held
@@ -153,6 +160,16 @@ func get_rpm_ratio() -> float:
     if max_rpm <= idle_rpm:
         return 0.0
     return (player_controller.state.current_rpm - idle_rpm) / (max_rpm - idle_rpm)
+
+
+func _update_auto_shift():
+    var rpm_ratio = get_rpm_ratio()
+    if rpm_ratio >= auto_shift_up_rpm and player_controller.state.current_gear < num_gears:
+        player_controller.state.current_gear += 1
+        gear_changed.emit(player_controller.state.current_gear)
+    elif rpm_ratio <= auto_shift_down_rpm and player_controller.state.current_gear > 1:
+        player_controller.state.current_gear -= 1
+        gear_changed.emit(player_controller.state.current_gear)
 
 
 func get_power_output() -> float:
