@@ -73,3 +73,52 @@ Components can also connect to `state.state_changed` for one-time entry/exit act
 - Input component `components/bike_input.gd`
   - Listens for Input Events & sends signals with values
   - Main script passes ref to this node to each component, they can individually listen for signals
+
+## Trick System
+
+Tricks are managed by `bike_tricks.gd` using an enum-based detection and scoring system.
+
+### Adding a New Trick
+
+1. **Add to enum** in `bike_tricks.gd`:
+```gdscript
+enum Trick { NONE, WHEELIE_SITTING, ..., MY_NEW_TRICK }
+```
+
+2. **Add to TRICK_DATA**:
+```gdscript
+const TRICK_DATA: Dictionary = {
+    Trick.MY_NEW_TRICK: {"name": "My Trick", "mult": 1.5, "points_per_sec": 20.0},
+}
+```
+
+3. **Add detection** in `_detect_trick()`:
+```gdscript
+if my_trick_conditions:
+    return Trick.MY_NEW_TRICK
+```
+
+### Trick Signals
+
+Connect to these signals for UI/audio/animation reactions:
+- `trick_started(trick: int)` - Trick began
+- `trick_ended(trick: int, score: float, duration: float)` - Trick completed, score banked
+- `trick_cancelled(trick: int)` - Trick interrupted (crash)
+- `combo_expired` - Combo window closed
+
+### Scoring
+
+- Tricks accumulate `points_per_sec * mult * delta` while active
+- Score banks when trick ends: `trick_score * combo_multiplier`
+- Combo: +0.25 per trick (max 4x), 2 second window
+- Crash: Loses current trick score, resets combo
+
+### State Access
+
+```gdscript
+state.active_trick        # Current BikeTricks.Trick enum
+state.trick_score         # Score building for current trick
+state.total_score         # Total banked score
+state.combo_multiplier    # Current combo (1.0 - 4.0)
+state.combo_count         # Tricks in current combo
+```

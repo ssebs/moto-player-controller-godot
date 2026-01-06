@@ -1,5 +1,6 @@
 class_name BikeTricks extends BikeComponent
 
+# Existing signals
 signal tire_screech_start(volume: float)
 signal tire_screech_stop
 signal stoppie_stopped # Emitted when bike comes to rest during a stoppie
@@ -7,54 +8,42 @@ signal boost_started
 signal boost_ended
 signal boost_earned # Emitted when a boost is earned from tricks
 
-# TODO: use this dict, and potentially use a more complex system. (resource?)
-enum TrickRequirements {IN_AIR, ON_GROUND, DURING_WHEELIE}
-const TrickTypes = {
-    "wheelie": {
-        "sitting": {
-            "mult": 1.0,
-            "name": "Sitting Wheelie",
-            "reqs": [TrickRequirements.ON_GROUND]
-        },
-        "standing": {
-            "mult": 1.2,
-            "name": "Standing Wheelie",
-            "reqs": [TrickRequirements.DURING_WHEELIE]
-        }
-    },
-    "stoppie": {
-        "basic": {
-            "mult": 1.0,
-            "name": "Stoppie",
-            "reqs": [TrickRequirements.DURING_WHEELIE]
-        }
-    },
-    "fishtail": {
-        "skid": { # Rear brake skid
-            "mult": 1.0,
-            "name": "Fishtail",
-            "reqs": [TrickRequirements.ON_GROUND]
-        },
-        "drift": { # Gas pressed while rear is out
-            "mult": 1.0,
-            "name": "Drift",
-            "reqs": [TrickRequirements.ON_GROUND]
-        }
-    },
-    "boost": {
-        "speedboost": {
-            "mult": 0.0,
-            "name": "Speed boost"
-        }
-    },
-    "heelclicker": {
-        "in_air": {
-            "mult": 2.0,
-            "name": "Heel Clicker",
-            "reqs": [TrickRequirements.IN_AIR]
-        }
-    }
+# Trick lifecycle signals
+signal trick_started(trick: int)
+signal trick_ended(trick: int, score: float, duration: float)
+signal trick_cancelled(trick: int)
+signal combo_expired
+
+# Trick enum
+enum Trick {
+	NONE,
+	WHEELIE_SITTING,
+	WHEELIE_STANDING,
+	STOPPIE,
+	FISHTAIL,
+	DRIFT,
+	HEEL_CLICKER,
+	BOOST,
 }
+
+# Trick data configuration
+const TRICK_DATA: Dictionary = {
+	Trick.WHEELIE_SITTING: {"name": "Sitting Wheelie", "mult": 1.0, "points_per_sec": 10.0},
+	Trick.WHEELIE_STANDING: {"name": "Standing Wheelie", "mult": 1.5, "points_per_sec": 20.0},
+	Trick.STOPPIE: {"name": "Stoppie", "mult": 1.2, "points_per_sec": 15.0},
+	Trick.FISHTAIL: {"name": "Fishtail", "mult": 1.0, "points_per_sec": 8.0},
+	Trick.DRIFT: {"name": "Drift", "mult": 1.3, "points_per_sec": 12.0},
+	Trick.HEEL_CLICKER: {"name": "Heel Clicker", "mult": 2.0, "points_per_sec": 50.0},
+	Trick.BOOST: {"name": "Boost", "mult": 1.5, "points_per_sec": 25.0, "is_modifier": true},
+}
+
+# Combo system constants
+const COMBO_WINDOW: float = 2.0
+const COMBO_INCREMENT: float = 0.25
+const MAX_COMBO_MULT: float = 4.0
+
+# Boost double-tap activation
+const BOOST_DOUBLE_TAP_WINDOW: float = 1.0
 
 # Rotation tuning
 @export var max_wheelie_angle: float = deg_to_rad(80)
@@ -85,6 +74,11 @@ const TrickTypes = {
 var boost_timer: float = 0.0
 var wheelie_time_held: float = 0.0
 
+# Trick lifecycle state
+var _trick_timer: float = 0.0
+var _combo_timer: float = 0.0
+var _last_trick_press_time: float = 0.0
+
 const SKID_SPAWN_INTERVAL: float = 0.025
 const SKID_MARK_LIFETIME: float = 5.0
 var skid_spawn_timer: float = 0.0
@@ -103,10 +97,13 @@ func _bike_setup(p_controller: PlayerController):
 
     player_controller.bike_input.trick_changed.connect(_on_trick_changed)
     player_controller.bike_crash.force_stoppie_requested.connect(_on_force_stoppie_requested)
+    player_controller.bike_crash.crashed.connect(_on_crashed_signal)
     stoppie_stopped.connect(_on_stoppie_stopped)
 
 func _bike_update(delta):
     current_delta = delta
+    _update_active_trick(delta)
+    _update_combo_timer(delta)
     _update_boost(delta)
 
     match player_controller.state.player_state:
@@ -151,6 +148,166 @@ func _update_trick_ground(delta):
     handle_skidding(delta, player_controller.bike_crash.is_front_wheel_locked(),
         player_controller.rear_wheel.global_position, player_controller.front_wheel.global_position,
         player_controller.global_rotation, true)
+
+
+# =============================================================================
+# TRICK DETECTION AND SCORING SYSTEM
+# =============================================================================
+
+func _detect_trick() -> Trick:
+    """Detects the current trick based on bike state and input."""
+    var is_airborne = player_controller.state.player_state in [
+        BikeState.PlayerState.AIRBORNE, BikeState.PlayerState.TRICK_AIR
+    ]
+
+    # Air tricks (trick button + direction)
+    if is_airborne and player_controller.bike_input.trick:
+        if player_controller.bike_input.lean < -0.5:
+            return Trick.HEEL_CLICKER
+
+    # Ground tricks
+    if not is_airborne:
+        # Wheelie detection (pitch > 15 degrees)
+        if player_controller.state.pitch_angle > deg_to_rad(15):
+            if player_controller.bike_input.trick:
+                return Trick.WHEELIE_STANDING
+            else:
+                return Trick.WHEELIE_SITTING
+
+        # Stoppie detection (pitch < -10 degrees)
+        if player_controller.state.pitch_angle < deg_to_rad(-10):
+            return Trick.STOPPIE
+
+        # Fishtail/Drift detection (fishtail angle > 10 degrees)
+        if abs(player_controller.state.fishtail_angle) > deg_to_rad(10):
+            if player_controller.bike_input.throttle > 0.5:
+                return Trick.DRIFT
+            else:
+                return Trick.FISHTAIL
+
+    return Trick.NONE
+
+
+func _update_active_trick(delta: float):
+    """Main trick update - handles detection, lifecycle, and scoring."""
+    var detected = _detect_trick()
+    var current = player_controller.state.active_trick
+
+    # Handle trick transitions
+    if detected != current:
+        if current != Trick.NONE:
+            _end_trick(current)
+        if detected != Trick.NONE:
+            _start_trick(detected)
+
+    # Continue scoring active trick
+    if player_controller.state.active_trick != Trick.NONE:
+        _continue_trick(delta)
+
+    # Update boost trick score separately (boost stacks with other tricks)
+    if player_controller.state.is_boosting:
+        _update_boost_trick_score(delta)
+
+
+func _start_trick(trick: Trick):
+    """Called when a new trick begins."""
+    player_controller.state.active_trick = trick
+    player_controller.state.trick_score = 0.0
+    player_controller.state.trick_start_time = Time.get_ticks_msec() / 1000.0
+    _trick_timer = 0.0
+    trick_started.emit(trick)
+
+
+func _continue_trick(delta: float):
+    """Called each frame while a trick is active - accumulates score."""
+    var trick = player_controller.state.active_trick
+    if trick == Trick.NONE:
+        return
+
+    var data = TRICK_DATA[trick]
+    _trick_timer += delta
+    player_controller.state.trick_score += data.points_per_sec * delta * data.mult
+
+
+func _end_trick(trick: Trick):
+    """Called when a trick ends - banks score and updates combo."""
+    var final_score = player_controller.state.trick_score * player_controller.state.combo_multiplier
+    player_controller.state.total_score += final_score
+
+    # Update combo
+    player_controller.state.combo_count += 1
+    player_controller.state.combo_multiplier = minf(
+        player_controller.state.combo_multiplier + COMBO_INCREMENT, MAX_COMBO_MULT
+    )
+    _combo_timer = COMBO_WINDOW
+
+    # Reset trick state
+    player_controller.state.active_trick = Trick.NONE
+    var duration = _trick_timer
+    player_controller.state.trick_score = 0.0
+
+    trick_ended.emit(trick, final_score, duration)
+
+
+func _update_boost_trick_score(delta: float):
+    """Updates boost trick score separately (boost is a modifier that stacks)."""
+    var data = TRICK_DATA[Trick.BOOST]
+    player_controller.state.boost_trick_score += data.points_per_sec * delta * data.mult
+
+
+func _bank_boost_trick_score():
+    """Banks boost trick score when boost ends."""
+    var final_score = player_controller.state.boost_trick_score * player_controller.state.combo_multiplier
+    player_controller.state.total_score += final_score
+
+    # Update combo for boost ending
+    if player_controller.state.boost_trick_score > 0:
+        player_controller.state.combo_count += 1
+        player_controller.state.combo_multiplier = minf(
+            player_controller.state.combo_multiplier + COMBO_INCREMENT, MAX_COMBO_MULT
+        )
+        _combo_timer = COMBO_WINDOW
+
+    player_controller.state.boost_trick_score = 0.0
+
+
+func _update_combo_timer(delta: float):
+    """Updates combo timer - resets combo when window expires."""
+    if _combo_timer > 0:
+        _combo_timer -= delta
+        if _combo_timer <= 0:
+            player_controller.state.combo_multiplier = 1.0
+            player_controller.state.combo_count = 0
+            combo_expired.emit()
+
+
+func _on_crashed_signal(_pitch_direction: float, _lean_direction: float):
+    """Signal handler for crashed signal - wraps _on_crashed."""
+    _on_crashed()
+
+
+func _on_crashed():
+    """Called when player crashes - cancels active trick and resets combo."""
+    var trick = player_controller.state.active_trick
+    if trick != Trick.NONE:
+        player_controller.state.active_trick = Trick.NONE
+        player_controller.state.trick_score = 0.0
+        player_controller.state.boost_trick_score = 0.0
+        trick_cancelled.emit(trick)
+
+    # Always reset combo on crash
+    player_controller.state.combo_multiplier = 1.0
+    player_controller.state.combo_count = 0
+    _combo_timer = 0.0
+
+
+func get_current_trick_name() -> String:
+    """Returns the display name of the current active trick."""
+    var trick = player_controller.state.active_trick
+    if trick == Trick.NONE:
+        return ""
+    return TRICK_DATA[trick].name
+
 
 func handle_wheelie_stoppie(delta, rpm_ratio: float,
                              front_wheel_locked: bool = false, is_airborne: bool = false):
@@ -325,8 +482,25 @@ func _on_force_stoppie_requested(target_pitch: float, rate: float):
 
 
 func _on_trick_changed(btn_pressed: bool):
+    """Handles trick button press - double-tap activates boost."""
     if not btn_pressed:
         return
+
+    var current_time = Time.get_ticks_msec() / 1000.0
+    var time_since_last = current_time - _last_trick_press_time
+
+    # Double-tap detection for boost activation
+    if time_since_last <= BOOST_DOUBLE_TAP_WINDOW and time_since_last > 0.05:
+        # Double-tap detected - activate boost
+        _activate_boost()
+        _last_trick_press_time = 0.0  # Reset to prevent triple-tap
+    else:
+        # First tap - record time (single tap used for other trick actions)
+        _last_trick_press_time = current_time
+
+
+func _activate_boost():
+    """Activates boost if available."""
     if player_controller.state.is_boosting:
         return
     if player_controller.state.boost_count <= 0:
@@ -334,6 +508,7 @@ func _on_trick_changed(btn_pressed: bool):
 
     player_controller.state.boost_count -= 1
     player_controller.state.is_boosting = true
+    player_controller.state.boost_trick_score = 0.0  # Reset boost score
     boost_timer = boost_duration
     boost_started.emit()
 
@@ -345,6 +520,7 @@ func _update_boost(delta):
     boost_timer -= delta
     if boost_timer <= 0:
         player_controller.state.is_boosting = false
+        _bank_boost_trick_score()  # Bank boost trick score when boost ends
         boost_ended.emit()
 
 
@@ -389,3 +565,13 @@ func _bike_reset():
     front_skid_spawn_timer = 0.0
     last_throttle_input = 0.0
     last_clutch_input = 0.0
+
+    # Reset trick scoring state
+    player_controller.state.active_trick = Trick.NONE
+    player_controller.state.trick_score = 0.0
+    player_controller.state.boost_trick_score = 0.0
+    player_controller.state.combo_multiplier = 1.0
+    player_controller.state.combo_count = 0
+    _trick_timer = 0.0
+    _combo_timer = 0.0
+    _last_trick_press_time = 0.0

@@ -62,6 +62,15 @@ var rpm_ratio: float = 0.0  # Cached per frame by BikeGearing
 var pitch_angle: float = 0.0
 var fishtail_angle: float = 0.0
 
+# Trick scoring state
+var active_trick: int = 0  # BikeTricks.Trick enum (0 = NONE)
+var trick_start_time: float = 0.0
+var trick_score: float = 0.0
+var boost_trick_score: float = 0.0  # Separate score for boost modifier
+var total_score: float = 0.0
+var combo_multiplier: float = 1.0
+var combo_count: int = 0
+
 # Boost state
 var is_boosting: bool = false
 var boost_count: int = 2
