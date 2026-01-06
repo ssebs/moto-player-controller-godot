@@ -13,6 +13,7 @@ signal trick_started(trick: int)
 signal trick_ended(trick: int, score: float, duration: float)
 signal trick_cancelled(trick: int)
 signal combo_expired
+signal dank_triggered(bonus: float)  # Emitted when wheelie/stoppie exceeds 60 degrees
 
 # Trick enum
 enum Trick {
@@ -52,6 +53,10 @@ const DIFFICULTY_MULT: Dictionary = {
 	BikeState.PlayerDifficulty.HARD: 1.5,
 }
 
+# Dank bonus (wheelie/stoppie > 60 degrees)
+const DANK_ANGLE: float = deg_to_rad(60)
+const DANK_BONUS: float = 100.0
+
 # Boost double-tap activation
 const BOOST_DOUBLE_TAP_WINDOW: float = 1.0
 
@@ -88,6 +93,7 @@ var wheelie_time_held: float = 0.0
 var _trick_timer: float = 0.0
 var _combo_timer: float = 0.0
 var _last_trick_press_time: float = 0.0
+var _dank_triggered_this_trick: bool = false
 
 const SKID_SPAWN_INTERVAL: float = 0.025
 const SKID_MARK_LIFETIME: float = 5.0
