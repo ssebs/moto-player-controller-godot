@@ -37,6 +37,7 @@ class_name IKCharacterMesh extends Node3D
 @onready var ragdoll_bones: PhysicalBoneSimulator3D = %PhysicalBoneSimulator3D
 
 var is_ragdoll := false
+var should_glitch_ragdoll_option := false # TODO: make this an option
 
 func _ready():
     _update_ik_magnets()
@@ -53,7 +54,8 @@ func _update_ik_magnets():
 
 func _physics_process(_delta):
     if is_ragdoll:
-        _clamp_ragdoll_velocities()
+        if !should_glitch_ragdoll_option:
+            _clamp_ragdoll_velocities()
     else:
         move_butt()
 
@@ -73,9 +75,9 @@ func stop_ragdoll():
 func _clamp_ragdoll_velocities():
     for child in ragdoll_bones.get_children():
         if child is PhysicalBone3D:
-            if child.linear_velocity.length() > max_bone_linear_velocity:
+            if abs(child.linear_velocity.length()) > max_bone_linear_velocity:
                 child.linear_velocity = child.linear_velocity.normalized() * max_bone_linear_velocity
-            if child.angular_velocity.length() > max_bone_angular_velocity:
+            if abs(child.angular_velocity.length()) > max_bone_angular_velocity:
                 child.angular_velocity = child.angular_velocity.normalized() * max_bone_angular_velocity
 
 
