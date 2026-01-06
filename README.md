@@ -35,8 +35,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-- [ ] Fix clutch start on easy mode (shouldn't be needed)
-- [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
+
 - [WIP] Simplify logic / component level refactor:
   - [ ] tricks
     - [ ] Decide how tricks should be tracked / checked.
@@ -44,37 +43,47 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] crash
   - [ ] physics
   - [ ] animation
-- [ ] Bike stats / mesh / marker positions for tricks should be in a resource
 
 ## Bugs
 
+- [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
+- [ ] Fix clutch start on easy mode (shouldn't be needed)
 - [ ] NOS disable turning during, you can only boost forward
 - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
 - [ ] Redline sound (bang limiter)
 - [ ] Should be more stable at higher speeds (countersteering at speed feels off, no turn in should occur)
+- [ ] Speed carries over even when crashing into collider
 
 ## TODO:
 
-- [ ] Bike crash physics (swich to Rigidbody?)
+- [ ] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
+- [ ] Multiple bike models w/ diff stats
+  - [ ] Sport bike (move stats to resource)
+  - [ ] Pocket bike (only 2 gears, lower stats, etc.)
+  - [ ] Move BikeMarkers to this
 - [WIP] Riding animations
   - [x] lean
   - [ ] wheelie v1 (RB for standing wheelie during wheelie)
   - [ ] stoppie
   - [ ] Stopped (1 leg down)
   - [ ] 1 complex trick (heel clicker) (only in-air)
+- [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] Camera controller
-- [ ] Multiple bike models w/ diff stats
-  - [ ] Sport bike (move stats to resource)
-  - [ ] Pocket bike (only 2 gears, lower stats, etc.)
-  - [ ] Move BikeMarkers to this
 - [ ] Tune "feeling" of riding the bike & doing tricks
   - [ ] Bike should fall when too slow, but should be stable at speed (don't have tip-in over 30)
   - [ ] Counter steering
-- [ ] Difficulty settings
-  - **Easy** - Automatic, can't fall off bike unless crashing into object / during trick
-  - **Medium** - Manual, can't fall easily from mistakes (e.g. death wobble), clutch not required
-  - **Hard** - Manual, can fall easily from mistakes, clutch required
-- [ ] All Tricks:
+- [ ] Final refactor
+  - [ ] Signals that emit from player controller for use in MP
+  - [ ] Simpify physics logic
+  - [ ] Simplify gearing logic
+  - [ ] Simplify tricks logic
+  - [ ] Simplify crash checks logic
+  - [ ] Simplify state machines / animation logic
+- [ ] Fix bugs
+
+## Out of Scope
+
+- [ ] All Tricks (TODO: move to DankNooner)
   - [ ] Standing wheelie
   - [ ] One leg over wheelie
   - [ ] Stoppie to 180
@@ -93,17 +102,13 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] hardflip
     - [ ] 360flip
     - [ ] nollie lazerflip
-- [ ] Fix all bugs
-- [ ] Final refactor
-  - [ ] Signals that emit from player controller for use in MP
-  - [ ] Simpify physics logic
-  - [ ] Simplify gearing logic
-  - [ ] Simplify tricks logic
-  - [ ] Simplify crash checks logic
-  - [ ] Simplify state machines / animation logic
 
 ## Done:
 
+- [x] Difficulty settings
+  - **Easy** - Automatic, can't fall off bike unless crashing into object / during trick
+  - **Medium** - Manual, can't fall easily from mistakes (e.g. death wobble), clutch not required
+  - **Hard** - Manual, can fall easily from mistakes, clutch required
 - [x] Ragdoll character on crash
 - [x] Review state machine / refactor
 - [x] State machine for biker state & animations
