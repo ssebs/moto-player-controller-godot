@@ -43,7 +43,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Move BikeMarkers to this
 
 ## Bugs
-
+- [ ] Cleanup input map (trick_down vs cam_down)
 - [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
 - [ ] Fix clutch start on easy mode (shouldn't be needed)
 - [ ] NOS disable turning during, you can only boost forward
@@ -58,7 +58,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [x] lean
   - [ ] wheelie v1 (RB for standing wheelie during wheelie)
   - [ ] stoppie
-  - [ ] Stopped (1 leg down)
+  - [ ] Idle / stopped (1 leg down)
   - [ ] 1 complex trick (heel clicker) (only in-air)
 - [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] Camera controller

@@ -60,8 +60,6 @@ class_name PlayerController extends CharacterBody3D
 var spawn_position: Vector3
 var spawn_rotation: Vector3
 
-var should_ragdoll := false
-
 func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
@@ -81,26 +79,11 @@ func _ready():
 
 func _physics_process(delta):
     if Input.is_action_just_pressed("trick_down"):
-        pass
         bike_crash.trigger_crash()
 
-
-        # should_ragdoll = !should_ragdoll
-        # if should_ragdoll:
-        #     character_mesh.start_ragdoll()
-        #     bike_itself_mesh.hide() # HACK
-        # else:
-        #     character_mesh.stop_ragdoll()
-        #     bike_itself_mesh.show() # HACK
-    
-
     # Handle crash states first (before input)
-    if state.player_state == BikeState.PlayerState.CRASHED:
-        bike_crash._bike_update(delta)
-        bike_animation.apply_mesh_rotation()
-        return
-
-    if state.player_state == BikeState.PlayerState.CRASHING:
+    if state.player_state == BikeState.PlayerState.CRASHED || \
+        state.player_state == BikeState.PlayerState.CRASHING:
         bike_crash._bike_update(delta)
         bike_animation._bike_update(delta)
         return
@@ -108,13 +91,10 @@ func _physics_process(delta):
     # Input first, so state detection has current values
     bike_input._bike_update(delta)
 
-    # Update player state based on current conditions (after input)
     _update_player_state()
 
-    # TODO: call this from %FunctionalityComponents.get_children()
-
-
     # Component updates
+    # TODO: call this from %FunctionalityComponents.get_children()
     bike_gearing._bike_update(delta)
     bike_physics._bike_update(delta)
     bike_tricks._bike_update(delta)
@@ -124,7 +104,6 @@ func _physics_process(delta):
 
     # Movement
     bike_physics.apply_movement(delta)
-
     move_and_slide()
 
     # Align to ground & bike_mesh rotation

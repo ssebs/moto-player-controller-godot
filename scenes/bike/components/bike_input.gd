@@ -11,7 +11,6 @@ signal gear_down_pressed
 signal difficulty_toggled
 signal trick_changed(value: float)
 
-
 # Vibration settings
 @export var vibration_duration: float = 0.15
 

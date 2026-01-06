@@ -116,13 +116,14 @@ var current_delta: float = 0.0 # TODO: stop using this!
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
-    player_controller.bike_input.trick_changed.connect(_on_trick_changed)
+    player_controller.bike_input.trick_changed.connect(_on_trick_btn_changed)
     player_controller.bike_crash.force_stoppie_requested.connect(_on_force_stoppie_requested)
     player_controller.bike_crash.crashed.connect(_on_crashed)
     stoppie_stopped.connect(_on_stoppie_stopped)
 
 func _bike_update(delta):
     current_delta = delta
+    # TODO: move these to _update_xyz
     _update_active_trick(delta)
     _update_combo_timer(delta)
     _update_boost(delta)
@@ -475,7 +476,7 @@ func _on_force_stoppie_requested(target_pitch: float, rate: float, ):
     player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, target_pitch, rate * current_delta)
 
 
-func _on_trick_changed(btn_pressed: bool):
+func _on_trick_btn_changed(btn_pressed: bool):
     """Handles trick button press - double-tap activates boost."""
     if not btn_pressed:
         return
