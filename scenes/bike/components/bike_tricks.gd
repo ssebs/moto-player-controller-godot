@@ -162,7 +162,7 @@ func _detect_trick() -> Trick:
 
     # Air tricks (trick button + direction)
     if is_airborne and player_controller.bike_input.trick:
-        if player_controller.bike_input.lean < -0.5:
+        if Input.is_action_pressed("cam_down"):
             return Trick.HEEL_CLICKER
 
     # Ground tricks

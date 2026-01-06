@@ -106,6 +106,21 @@ Connect to these signals for UI/audio/animation reactions:
 - `trick_cancelled(trick: int)` - Trick interrupted (crash)
 - `combo_expired` - Combo window closed
 
+### Trick Animations
+
+Add animations in `bike_animation.gd` via `_on_trick_started`/`_on_trick_ended`:
+```gdscript
+func _on_trick_started(trick: int):
+    match trick:
+        BikeTricks.Trick.HEEL_CLICKER:
+            player_controller.anim_player.play("snap_neck")
+
+func _on_trick_ended(trick: int, _score: float, _duration: float):
+    match trick:
+        BikeTricks.Trick.HEEL_CLICKER:
+            player_controller.anim_player.play_backwards("snap_neck")
+```
+
 ### Scoring
 
 - Tricks accumulate `points_per_sec * mult * delta` while active

@@ -24,6 +24,10 @@ func _bike_setup(p_controller: PlayerController):
     player_controller.bike_tricks.boost_started.connect(_on_boost_started)
     player_controller.bike_tricks.boost_ended.connect(_on_boost_ended)
 
+    # Connect to trick signals for animations
+    player_controller.bike_tricks.trick_started.connect(_on_trick_started)
+    player_controller.bike_tricks.trick_ended.connect(_on_trick_ended)
+
     # Connect to player state changes
     player_controller.state.state_changed.connect(_on_player_state_changed)
 
@@ -81,6 +85,19 @@ func _on_boost_ended():
 func _on_boost_anim_finished(anim_name: String):
     if anim_name == "naruto_run_start":
         player_controller.anim_player.play("naruto_run_loop")
+
+
+func _on_trick_started(trick: int):
+    match trick:
+        BikeTricks.Trick.HEEL_CLICKER:
+            player_controller.anim_player.play("snap_neck")
+
+
+func _on_trick_ended(trick: int, _score: float, _duration: float):
+    match trick:
+        BikeTricks.Trick.HEEL_CLICKER:
+            player_controller.anim_player.play_backwards("snap_neck")
+
 
 func _update_brake_light(value: float):
     if tail_light_material:
