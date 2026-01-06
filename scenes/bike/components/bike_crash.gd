@@ -111,6 +111,7 @@ func check_crash_conditions(delta) -> String:
     return crash_reason
 
 
+# TODO: clean this up & disable on easy
 func _update_brake_danger(delta) -> bool:
     """Returns true if brake crash should occur"""
     # Detect brake grab (how fast brake input is increasing)

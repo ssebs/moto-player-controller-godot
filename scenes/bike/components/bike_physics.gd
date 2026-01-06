@@ -186,6 +186,8 @@ func handle_steering(delta):
     # Countersteer: lean induces steering in same direction
     # More lean = tighter turn radius (more steering)
     var lean_induced_steer = - total_lean * countersteer_factor
+    if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+        lean_induced_steer = 0
 
     # Player input adds to the automatic countersteer
     var input_steer = max_steering_angle * player_controller.bike_input.steer
