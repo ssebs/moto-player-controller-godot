@@ -170,6 +170,12 @@ func _on_crashed(_pitch_direction: float, _lean_direction: float):
 
 func _on_boost_started():
     show_speed_lines()
+    # Show boost notification with difficulty multiplier
+    if player_controller.boost_toast:
+        var diff_mult = BikeTricks.DIFFICULTY_MULT.get(player_controller.state.difficulty, 1.0)
+        player_controller.boost_toast.text = "BOOST! (x%.1f)" % diff_mult
+        player_controller.boost_toast.visible = true
+        toast_timer = TOAST_DURATION
 
 
 func _on_boost_ended():
@@ -214,9 +220,11 @@ func _bike_reset():
 func _on_trick_ended(trick: int, score: float, _duration: float):
     """Add completed trick to the feed."""
     var trick_name = BikeTricks.TRICK_DATA[trick].name
+    var diff_mult = BikeTricks.DIFFICULTY_MULT.get(player_controller.state.difficulty, 1.0)
     _trick_feed.push_front({
         "name": trick_name,
         "score": int(score),
+        "diff_mult": diff_mult,
         "timer": TRICK_FEED_DURATION
     })
     # Limit feed size
@@ -240,7 +248,11 @@ func _update_trick_feed(delta: float):
             var feed_text = ""
             for item in _trick_feed:
                 var _alpha = clampf(item.timer / TRICK_FEED_DURATION, 0.3, 1.0)  # TODO: use for fade effect
-                feed_text += "%s +%d\n" % [item.name, item.score]
+                var mult_str = "x%.1f" % item.diff_mult if item.diff_mult != 1.0 else ""
+                if mult_str != "":
+                    feed_text += "%s +%d (%s)\n" % [item.name, item.score, mult_str]
+                else:
+                    feed_text += "%s +%d\n" % [item.name, item.score]
             player_controller.trick_feed_label.text = feed_text.strip_edges()
             player_controller.trick_feed_label.visible = true
         else:

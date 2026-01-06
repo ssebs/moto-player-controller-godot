@@ -45,6 +45,13 @@ const COMBO_WINDOW: float = 2.0
 const COMBO_INCREMENT: float = 0.25
 const MAX_COMBO_MULT: float = 4.0
 
+# Difficulty score multipliers
+const DIFFICULTY_MULT: Dictionary = {
+	BikeState.PlayerDifficulty.EASY: 0.8,
+	BikeState.PlayerDifficulty.MEDIUM: 1.0,
+	BikeState.PlayerDifficulty.HARD: 1.5,
+}
+
 # Boost double-tap activation
 const BOOST_DOUBLE_TAP_WINDOW: float = 1.0
 
@@ -232,11 +239,16 @@ func _continue_trick(delta: float):
     player_controller.state.trick_score += data.points_per_sec * delta * data.mult
 
 
+func _get_difficulty_mult() -> float:
+    """Returns the score multiplier for the current difficulty."""
+    return DIFFICULTY_MULT.get(player_controller.state.difficulty, 1.0)
+
+
 func _end_trick(trick: Trick):
     """Called when a trick ends - banks score and updates combo."""
     var data = TRICK_DATA[trick]
     var base_points = data.get("base_points", 0)
-    var final_score = (player_controller.state.trick_score + base_points) * player_controller.state.combo_multiplier
+    var final_score = (player_controller.state.trick_score + base_points) * player_controller.state.combo_multiplier * _get_difficulty_mult()
     player_controller.state.total_score += final_score
 
     # Update combo
@@ -262,7 +274,7 @@ func _update_boost_trick_score(delta: float):
 
 func _bank_boost_trick_score():
     """Banks boost trick score when boost ends."""
-    var final_score = player_controller.state.boost_trick_score * player_controller.state.combo_multiplier
+    var final_score = player_controller.state.boost_trick_score * player_controller.state.combo_multiplier * _get_difficulty_mult()
     player_controller.state.total_score += final_score
 
     # Update combo for boost ending

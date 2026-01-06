@@ -36,13 +36,11 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 
-- [WIP] Simplify logic / component level refactor:
-  - [ ] tricks
-    - [ ] Decide how tricks should be tracked / checked.
-      - [ ] enum? dict? see @bike_tricks.gd
-  - [ ] crash
-  - [ ] physics
-  - [ ] animation
+- [ ] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
+- [ ] Multiple bike models w/ diff stats
+  - [ ] Sport bike (move stats to resource)
+  - [ ] Pocket bike (only 2 gears, lower stats, etc.)
+  - [ ] Move BikeMarkers to this
 
 ## Bugs
 
@@ -56,11 +54,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## TODO:
 
-- [ ] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
-- [ ] Multiple bike models w/ diff stats
-  - [ ] Sport bike (move stats to resource)
-  - [ ] Pocket bike (only 2 gears, lower stats, etc.)
-  - [ ] Move BikeMarkers to this
 - [WIP] Riding animations
   - [x] lean
   - [ ] wheelie v1 (RB for standing wheelie during wheelie)
@@ -105,6 +98,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] tricks
+  - [x] Decide how tricks should be tracked / checked.
 - [x] Difficulty settings
   - **Easy** - Automatic, can't fall off bike unless crashing into object / during trick
   - **Medium** - Manual, can't fall easily from mistakes (e.g. death wobble), clutch not required
