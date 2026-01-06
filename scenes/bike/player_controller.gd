@@ -37,6 +37,10 @@ class_name PlayerController extends CharacterBody3D
 @onready var boost_label: Label = %BoostLabel
 @onready var boost_toast: Label = %BoostToast
 @onready var respawn_label: Label = %RespawnLabel
+@onready var score_label: Label = %ScoreLabel
+@onready var trick_label: Label = %TrickLabel
+@onready var combo_label: Label = %ComboLabel
+@onready var trick_feed_label: Label = %TrickFeedLabel
 
 # Components
 @onready var bike_input: BikeInput = %BikeInput

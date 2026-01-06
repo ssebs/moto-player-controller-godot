@@ -27,14 +27,17 @@ enum Trick {
 }
 
 # Trick data configuration
+# base_points: instant score when trick completes
+# points_per_sec: score accumulated per second while trick is active
+# mult: multiplier applied to points_per_sec
 const TRICK_DATA: Dictionary = {
-	Trick.WHEELIE_SITTING: {"name": "Sitting Wheelie", "mult": 1.0, "points_per_sec": 10.0},
-	Trick.WHEELIE_STANDING: {"name": "Standing Wheelie", "mult": 1.5, "points_per_sec": 20.0},
-	Trick.STOPPIE: {"name": "Stoppie", "mult": 1.2, "points_per_sec": 15.0},
-	Trick.FISHTAIL: {"name": "Fishtail", "mult": 1.0, "points_per_sec": 8.0},
-	Trick.DRIFT: {"name": "Drift", "mult": 1.3, "points_per_sec": 12.0},
-	Trick.HEEL_CLICKER: {"name": "Heel Clicker", "mult": 2.0, "points_per_sec": 50.0},
-	Trick.BOOST: {"name": "Boost", "mult": 1.5, "points_per_sec": 25.0, "is_modifier": true},
+	Trick.WHEELIE_SITTING: {"name": "Sitting Wheelie", "base_points": 50, "mult": 1.0, "points_per_sec": 10.0},
+	Trick.WHEELIE_STANDING: {"name": "Standing Wheelie", "base_points": 100, "mult": 1.5, "points_per_sec": 20.0},
+	Trick.STOPPIE: {"name": "Stoppie", "base_points": 75, "mult": 1.2, "points_per_sec": 15.0},
+	Trick.FISHTAIL: {"name": "Fishtail", "base_points": 25, "mult": 1.0, "points_per_sec": 8.0},
+	Trick.DRIFT: {"name": "Drift", "base_points": 50, "mult": 1.3, "points_per_sec": 12.0},
+	Trick.HEEL_CLICKER: {"name": "Heel Clicker", "base_points": 200, "mult": 2.0, "points_per_sec": 50.0},
+	Trick.BOOST: {"name": "Boost", "base_points": 0, "mult": 1.5, "points_per_sec": 25.0, "is_modifier": true},
 }
 
 # Combo system constants
@@ -231,7 +234,9 @@ func _continue_trick(delta: float):
 
 func _end_trick(trick: Trick):
     """Called when a trick ends - banks score and updates combo."""
-    var final_score = player_controller.state.trick_score * player_controller.state.combo_multiplier
+    var data = TRICK_DATA[trick]
+    var base_points = data.get("base_points", 0)
+    var final_score = (player_controller.state.trick_score + base_points) * player_controller.state.combo_multiplier
     player_controller.state.total_score += final_score
 
     # Update combo

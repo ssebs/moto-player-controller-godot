@@ -3,6 +3,11 @@ class_name BikeUI extends BikeComponent
 var toast_timer: float = 0.0
 const TOAST_DURATION: float = 1.5
 
+# Trick feed system
+const TRICK_FEED_DURATION: float = 2.0
+const TRICK_FEED_MAX_ITEMS: int = 5
+var _trick_feed: Array = []  # Array of {name: String, score: int, timer: float}
+
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
@@ -17,11 +22,13 @@ func _bike_setup(p_controller: PlayerController):
     player_controller.bike_tricks.boost_started.connect(_on_boost_started)
     player_controller.bike_tricks.boost_ended.connect(_on_boost_ended)
     player_controller.bike_tricks.boost_earned.connect(show_boost_toast)
+    player_controller.bike_tricks.trick_ended.connect(_on_trick_ended)
 
 
 func _bike_update(delta):
     update_ui(player_controller.state.rpm_ratio)
     _update_toast(delta)
+    _update_trick_feed(delta)
 
 
 func update_ui(rpm_ratio: float):
@@ -44,6 +51,31 @@ func _update_labels():
 
     if player_controller.boost_label:
         player_controller.boost_label.text = "Boost: %d" % player_controller.state.boost_count
+
+    # Score display
+    if player_controller.score_label:
+        player_controller.score_label.text = "Score: %d" % int(player_controller.state.total_score)
+
+    # Current trick display
+    if player_controller.trick_label:
+        var trick_name = player_controller.bike_tricks.get_current_trick_name()
+        if trick_name != "":
+            player_controller.trick_label.text = trick_name
+            player_controller.trick_label.visible = true
+            # Show building score
+            var building_score = int(player_controller.state.trick_score)
+            if building_score > 0:
+                player_controller.trick_label.text += " +%d" % building_score
+        else:
+            player_controller.trick_label.visible = false
+
+    # Combo display
+    if player_controller.combo_label:
+        if player_controller.state.combo_count > 0:
+            player_controller.combo_label.text = "x%.2f (%d)" % [player_controller.state.combo_multiplier, player_controller.state.combo_count]
+            player_controller.combo_label.visible = true
+        else:
+            player_controller.combo_label.visible = false
 
 
 func _update_bars(rpm_ratio: float):
@@ -170,7 +202,46 @@ func _update_toast(delta):
 func _bike_reset():
     hide_speed_lines()
     toast_timer = 0.0
+    _trick_feed.clear()
     if player_controller.boost_toast:
         player_controller.boost_toast.visible = false
     if player_controller.respawn_label:
         player_controller.respawn_label.visible = false
+    if player_controller.trick_feed_label:
+        player_controller.trick_feed_label.text = ""
+
+
+func _on_trick_ended(trick: int, score: float, _duration: float):
+    """Add completed trick to the feed."""
+    var trick_name = BikeTricks.TRICK_DATA[trick].name
+    _trick_feed.push_front({
+        "name": trick_name,
+        "score": int(score),
+        "timer": TRICK_FEED_DURATION
+    })
+    # Limit feed size
+    if _trick_feed.size() > TRICK_FEED_MAX_ITEMS:
+        _trick_feed.pop_back()
+
+
+func _update_trick_feed(delta: float):
+    """Update trick feed timers and display."""
+    # Update timers and remove expired entries
+    var i = _trick_feed.size() - 1
+    while i >= 0:
+        _trick_feed[i].timer -= delta
+        if _trick_feed[i].timer <= 0:
+            _trick_feed.remove_at(i)
+        i -= 1
+
+    # Update display
+    if player_controller.trick_feed_label:
+        if _trick_feed.size() > 0:
+            var feed_text = ""
+            for item in _trick_feed:
+                var _alpha = clampf(item.timer / TRICK_FEED_DURATION, 0.3, 1.0)  # TODO: use for fade effect
+                feed_text += "%s +%d\n" % [item.name, item.score]
+            player_controller.trick_feed_label.text = feed_text.strip_edges()
+            player_controller.trick_feed_label.visible = true
+        else:
+            player_controller.trick_feed_label.visible = false
