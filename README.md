@@ -4,7 +4,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Gameplay
 
-[Gameplay YT Video](https://youtu.be/G5kgtRopBhg)
+[Gameplay YT Video](https://youtu.be/AbMAysvyk-Q)
 
 - How riding should feel
   - Mix of Sim / Arcade - not as hard as real life, but not as easy as GTA.
