@@ -158,6 +158,7 @@ func _update_player_state():
     if state.player_state in [BikeState.PlayerState.CRASHED, BikeState.PlayerState.CRASHING]:
         return
 
+    # TODO: remove bike_tricks.is_in..., this should be requested by state.request_state_change
     var is_airborne = not is_on_floor()
     var is_ground_trick = bike_tricks.is_in_ground_trick()
     var is_air_trick = bike_tricks.is_in_air_trick(is_airborne)

@@ -37,7 +37,7 @@ func update_ui(rpm_ratio: float):
     _update_vibration()
     _update_difficulty_display()
 
-
+# TODO: refactor this
 func _update_labels():
     if !player_controller.gear_label or !player_controller.speed_label:
         return

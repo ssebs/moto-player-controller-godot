@@ -197,14 +197,8 @@ func _update_crash_state(delta):
         return
     
     _update_ragdoll(delta)
+    
     # TODO: bike crash physics
-
-    # # Apply crash physics - rotate bike to ground
-    # if crash_pitch_direction != 0:
-    #     player_controller.bike_tricks.force_pitch(crash_pitch_direction * deg_to_rad(90), crash_rotation_speed, delta)
-    # elif crash_lean_direction != 0:
-    #     player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, crash_lean_direction * deg_to_rad(90), crash_rotation_speed * delta)
-
 
 func _update_ragdoll(delta):
     if not player_controller.character_mesh.is_ragdoll:

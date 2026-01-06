@@ -35,7 +35,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-
+- [ ] refactor bike_tricks w/ Trick enum
 - [ ] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
 - [ ] Multiple bike models w/ diff stats
   - [ ] Sport bike (move stats to resource)
@@ -72,6 +72,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Simplify tricks logic
   - [ ] Simplify crash checks logic
   - [ ] Simplify state machines / animation logic
+  - [ ] Simplify UI logic
 - [ ] Fix bugs
 
 ## Out of Scope
