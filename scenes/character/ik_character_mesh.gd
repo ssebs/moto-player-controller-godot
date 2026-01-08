@@ -23,7 +23,7 @@ class_name IKCharacterMesh extends Node3D
 
 # Ragdoll velocity limits
 @export var max_bone_linear_velocity: float = 100.0
-@export var max_bone_angular_velocity: float = 100.0
+@export var max_bone_angular_velocity: float = 50.0
 
 
 # IK nodes

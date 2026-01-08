@@ -59,6 +59,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] stoppie
   - [ ] Idle / stopped (1 leg down)
   - [x] 1 complex trick (heel clicker) (only in-air)
+  - [ ] Blend between leaning & tricks (boost)
 - [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] Camera controller
 - [ ] Tune "feeling" of riding the bike & doing tricks
