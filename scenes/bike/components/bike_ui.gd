@@ -101,8 +101,8 @@ func _update_bars(rpm_ratio: float):
 
     player_controller.brake_danger_bar.value = player_controller.bike_input.front_brake
 
-    if player_controller.state.brake_danger_level > 0.1:
-        var danger_color = Color(1.0, 1.0 - player_controller.state.brake_danger_level, 0.0)
+    if player_controller.state.grip_usage > 0.1:
+        var danger_color = Color(1.0, 1.0 - player_controller.state.grip_usage, 0.0)
         player_controller.brake_danger_bar.modulate = danger_color
     else:
         player_controller.brake_danger_bar.modulate = Color(0.3, 0.5, 0.9)
@@ -121,12 +121,11 @@ func _update_vibration():
     var strong_total = 0.0
 
     # Get vibration from components
-    if player_controller.bike_crash:
-        var brake_vibe = player_controller.bike_crash.get_brake_vibration()
-        weak_total += brake_vibe.x
-        strong_total += brake_vibe.y
-
     if player_controller.bike_tricks:
+        var grip_vibe = player_controller.bike_tricks.get_grip_vibration()
+        weak_total += grip_vibe.x
+        strong_total += grip_vibe.y
+
         var fishtail_vibe = player_controller.bike_tricks.get_fishtail_vibration()
         weak_total += fishtail_vibe.x
         strong_total += fishtail_vibe.y

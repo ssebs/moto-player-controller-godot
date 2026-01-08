@@ -75,8 +75,8 @@ var combo_count: int = 0
 var is_boosting: bool = false
 var boost_count: int = 2
 
-# Crash state
-var brake_danger_level: float = 0.0
+# Grip/Crash state
+var grip_usage: float = 0.0  # 0-1, how much grip is being consumed
 var brake_grab_level: float = 0.0
 
 # Difficulty

@@ -56,6 +56,25 @@ const DIFFICULTY_MULT: Dictionary = {
 	BikeState.PlayerDifficulty.MEDIUM: 1.0,
 	BikeState.PlayerDifficulty.HARD: 1.5,
 }
+
+# Grip system tuning per difficulty
+# EASY: grip logic disabled entirely
+# MEDIUM: forgiving thresholds
+# HARD: realistic grip limits
+const GRIP_TUNING: Dictionary = {
+	BikeState.PlayerDifficulty.MEDIUM: {
+		"brake_grab_threshold": 6.0,  # Harder to trigger lock
+		"grip_crash_threshold": 1.2,  # 20% more headroom
+		"grip_buildup_speed": 3.0,    # Slower buildup
+		"grip_decay_speed": 5.0,      # Faster recovery
+	},
+	BikeState.PlayerDifficulty.HARD: {
+		"brake_grab_threshold": 4.0,  # Rate/sec to count as grab
+		"grip_crash_threshold": 0.9,
+		"grip_buildup_speed": 5.0,
+		"grip_decay_speed": 3.0,
+	},
+}
 #region export vars
 # Tunables
 @export var combo_window: float = 2.0
@@ -112,6 +131,10 @@ var last_clutch_input: float = 0.0
 var _force_stoppie_target: float = 0.0
 var _force_stoppie_rate: float = 0.0
 var _force_stoppie_active: bool = false
+
+# Grip system state
+var last_front_brake: float = 0.0
+var front_brake_hold_time: float = 0.0
 #endregion
 
 #region BikeComponent stuff
@@ -119,7 +142,6 @@ func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
     player_controller.bike_input.trick_changed.connect(_on_trick_btn_changed)
-    player_controller.bike_crash.force_stoppie_requested.connect(_on_force_stoppie_requested)
     player_controller.bike_crash.crashed.connect(_on_crashed)
     stoppie_stopped.connect(_on_stoppie_stopped)
 
@@ -181,6 +203,12 @@ func _bike_reset():
     _force_stoppie_rate = 0.0
     _force_stoppie_active = false
 
+    # Reset grip system state
+    last_front_brake = 0.0
+    front_brake_hold_time = 0.0
+    player_controller.state.grip_usage = 0.0
+    player_controller.state.brake_grab_level = 0.0
+
 #endregion
 
 #region _update / handlers
@@ -191,6 +219,7 @@ func _update_riding(delta):
     _update_wheelie(delta)
     _update_stoppie(delta)
     _update_skidding(delta)
+    _update_grip_usage(delta)
 
 
 func _update_airborne(delta):
@@ -210,6 +239,7 @@ func _update_trick_ground(delta):
     _update_wheelie(delta)
     _update_stoppie(delta)
     _update_skidding(delta)
+    _update_grip_usage(delta)
 
 
 ## Airborne pitch control - free rotation with lean input.
@@ -275,10 +305,9 @@ func _update_wheelie(delta: float):
             player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
 
 
-# TODO: have bike_trick's stoppie logic handle bike_crash's "brake_danger" and rename it
 ## Handles stoppie initiation, continuation, and forced stoppie from crash system.
 func _update_stoppie(delta: float):
-    var front_wheel_locked = player_controller.bike_crash.is_front_wheel_locked()
+    var front_wheel_locked = is_front_wheel_locked()
     var was_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
 
     # Handle forced stoppie from crash system
@@ -329,13 +358,13 @@ func _update_stoppie(delta: float):
 
 func _update_skidding(delta: float):
     var is_on_floor = player_controller.is_on_floor()
-    var is_front_wheel_locked = player_controller.bike_crash.is_front_wheel_locked()
+    var front_wheel_locked = is_front_wheel_locked()
     var rear_wheel_pos = player_controller.rear_wheel.global_position
     var front_wheel_pos = player_controller.front_wheel.global_position
     var bike_rot = player_controller.global_rotation
 
     var is_rear_skidding = player_controller.bike_input.rear_brake > 0.5 and player_controller.state.speed > 2 and is_on_floor
-    var is_front_skidding = is_front_wheel_locked and player_controller.state.speed > 2 and is_on_floor
+    var is_front_skidding = front_wheel_locked and player_controller.state.speed > 2 and is_on_floor
 
     # Rear wheel skid
     if is_rear_skidding:
@@ -389,6 +418,92 @@ func _update_boost(delta):
         player_controller.state.is_boosting = false
         _bank_boost_trick_score() # Bank boost trick score when boost ends
         boost_ended.emit()
+
+
+func _update_grip_usage(delta) -> bool:
+    """Updates grip usage for front tire. Returns true if crash should occur."""
+    # Skip grip logic entirely on EASY difficulty
+    if player_controller.state.difficulty == BikeState.PlayerDifficulty.EASY:
+        player_controller.state.grip_usage = 0.0
+        player_controller.state.brake_grab_level = 0.0
+        return false
+
+    # Get tuning values for current difficulty
+    var tuning = GRIP_TUNING[player_controller.state.difficulty]
+    var brake_grab_threshold = tuning.brake_grab_threshold
+    var grip_crash_threshold = tuning.grip_crash_threshold
+    var grip_buildup_speed = tuning.grip_buildup_speed
+    var grip_decay_speed = tuning.grip_decay_speed
+
+    # Detect brake grab (how fast brake input is increasing)
+    var brake_rate = (player_controller.bike_input.front_brake - last_front_brake) / delta if delta > 0 else 0.0
+    last_front_brake = player_controller.bike_input.front_brake
+
+    # Only care about increasing brake input at speed
+    if brake_rate > brake_grab_threshold and player_controller.state.speed > 10:
+        # Accumulate grab level based on how aggressive the grab is
+        var grab_intensity = (brake_rate - brake_grab_threshold) / brake_grab_threshold
+        player_controller.state.brake_grab_level = clamp(player_controller.state.brake_grab_level + grab_intensity * delta * grip_buildup_speed, 0.0, 1.0)
+    elif player_controller.bike_input.front_brake < 0.3:
+        # Only decay grab level when brake is mostly released
+        player_controller.state.brake_grab_level = move_toward(player_controller.state.brake_grab_level, 0.0, grip_decay_speed * delta)
+    # else: brake is held but not increasing - maintain current grab level
+
+    # Calculate turning/lean factors
+    var turn_factor = abs(player_controller.state.steering_angle) / player_controller.bike_physics.max_steering_angle
+    var lean_factor = abs(player_controller.state.lean_angle) / player_controller.bike_crash.crash_lean_threshold
+    var instability = max(turn_factor, lean_factor)
+
+    # Calculate grip usage: braking + turning
+    var braking_grip = player_controller.state.brake_grab_level
+    var turning_grip = instability
+    player_controller.state.grip_usage = braking_grip + turning_grip * 0.5
+
+    # Instant crash if brake grabbed while turning
+    if player_controller.state.brake_grab_level > grip_crash_threshold and player_controller.state.speed > 20:
+        if instability > 0.4:
+            # Lowside crash from grabbing brake in turn
+            player_controller.bike_crash.crash_pitch_direction = 0
+            player_controller.bike_crash.crash_lean_direction = -sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
+            player_controller.bike_crash.trigger_crash()
+            return true
+
+    # Original hold-time based danger (for sustained hard braking)
+    if player_controller.bike_input.front_brake > 0.7 and player_controller.state.speed > 25:
+        front_brake_hold_time += delta
+
+        var speed_factor = clamp((player_controller.state.speed - 25) / (player_controller.bike_physics.max_speed - 25), 0.0, 1.0)
+        var base_threshold = 0.8 * (1.0 - speed_factor * 0.3)
+        var crash_time_threshold = base_threshold * (1.0 - instability * 0.5)
+
+        # Brake grab makes danger build faster
+        var grab_multiplier = 1.0 + player_controller.state.brake_grab_level * 1.5
+        player_controller.state.grip_usage = clamp((front_brake_hold_time * grab_multiplier) / crash_time_threshold, 0.0, 1.0)
+
+        if front_brake_hold_time > crash_time_threshold:
+            if instability > 0.5:
+                # Lowside crash
+                player_controller.bike_crash.crash_pitch_direction = 0
+                player_controller.bike_crash.crash_lean_direction = -sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
+                player_controller.bike_crash.trigger_crash()
+                return true
+            else:
+                # Force stoppie when going straight with grip maxed
+                _check_force_stoppie()
+    else:
+        front_brake_hold_time = 0.0
+        player_controller.state.grip_usage = move_toward(player_controller.state.grip_usage, 0.0, grip_decay_speed * delta)
+
+    return false
+
+
+func _check_force_stoppie():
+    """Force stoppie when grip maxed while going straight"""
+    if player_controller.bike_input.front_brake > 0.8 and player_controller.state.speed > 25 and player_controller.state.grip_usage >= 1.0:
+        var turn_factor = abs(player_controller.bike_input.steer)
+        if turn_factor <= 0.2:
+            var target_pitch = -player_controller.bike_crash.crash_stoppie_threshold * 1.2
+            _on_force_stoppie_requested(target_pitch, 4.0)
 
 
 func _update_wheelie_distance(delta):
@@ -626,4 +741,21 @@ func get_boosted_throttle(base_throttle: float) -> float:
     if player_controller.state.is_boosting:
         return 1.0
     return base_throttle
+
+func is_front_wheel_locked() -> bool:
+    """Returns true if front brake was grabbed hard enough to lock wheel (skid)"""
+    # On EASY, front wheel never locks
+    if player_controller.state.difficulty == BikeState.PlayerDifficulty.EASY:
+        return false
+    var grip_crash_threshold = GRIP_TUNING[player_controller.state.difficulty].grip_crash_threshold
+    return player_controller.state.brake_grab_level > grip_crash_threshold
+
+func get_grip_vibration() -> Vector2:
+    """Returns vibration intensity (weak, strong) for grip usage"""
+    if player_controller.state.grip_usage > 0.1:
+        var intensity = 3.0
+        var weak = player_controller.state.grip_usage * intensity
+        var strong = player_controller.state.grip_usage * player_controller.state.grip_usage * intensity
+        return Vector2(weak, strong)
+    return Vector2.ZERO
 #endregion

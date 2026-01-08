@@ -61,7 +61,7 @@ func _update_idle(delta):
         delta,
         player_controller.bike_gearing.get_power_output(),
         player_controller.bike_gearing.get_max_speed_for_gear(),
-        player_controller.bike_crash.is_front_wheel_locked()
+        player_controller.bike_tricks.is_front_wheel_locked()
     )
     align_to_ground(delta)
 
@@ -72,7 +72,7 @@ func _update_riding(delta):
         delta,
         player_controller.bike_gearing.get_power_output(),
         player_controller.bike_gearing.get_max_speed_for_gear(),
-        player_controller.bike_crash.is_front_wheel_locked()
+        player_controller.bike_tricks.is_front_wheel_locked()
     )
     handle_steering(delta)
     update_lean(delta)
