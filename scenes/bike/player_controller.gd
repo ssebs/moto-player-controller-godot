@@ -137,20 +137,15 @@ func _update_player_state():
     # Don't auto-transition out of crash states - they have explicit exits
     if state.player_state in [BikeState.PlayerState.CRASHED, BikeState.PlayerState.CRASHING]:
         return
+    # Trick states are managed by bike_tricks
+    if state.player_state in [BikeState.PlayerState.TRICK_GROUND, BikeState.PlayerState.TRICK_AIR]:
+        return
 
-    # TODO: remove bike_tricks.is_in..., this should be requested by state.request_state_change
     var is_airborne = not is_on_floor()
-    var is_ground_trick = bike_tricks.is_in_ground_trick()
-    var is_air_trick = bike_tricks.is_in_air_trick(is_airborne)
-    var has_input = bike_input.has_input()
-
     var target: BikeState.PlayerState
     if is_airborne:
-        target = BikeState.PlayerState.TRICK_AIR if is_air_trick else BikeState.PlayerState.AIRBORNE
-    elif is_ground_trick:
-        target = BikeState.PlayerState.TRICK_GROUND
-    elif state.speed < 0.5 and not has_input:
-        # Only go to IDLE if stopped AND no input
+        target = BikeState.PlayerState.AIRBORNE
+    elif state.speed < 0.5 and not bike_input.has_input():
         target = BikeState.PlayerState.IDLE
     else:
         target = BikeState.PlayerState.RIDING

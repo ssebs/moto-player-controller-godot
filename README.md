@@ -37,6 +37,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 ## In Progress:
 - [ ] Disable counter steer on ez
 - [ ] refactor bike_tricks w/ Trick enum
+  - [x] Cleanup file
+  - [ ] have bike_trick's stoppie logic handle bike_crash's "brake_danger" and rename it
 - [ ] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
 - [ ] Multiple bike models w/ diff stats
   - [ ] Sport bike (move stats to resource)

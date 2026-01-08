@@ -108,8 +108,10 @@ var front_skid_spawn_timer: float = 0.0
 var last_throttle_input: float = 0.0
 var last_clutch_input: float = 0.0
 
-# Frame delta for signal handlers
-var current_delta: float = 0.0 # TODO: stop using this!
+# Force stoppie state (set by signal handler, applied in _update_stoppie)
+var _force_stoppie_target: float = 0.0
+var _force_stoppie_rate: float = 0.0
+var _force_stoppie_active: bool = false
 #endregion
 
 #region BikeComponent stuff
@@ -122,8 +124,17 @@ func _bike_setup(p_controller: PlayerController):
     stoppie_stopped.connect(_on_stoppie_stopped)
 
 func _bike_update(delta):
-    current_delta = delta
-    # TODO: move these to _update_xyz
+    # Handle landing from air - transition out of air states when on floor
+    if player_controller.is_on_floor():
+        if player_controller.state.player_state == BikeState.PlayerState.TRICK_AIR:
+            # Landed with pitch - go to TRICK_GROUND if still pitched, else RIDING
+            if abs(player_controller.state.pitch_angle) > deg_to_rad(5):
+                player_controller.state.request_state_change(BikeState.PlayerState.TRICK_GROUND)
+            else:
+                player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
+        elif player_controller.state.player_state == BikeState.PlayerState.AIRBORNE:
+            player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
+
     _update_active_trick(delta)
     _update_combo_timer(delta)
     _update_boost(delta)
@@ -165,6 +176,11 @@ func _bike_reset():
     _combo_timer = 0.0
     _last_trick_press_time = 0.0
 
+    # Reset force stoppie state
+    _force_stoppie_target = 0.0
+    _force_stoppie_rate = 0.0
+    _force_stoppie_active = false
+
 #endregion
 
 #region _update / handlers
@@ -172,54 +188,60 @@ func _bike_reset():
 func _update_riding(delta):
     # Check for skidding, can initiate ground tricks
     _update_wheelie_distance(delta)
-    handle_wheelie_stoppie(delta, player_controller.state.rpm_ratio, player_controller.bike_crash.is_front_wheel_locked(), false)
-    handle_skidding(delta, player_controller.bike_crash.is_front_wheel_locked(),
-        player_controller.rear_wheel.global_position, player_controller.front_wheel.global_position,
-        player_controller.global_rotation, true)
+    _update_wheelie(delta)
+    _update_stoppie(delta)
+    _update_skidding(delta)
 
 
 func _update_airborne(delta):
     # Can initiate air tricks with pitch control
-    handle_wheelie_stoppie(delta, player_controller.state.rpm_ratio, false, true)
+    _update_airborne_pitch(delta)
 
 
 func _update_trick_air(delta):
     # Actively controlling pitch in air
     _update_wheelie_distance(delta)
-    handle_wheelie_stoppie(delta, player_controller.state.rpm_ratio, false, true)
+    _update_airborne_pitch(delta)
 
 
 func _update_trick_ground(delta):
     # Wheelie/stoppie/fishtail active
     _update_wheelie_distance(delta)
-    handle_wheelie_stoppie(delta, player_controller.state.rpm_ratio, player_controller.bike_crash.is_front_wheel_locked(), false)
-    handle_skidding(delta, player_controller.bike_crash.is_front_wheel_locked(),
-        player_controller.rear_wheel.global_position, player_controller.front_wheel.global_position,
-        player_controller.global_rotation, true)
+    _update_wheelie(delta)
+    _update_stoppie(delta)
+    _update_skidding(delta)
 
 
-# TODO: simpify, move logic out for airborne, only clutch dump, move stoppie logic, etc.
-func handle_wheelie_stoppie(delta, rpm_ratio: float,
-                             front_wheel_locked: bool = false, is_airborne: bool = false):
-    # Airborne pitch control - free rotation with lean input
-    if is_airborne:
-        if abs(player_controller.bike_input.lean) > 0.1:
-            var air_pitch_target = player_controller.bike_input.lean * max_wheelie_angle
-            player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, air_pitch_target, rotation_speed * 1.5 * delta)
-        return
+## Airborne pitch control - free rotation with lean input.
+func _update_airborne_pitch(delta: float):
+    var was_in_air_trick = abs(player_controller.state.pitch_angle) > deg_to_rad(5)
+
+    if abs(player_controller.bike_input.lean) > 0.1:
+        var air_pitch_target = player_controller.bike_input.lean * max_wheelie_angle
+        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, air_pitch_target, rotation_speed * 1.5 * delta)
+
+    # State transitions for air tricks
+    var is_in_air_trick = abs(player_controller.state.pitch_angle) > deg_to_rad(5)
+    if is_in_air_trick and not was_in_air_trick:
+        player_controller.state.request_state_change(BikeState.PlayerState.TRICK_AIR)
+    elif not is_in_air_trick and was_in_air_trick:
+        player_controller.state.request_state_change(BikeState.PlayerState.AIRBORNE)
+
+
+## Handles wheelie initiation and continuation based on RPM, throttle, and clutch dump.
+func _update_wheelie(delta: float):
+    var rpm_ratio = player_controller.state.rpm_ratio
+    var was_in_wheelie = player_controller.state.pitch_angle > deg_to_rad(5)
 
     # Detect clutch dump
     var clutch_dump = last_clutch_input > 0.7 and player_controller.state.clutch_value < 0.3 and player_controller.bike_input.throttle > 0.5
     last_throttle_input = player_controller.bike_input.throttle
     last_clutch_input = player_controller.state.clutch_value
 
-    # Can't START a wheelie/stoppie while turning, but can continue one
-    var currently_in_wheelie = player_controller.state.pitch_angle > deg_to_rad(5)
-    var currently_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
+    # Can't START a wheelie while turning, but can continue one
     var can_start_trick = not player_controller.bike_physics.is_turning()
 
     # Wheelie logic - wheelies scale with RPM above threshold
-    var wheelie_target = 0.0
     var rpm_above_threshold = rpm_ratio >= wheelie_rpm_threshold
     var can_pop_wheelie = player_controller.bike_input.lean > 0.3 and player_controller.bike_input.throttle > 0.7 and (rpm_above_threshold or clutch_dump)
 
@@ -229,42 +251,89 @@ func handle_wheelie_stoppie(delta, rpm_ratio: float,
     if rpm_ratio >= wheelie_rpm_threshold:
         rpm_wheelie_factor = clamp((rpm_ratio - wheelie_rpm_threshold) / (wheelie_rpm_full - wheelie_rpm_threshold), 0.0, 1.0)
 
-    if player_controller.state.speed > 1 and (currently_in_wheelie or (can_pop_wheelie and can_start_trick)):
+    var wheelie_target = 0.0
+    if player_controller.state.speed > 1 and (was_in_wheelie or (can_pop_wheelie and can_start_trick)):
         if player_controller.bike_input.throttle > 0.3:
             # Wheelie intensity scales with both throttle AND rpm position in the power band
             wheelie_target = max_wheelie_angle * player_controller.bike_input.throttle * rpm_wheelie_factor
             wheelie_target += max_wheelie_angle * player_controller.bike_input.lean * 0.15
+
+    # Apply wheelie pitch
+    if wheelie_target > 0:
+        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, wheelie_target, rotation_speed * delta)
+    elif player_controller.state.pitch_angle > 0:
+        # Return to neutral if not in stoppie territory
+        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * delta)
+
+    # State transitions for wheelies
+    var is_in_wheelie = player_controller.state.pitch_angle > deg_to_rad(5)
+    if is_in_wheelie and not was_in_wheelie:
+        player_controller.state.request_state_change(BikeState.PlayerState.TRICK_GROUND)
+    elif not is_in_wheelie and was_in_wheelie and player_controller.state.pitch_angle >= 0:
+        # Only exit TRICK_GROUND if we're not in a stoppie
+        if player_controller.state.player_state == BikeState.PlayerState.TRICK_GROUND:
+            player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
+
+
+# TODO: have bike_trick's stoppie logic handle bike_crash's "brake_danger" and rename it
+## Handles stoppie initiation, continuation, and forced stoppie from crash system.
+func _update_stoppie(delta: float):
+    var front_wheel_locked = player_controller.bike_crash.is_front_wheel_locked()
+    var was_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
+
+    # Handle forced stoppie from crash system
+    if _force_stoppie_active:
+        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, _force_stoppie_target, _force_stoppie_rate * delta)
+        if abs(player_controller.state.pitch_angle - _force_stoppie_target) < 0.01:
+            _force_stoppie_active = false
+        return
+
+    # Can't START a stoppie while turning, but can continue one
+    var can_start_trick = not player_controller.bike_physics.is_turning()
 
     # Stoppie logic - only works with progressive braking (not grabbed)
     # If front wheel is locked (brake grabbed), no stoppie - just skid
     var stoppie_target = 0.0
     if not front_wheel_locked:
         var wants_stoppie = player_controller.bike_input.lean < -0.1 and player_controller.bike_input.front_brake > 0.5
-        if player_controller.state.speed > 1 and (currently_in_stoppie or (wants_stoppie and can_start_trick)):
-            stoppie_target = - max_stoppie_angle * player_controller.bike_input.front_brake * (1.0 - player_controller.bike_input.throttle * 0.5)
+        if player_controller.state.speed > 1 and (was_in_stoppie or (wants_stoppie and can_start_trick)):
+            stoppie_target = -max_stoppie_angle * player_controller.bike_input.front_brake * (1.0 - player_controller.bike_input.throttle * 0.5)
             stoppie_target += -max_stoppie_angle * (-player_controller.bike_input.lean) * 0.15
 
-    # Apply pitch
-    var was_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
-    if wheelie_target > 0:
-        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, wheelie_target, rotation_speed * delta)
-    elif stoppie_target < 0:
+    # Apply stoppie pitch
+    if stoppie_target < 0:
         player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, stoppie_target, rotation_speed * delta)
         if not was_in_stoppie:
             tire_screech_start.emit(skid_volume)
         # Check if bike stopped during stoppie - soft reset without position change
+        var currently_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
         if player_controller.state.speed < 0.5 and currently_in_stoppie:
             player_controller.state.pitch_angle = 0.0
             tire_screech_stop.emit()
             stoppie_stopped.emit()
-    else:
+    elif player_controller.state.pitch_angle < 0:
+        # Return to neutral if not in wheelie territory
         player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * delta)
         if was_in_stoppie and player_controller.state.pitch_angle >= deg_to_rad(-5):
             tire_screech_stop.emit()
 
+    # State transitions for stoppies
+    var is_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
+    if is_in_stoppie and not was_in_stoppie:
+        player_controller.state.request_state_change(BikeState.PlayerState.TRICK_GROUND)
+    elif not is_in_stoppie and was_in_stoppie and player_controller.state.pitch_angle <= 0:
+        # Only exit TRICK_GROUND if we're not in a wheelie
+        if player_controller.state.player_state == BikeState.PlayerState.TRICK_GROUND:
+            player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
 
-func handle_skidding(delta, is_front_wheel_locked: bool, rear_wheel_position: Vector3,
-                      front_wheel_position: Vector3, bike_rotation: Vector3, is_on_floor: bool):
+
+func _update_skidding(delta: float):
+    var is_on_floor = player_controller.is_on_floor()
+    var is_front_wheel_locked = player_controller.bike_crash.is_front_wheel_locked()
+    var rear_wheel_pos = player_controller.rear_wheel.global_position
+    var front_wheel_pos = player_controller.front_wheel.global_position
+    var bike_rot = player_controller.global_rotation
+
     var is_rear_skidding = player_controller.bike_input.rear_brake > 0.5 and player_controller.state.speed > 2 and is_on_floor
     var is_front_skidding = is_front_wheel_locked and player_controller.state.speed > 2 and is_on_floor
 
@@ -273,11 +342,11 @@ func handle_skidding(delta, is_front_wheel_locked: bool, rear_wheel_position: Ve
         skid_spawn_timer += delta
         if skid_spawn_timer >= skid_spawn_interval:
             skid_spawn_timer = 0.0
-            _spawn_skid_mark(rear_wheel_position, bike_rotation)
+            _spawn_skid_mark(rear_wheel_pos, bike_rot)
 
         # Fishtail calculation - steering induces fishtail direction
         var steer_influence = player_controller.state.steering_angle / player_controller.bike_physics.max_steering_angle
-        var target_fishtail = - steer_influence * max_fishtail_angle * player_controller.bike_input.rear_brake
+        var target_fishtail = -steer_influence * max_fishtail_angle * player_controller.bike_input.rear_brake
 
         # Small natural wobble when skidding straight (random direction, small amplitude)
         if abs(steer_influence) < 0.1:
@@ -302,7 +371,7 @@ func handle_skidding(delta, is_front_wheel_locked: bool, rear_wheel_position: Ve
         front_skid_spawn_timer += delta
         if front_skid_spawn_timer >= skid_spawn_interval:
             front_skid_spawn_timer = 0.0
-            _spawn_skid_mark(front_wheel_position, bike_rotation)
+            _spawn_skid_mark(front_wheel_pos, bike_rot)
         tire_screech_start.emit(skid_volume)
     else:
         front_skid_spawn_timer = 0.0
@@ -323,7 +392,7 @@ func _update_boost(delta):
 
 
 func _update_wheelie_distance(delta):
-    if is_in_wheelie():
+    if player_controller.state.pitch_angle > deg_to_rad(5):
         wheelie_time_held += delta
         if wheelie_time_held >= wheelie_time_for_boost:
             wheelie_time_held -= wheelie_time_for_boost
@@ -472,8 +541,10 @@ func _on_stoppie_stopped():
     player_controller.state.fall_angle = 0.0
     player_controller.velocity = Vector3.ZERO
 
-func _on_force_stoppie_requested(target_pitch: float, rate: float, ):
-    player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, target_pitch, rate * current_delta)
+func _on_force_stoppie_requested(target_pitch: float, rate: float):
+    _force_stoppie_target = target_pitch
+    _force_stoppie_rate = rate
+    _force_stoppie_active = true
 
 
 func _on_trick_btn_changed(btn_pressed: bool):
@@ -530,22 +601,6 @@ func get_current_trick_name() -> String:
     if trick == Trick.NONE:
         return ""
     return TRICK_DATA[trick].name
-
-func is_in_wheelie() -> bool:
-    return player_controller.state.pitch_angle > deg_to_rad(5)
-
-
-func is_in_stoppie() -> bool:
-    return player_controller.state.pitch_angle < deg_to_rad(-5)
-
-# TODO: see player_controller
-func is_in_ground_trick() -> bool:
-    """Returns true if doing any ground-based trick (wheelie, stoppie, fishtail)"""
-    return is_in_wheelie() || is_in_stoppie()
-
-func is_in_air_trick(is_airborne: bool) -> bool:
-    """Returns true if doing an air trick (pitch control while airborne)"""
-    return is_airborne and abs(player_controller.state.pitch_angle) > deg_to_rad(5)
 
 func get_fishtail_vibration() -> Vector2:
     """Returns vibration intensity (weak, strong) for fishtail skidding"""
