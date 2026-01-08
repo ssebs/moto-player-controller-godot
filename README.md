@@ -99,7 +99,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] nollie lazerflip
 
 ## Done:
-
+- [x] try rotating the collider w/ mesh , so you can wheelie up ledges
 - [x] tricks
   - [x] Decide how tricks should be tracked / checked.
 - [x] Difficulty settings

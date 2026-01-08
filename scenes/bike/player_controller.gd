@@ -2,6 +2,7 @@ class_name PlayerController extends CharacterBody3D
 
 #region Onready Node References
 # Meshes / Character / Animations
+@onready var collision_shape: CollisionShape3D = %CollisionShape3D
 @onready var rotation_root: Node3D = %LeanAndRotationPoint
 @onready var bike_mesh: Node3D = %BikeMesh
 @onready var character_mesh: Node3D = %IKCharacterMesh

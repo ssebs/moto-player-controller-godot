@@ -54,8 +54,8 @@ func _update_ik_magnets():
 
 func _physics_process(_delta):
     if is_ragdoll:
-        if !enable_glitch_ragdoll_option:
-            _clamp_ragdoll_velocities()
+        # if !enable_glitch_ragdoll_option:
+        _clamp_ragdoll_velocities()
     else:
         move_butt()
 

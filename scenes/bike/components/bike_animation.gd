@@ -161,6 +161,7 @@ func update_lean_animation():
 
 func apply_mesh_rotation():
     player_controller.rotation_root.transform = Transform3D.IDENTITY
+    player_controller.collision_shape.rotation.x = deg_to_rad(-90.0)
 
     if player_controller.state.ground_pitch != 0:
         player_controller.rotation_root.rotate_x(-player_controller.state.ground_pitch)
@@ -173,6 +174,7 @@ func apply_mesh_rotation():
 
     if player_controller.state.pitch_angle != 0:
         _rotate_around_pivot(player_controller.rotation_root, pivot, Vector3.RIGHT)
+        player_controller.collision_shape.rotation.x = deg_to_rad(-90.0) + player_controller.state.pitch_angle
 
     var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
     if total_lean != 0:
