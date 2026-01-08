@@ -43,13 +43,12 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Move BikeMarkers to this
 
 ## Bugs
+
 - [ ] Cleanup input map (trick_down vs cam_down)
-- [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
 - [ ] Fix clutch start on easy mode (shouldn't be needed)
 - [ ] NOS disable turning during, you can only boost forward
 - [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
 - [ ] Redline sound (bang limiter)
-- [ ] Should be more stable at higher speeds (countersteering at speed feels off, no turn in should occur)
 - [ ] Speed carries over even when crashing into collider
 
 ## TODO:
@@ -65,6 +64,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Tune "feeling" of riding the bike & doing tricks
   - [ ] Bike should fall when too slow, but should be stable at speed (don't have tip-in over 30)
   - [ ] Counter steering
+- [ ] Drift
 - [ ] Final refactor
   - [ ] Signals that emit from player controller for use in MP
   - [ ] Simpify physics logic
@@ -76,7 +76,10 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Fix bugs
 
 ## Out of Scope
-
+- [ ] HUD Cleanup
+  - [ ] Create hud texture of motorcycle dashboard
+  - [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
+  - [ ] Font / style / etc.
 - [ ] All Tricks (TODO: move to DankNooner)
   - [ ] Standing wheelie
   - [ ] One leg over wheelie
@@ -98,6 +101,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] nollie lazerflip
 
 ## Done:
+
 - [x] refactor bike_tricks w/ Trick enum
   - [x] Cleanup file
   - [x] have bike_trick's stoppie logic handle bike_crash's "brake_danger" and rename it

@@ -134,7 +134,7 @@ var _force_stoppie_active: bool = false
 
 # Grip system state
 var last_front_brake: float = 0.0
-var front_brake_hold_time: float = 0.0
+var front_brake_hold_time: float = 0.0        
 #endregion
 
 #region BikeComponent stuff
@@ -363,7 +363,7 @@ func _update_skidding(delta: float):
     var front_wheel_pos = player_controller.front_wheel.global_position
     var bike_rot = player_controller.global_rotation
 
-    var is_rear_skidding = player_controller.bike_input.rear_brake > 0.5 and player_controller.state.speed > 2 and is_on_floor
+    var is_rear_skidding = player_controller.bike_input.rear_brake > 0.5 and player_controller.state.speed > 2 and is_on_floor 
     var is_front_skidding = front_wheel_locked and player_controller.state.speed > 2 and is_on_floor
 
     # Rear wheel skid
@@ -459,10 +459,9 @@ func _update_grip_usage(delta) -> bool:
     var turning_grip = instability
     player_controller.state.grip_usage = braking_grip + turning_grip * 0.5
 
-    # Instant crash if brake grabbed while turning
+    # Brake grabbed while turning = lowside crash
     if player_controller.state.brake_grab_level > grip_crash_threshold and player_controller.state.speed > 20:
         if instability > 0.4:
-            # Lowside crash from grabbing brake in turn
             player_controller.bike_crash.crash_pitch_direction = 0
             player_controller.bike_crash.crash_lean_direction = -sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
             player_controller.bike_crash.trigger_crash()
