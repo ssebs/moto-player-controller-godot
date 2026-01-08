@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://bmqevs0vheol7"]
+[gd_scene load_steps=30 format=3 uid="uid://bmqevs0vheol7"]
 
 [ext_resource type="Script" uid="uid://c331s8cm2gjtp" path="res://scenes/bike/player_controller.gd" id="1_5uol1"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_ujl86"]
@@ -100,6 +100,102 @@ tracks/5/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 0,
 "values": [Vector3(1.1478428, 2.5467584, 2.9892645)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/HeadTarget:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1.3219673e-07, 1.452965, 0.39370275)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/LeftLegTarget:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.2375038, 0.39871255, -0.17106614)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.238, 0.399, -0.171)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/ButtTarget:rotation")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.9598962, 9.39509e-08, 1.4533786e-07)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/LeftLegTarget:rotation")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.9147984, -0.07739972, -3.0440352)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:rotation")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.9145527, -0.07679453, -3.0438542)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/LeftLegIK:magnet")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 0, 1)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/RightLegIK:magnet")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1, 0, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_wi4rf"]
@@ -233,9 +329,181 @@ tracks/0/keys = {
 "values": [Vector3(0.43134058, 1.4476901e-08, 7.8451706e-08), Vector3(-2.1031218, 6.2831855, 0)]
 }
 
+[sub_resource type="Animation" id="Animation_v7ldm"]
+resource_name = "heel_clicker"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/HeadTarget:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1.3219673e-07, 1.452965, 0.39370275)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/LeftArmTarget:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.284, 0.9407963, 0.42305174)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/RightArmTarget:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.284, 0.90103054, 0.44884363)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/ButtTarget:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.8000001, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(2.769973e-08, 0.98623186, -0.35969338), Vector3(-9.252988e-09, 1.1298547, -0.1149666), Vector3(-9.252988e-09, 1.1298547, -0.1149666), Vector3(2.769973e-08, 0.98623186, -0.35969338)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/LeftLegTarget:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8000001, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.2375038, 0.39871255, -0.17106614), Vector3(0.39440286, 1.1783117, 0.46141785), Vector3(0.070909046, 1.4099017, 0.46141776), Vector3(0.39440286, 1.1783117, 0.46141785), Vector3(0.070909046, 1.4099017, 0.46141776), Vector3(0.2375038, 0.39871255, -0.17106614)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8000001, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.238, 0.399, -0.171), Vector3(-0.394, 1.178, 0.461), Vector3(-0.071, 1.41, 0.461), Vector3(-0.394, 1.178, 0.461), Vector3(-0.071, 1.41, 0.461), Vector3(-0.238, 0.399, -0.171)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/HeadTarget:rotation")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.43134058, 1.4476901e-08, 7.8451706e-08)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/LeftArmTarget:rotation")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.5337216, 1.0176142, -1.1505777e-07)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/RightArmTarget:rotation")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1.1478428, 2.5467584, 2.9892645)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/ButtTarget:rotation")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.8000001, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.9598962, 9.39509e-08, 1.4533786e-07), Vector3(-0.38229692, 4.3889203e-10, -1.1179892e-07), Vector3(-0.38229692, 4.3889203e-10, -1.1179892e-07), Vector3(0.9598962, 9.39509e-08, 1.4533786e-07)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/LeftLegTarget:rotation")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.9147984, -0.07739972, -3.0440352)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:rotation")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.9145527, -0.07679453, -3.0438542)]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/LeftLegIK:magnet")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/RightLegIK:magnet")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1, 1, 1)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fm7or"]
 _data = {
 &"RESET": SubResource("Animation_262bm"),
+&"heel_clicker": SubResource("Animation_v7ldm"),
 &"lean_left": SubResource("Animation_wi4rf"),
 &"lean_right": SubResource("Animation_fm7or"),
 &"naruto_run_loop": SubResource("Animation_x2eqs"),
@@ -332,84 +600,84 @@ magnet = Vector3(-1, 0, 1)
 target = Transform3D(1, 1.274684e-08, 9.343069e-10, -1.274684e-08, 0.9893129, 0.14580679, 9.342784e-10, -0.14580679, 0.9893129, -1.8309903e-07, 1.7583534, 0.73081344)
 
 [node name="Physical Bone mixamorig6_Hips" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="0"]
-transform = Transform3D(1, 4.709063e-08, 7.322872e-08, 8.3366416e-08, -0.76040137, -0.6494535, 2.5100036e-08, 0.6494535, -0.76040137, 3.3549505e-08, 1.0196265, -0.32059056)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.615246e-09, -2.1704473e-06, 0.05142209)
-body_offset = Transform3D(1, -1.0658141e-13, -4.2632564e-14, -2.842171e-14, 0.09581822, -0.9953989, 1.2079227e-13, 0.9953989, 0.09581822, 9.615249e-09, 0.051185697, -0.0049250126)
+transform = Transform3D(1, 4.7091156e-08, 7.322847e-08, 8.336661e-08, -0.7604025, -0.6494521, 2.5099666e-08, 0.6494521, -0.7604025, 3.3634738e-08, 1.0196191, -0.3193464)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.731085e-09, -0.0008156798, 0.05236339)
+body_offset = Transform3D(1, 2.842171e-13, -1.9184654e-13, -2.2737368e-13, 0.09581643, -0.995399, -2.4868996e-13, 0.995399, 0.09581643, 9.731096e-09, 0.052200615, -0.004205346)
 
 [node name="Physical Bone mixamorig6_Spine" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="1"]
-transform = Transform3D(1, 5.0902787e-07, 4.769559e-07, 6.968261e-07, -0.76040214, -0.64945257, 3.2088835e-08, 0.64945257, -0.76040214, 3.0676997e-08, 1.0919847, -0.23587438)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.91227e-08, 1.06091704e-07, 0.059994154)
-body_offset = Transform3D(1, 4.6193708e-07, 4.0372723e-07, 4.0372757e-07, -7.748604e-07, -1.0000001, -4.6193674e-07, 1.0000001, -7.748604e-07, 1.4901374e-08, 0.05999416, -5.9604645e-08)
+transform = Transform3D(1, 5.0914167e-07, 4.7689184e-07, 6.96871e-07, -0.76040286, -0.64945173, 3.196702e-08, 0.64945173, -0.76040286, 3.07098e-08, 1.091981, -0.23586921)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.9149302e-08, -5.9688164e-06, 0.059995703)
+body_offset = Transform3D(1, 4.620508e-07, 4.0366322e-07, 4.036641e-07, -1.847744e-06, -1.0000001, -4.6205e-07, 1.0000001, -1.847744e-06, 1.4934002e-08, 0.05999571, 6.0796738e-06)
 
 [node name="Physical Bone mixamorig6_Spine1" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="2"]
-transform = Transform3D(1, 2.855093e-07, 1.7008604e-07, 3.2756463e-07, -0.76040167, -0.64945316, -5.6091196e-08, 0.64945316, -0.76040167, -1.2016258e-07, 1.1754777, -0.12590551)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2056712e-07, -0.007931351, 0.07785999)
-body_offset = Transform3D(1, 2.3841852e-07, 9.6857306e-08, 9.6857306e-08, 0, -1.0000001, -2.3841852e-07, 1.0000001, 0, -1.2621746e-07, 0.07786, 0.007931352)
+transform = Transform3D(1, 2.8551955e-07, 1.7008705e-07, 3.2757316e-07, -0.76040244, -0.6494522, -5.609671e-08, 0.6494522, -0.76040244, -1.2014138e-07, 1.1754812, -0.1258634)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2054714e-07, -0.007955992, 0.07789427)
+body_offset = Transform3D(1, 2.3842867e-07, 9.6858386e-08, 9.6858656e-08, -1.2218952e-06, -1.0000001, -2.3842858e-07, 1.0000001, -1.2218952e-06, -1.2619492e-07, 0.07789427, 0.007956088)
 
 [node name="Physical Bone mixamorig6_Head" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="3"]
-transform = Transform3D(-1, -3.3309277e-08, 3.4530728e-07, -1.243138e-07, 0.9636828, -0.26704976, -3.2387146e-07, -0.26704976, -0.9636828, -6.3519536e-08, 1.3732018, 0.20822115)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6685133e-09, -0.003911238, 0.1445295)
-body_offset = Transform3D(-1, 4.0326654e-08, 2.9885587e-07, -2.6822087e-07, 0.3340242, -0.9425646, -1.3783557e-07, -0.9425646, -0.3340242, -4.4704283e-08, 0.13753486, 0.044589758)
+transform = Transform3D(-1, 3.7504364e-09, 3.6271024e-07, -2.572948e-07, 0.69750535, -0.71657956, -2.5567985e-07, -0.71657956, -0.69750535, -7.696013e-08, 1.4402763, 0.16698512)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.890541e-09, -0.0039095804, 0.14452882)
+body_offset = Transform3D(-1, 4.0329066e-08, 2.988622e-07, -2.6822607e-07, 0.33402425, -0.9425647, -1.3783995e-07, -0.9425647, -0.33402425, -4.492707e-08, 0.13753366, 0.0445911)
 
 [node name="Physical Bone mixamorig6_LeftShoulder" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="4"]
-transform = Transform3D(-0.027132552, -0.26322648, -0.96435255, 0.7597595, -0.63237166, 0.15123387, -0.6496379, -0.72857255, 0.21714666, 0.12511577, 1.3000503, 0.002432448)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8184295e-05, 1.807486e-05, 0.06553349)
-body_offset = Transform3D(1, 2.0861626e-07, -7.4505806e-08, -5.9604645e-08, -7.4505806e-08, -1.0000001, -2.3841858e-07, 1, -2.2351742e-07, -1.8179417e-05, 0.0655335, -1.8060207e-05)
+transform = Transform3D(-0.027117448, -0.26324463, -0.96434796, 0.75979567, -0.6323256, 0.15124477, -0.6495962, -0.728606, 0.21715917, 0.12509695, 1.300043, 0.0023280096)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.464007e-05, -6.64516e-05, 0.06553913)
+body_offset = Transform3D(1, 5.733967e-05, 0, -1.4901161e-08, -1.7285347e-05, -1, -5.7458878e-05, 1, -1.7434359e-05, 4.464388e-05, 0.06553913, 6.759167e-05)
 
 [node name="Physical Bone mixamorig6_LeftArm" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="5"]
-transform = Transform3D(0.17960635, -0.97646636, -0.11939465, -0.099019974, -0.13869682, 0.9853722, -0.9787424, -0.16515663, -0.121600494, 0.20446876, 1.1568186, 0.004629612)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.283751e-06, 3.9953784e-07, 0.13529927)
-body_offset = Transform3D(1.0004754, -6.645918e-05, -4.978478e-05, -4.9747527e-05, -9.769574e-06, -1.0004753, 6.6533685e-05, 1.0004753, -9.786338e-06, -5.5134296e-07, 0.13536358, 9.23872e-07)
+transform = Transform3D(0.27262038, -0.947399, -0.1676703, -0.6449196, -0.3092673, 0.69887954, -0.7139726, -0.08239491, -0.6953087, 0.2109877, 1.1955993, 0.082291685)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9644514e-05, -3.0940437e-06, 0.13531621)
+body_offset = Transform3D(1.0004753, -6.837025e-05, -5.298853e-05, -5.2839518e-05, -8.08388e-07, -1.0004752, 6.829947e-05, 1.0004753, -9.3504786e-07, -4.249811e-05, 0.1353805, 3.2186508e-06)
 
 [node name="Physical Bone mixamorig6_LeftHand" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="6"]
-transform = Transform3D(0.9295685, 0.20893553, 0.3037241, 0.19080989, -0.9776264, 0.08853431, 0.31542665, -0.024345148, -0.9486376, 0.24565259, 0.77015543, 0.07307466)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5771948e-06, -1.6051345e-06, 0.020525888)
-body_offset = Transform3D(-0.4666596, 0.6087434, 0.6425321, 3.1292439e-06, 0.7263648, -0.6881648, -0.8851097, -0.32094884, -0.33876857, -0.0131883025, 0.01412636, 0.006951615)
+transform = Transform3D(0.12850179, 0.8491696, 0.5122483, 0.9062363, -0.31033063, 0.28710756, 0.40276933, 0.42732415, -0.80942637, 0.26625663, 0.9579616, 0.40419087)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5239231e-05, -3.838679e-06, 0.020520564)
+body_offset = Transform3D(-0.46664613, 0.60874605, 0.64253867, 3.4570694e-06, 0.72637117, -0.688167, -0.88511205, -0.3209365, -0.33875817, -0.013190031, 0.014124364, 0.0069367886)
 
 [node name="Physical Bone mixamorig6_RightShoulder" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="7"]
-transform = Transform3D(-0.025735766, 0.2633669, 0.9643524, -0.75979465, -0.63206357, 0.15234132, 0.6496537, -0.72878915, 0.21637139, -0.12512496, 1.2999028, 0.0025365797)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.1813352e-05, 2.0863563e-05, 0.06554219)
-body_offset = Transform3D(1.0000002, 5.364418e-07, -2.9802322e-08, 5.9604645e-08, 7.4505806e-08, -1.0000001, -5.066395e-07, 1.0000002, -2.9802322e-08, 2.18153e-05, 0.0655422, -2.0861626e-05)
+transform = Transform3D(-0.025739858, 0.2633694, 0.96435165, -0.7597923, -0.6320665, 0.15234073, 0.64965624, -0.72878563, 0.21637537, -0.12515257, 1.2998427, 0.0026166744)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00012042012, 4.8696354e-05, 0.06556064)
+body_offset = Transform3D(1.0000002, 4.917383e-06, 3.0100346e-06, 3.0994415e-06, -2.6673079e-06, -1.0000001, -4.917383e-06, 1.0000002, -2.7269125e-06, 0.00012022257, 0.06556065, -4.851818e-05)
 
 [node name="Physical Bone mixamorig6_RightArm" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="8"]
-transform = Transform3D(0.3196295, 0.9410608, -0.11064255, 0.22491498, 0.03808031, 0.973634, 0.920462, -0.33608732, -0.19948706, -0.1733468, 1.1581206, 0.015339636)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5714542e-06, 8.252395e-06, 0.13537318)
-body_offset = Transform3D(0.9998665, -0.0002001226, -3.1739473e-05, -3.1769276e-05, -1.1831522e-05, -0.9998666, 0.00020006299, 0.9998663, -1.1689961e-05, 6.8694353e-06, 0.13535511, -6.6682696e-06)
+transform = Transform3D(0.3246543, 0.9367437, 0.1308084, 0.64070785, -0.31954294, 0.69813025, 0.69576806, -0.14284104, -0.70392007, -0.20605724, 1.1954528, 0.08363967)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6096424e-05, 4.372766e-05, 0.13536459)
+body_offset = Transform3D(0.9998665, -0.00020679086, -1.4126301e-05, -1.4126301e-05, -4.6268106e-06, -0.9998666, 0.00020678341, 0.99986655, -4.5970082e-06, 2.8014183e-05, 0.13534653, -4.3094158e-05)
 
 [node name="Physical Bone mixamorig6_RightHand" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="9"]
-transform = Transform3D(0.6438448, -0.19592011, -0.7396481, -0.24372286, -0.9688248, 0.04447059, -0.7253021, 0.15163699, -0.67152303, -0.1134562, 0.7768093, 0.110012755)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9079074e-05, 2.8219074e-07, 0.022142818)
-body_offset = Transform3D(-0.48943233, -0.5829736, -0.6485704, -1.7881393e-06, 0.7437852, -0.66855705, 0.87209034, -0.32719076, -0.36400932, 0.01437068, 0.014803529, 0.008043647)
+transform = Transform3D(-0.23805867, -0.8798431, -0.4113444, -0.82567257, -0.039695915, 0.5627514, -0.5114617, 0.47360364, -0.71701235, -0.25977546, 0.938721, 0.3970503)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3425167e-05, -3.800029e-06, 0.022141159)
+body_offset = Transform3D(-0.4894519, -0.5829581, -0.6485777, -2.5361776e-05, 0.74377704, -0.66850644, 0.8721109, -0.32718638, -0.3640591, 0.014374405, 0.014804333, 0.008030295)
 
 [node name="Physical Bone mixamorig6_LeftUpLeg" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="10"]
-transform = Transform3D(-0.99663746, 8.79651e-06, -0.081937686, -0.04165391, -0.8611986, 0.50655895, -0.070560165, 0.50826865, 0.8583031, 0.108242035, 0.8517102, -0.58303785)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.166108e-06, -2.9550583e-06, 0.2044969)
-body_offset = Transform3D(1.0000002, -8.691102e-06, 1.609698e-05, 1.6093254e-05, 1.013279e-06, -1.0000002, 8.683652e-06, 1, 1.0430813e-06, 3.874302e-06, 0.20449695, 2.7418137e-06)
+transform = Transform3D(-0.5149633, -0.70725644, -0.4843564, -0.8430429, 0.31554487, 0.43555728, -0.1552145, 0.6326293, -0.75874144, 0.19057779, 0.866216, -0.25234362)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.3690245e-06, 2.0956877e-05, 0.2045322)
+body_offset = Transform3D(1.0000001, -2.4102628e-05, 2.3066998e-05, 2.2992492e-05, -7.2717667e-06, -1.0000001, 2.4236739e-05, 1.0000001, -7.2419643e-06, -1.1086464e-05, 0.20453224, -1.9475818e-05)
 
 [node name="Physical Bone mixamorig6_LeftLeg" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="11"]
-transform = Transform3D(-0.99797344, -0.00084001943, -0.063626796, -0.03235816, -0.8542773, 0.51880956, -0.054790735, 0.519817, 0.8525188, 0.13740161, 0.6470252, -0.924694)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8545845e-06, 4.684861e-06, 0.1948695)
-body_offset = Transform3D(1.0000005, -1.8365681e-05, -4.2952597e-06, -4.3064356e-06, 3.4570694e-06, -1.0000002, 1.8365681e-05, 1.0000004, 3.4868717e-06, -3.0174851e-06, 0.19486955, -5.364418e-06)
+transform = Transform3D(-0.9905368, 0.030181065, 0.13388777, 0.12551235, -0.19549043, 0.9726408, 0.05552911, 0.9802411, 0.18985236, 0.2635054, 0.58751225, -0.13423307)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0270874e-05, 1.6585778e-05, 0.19497532)
+body_offset = Transform3D(1.0000002, -1.5035272e-05, -1.760386e-05, -1.7519109e-05, 4.991889e-06, -1, 1.5068799e-05, 1, 4.9620867e-06, -1.6838312e-05, 0.19497532, -1.7553568e-05)
 
 [node name="Physical Bone mixamorig6_LeftFoot" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="12"]
-transform = Transform3D(-0.98507416, 0.03743262, -0.16801111, -0.16955861, -0.042918324, 0.9845851, 0.029644843, 0.9983771, 0.04862475, 0.16614516, 0.45017815, -1.0957313)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4555785e-05, 0.00019155547, 0.097258)
-body_offset = Transform3D(1.0000004, 0.00015124865, -0.00019531045, -0.00019550021, 0.0006534457, -0.9999997, -0.00015115738, 0.99999976, 0.00065346435, 4.4107437e-06, 0.09725785, -0.00025510788)
+transform = Transform3D(-0.9982316, -0.047306977, -0.03599657, -0.05944449, 0.7919912, 0.60763174, -0.0002362534, 0.608697, -0.79340273, 0.24078244, 0.33886993, -0.0940791)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00014325173, 0.00012256535, 0.09728192)
+body_offset = Transform3D(1.0000002, 0.00017054897, -0.0001669515, -0.00016704176, 0.00072181225, -0.99999976, -0.00017038481, 0.9999998, 0.00072178245, 0.00015947223, 0.097281784, -0.00019280612)
 
 [node name="Physical Bone mixamorig6_RightUpLeg" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="13"]
-transform = Transform3D(-0.99663603, -1.16961516e-07, 0.08195465, 0.042029817, -0.8584835, 0.511116, 0.07035665, 0.51284117, 0.8555956, -0.10824711, 0.85282916, -0.58383465)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7091298e-07, -1.1148711e-07, 0.20442711)
-body_offset = Transform3D(1.0000001, -1.4901161e-08, -5.699694e-07, -5.7742e-07, 2.3245811e-06, -1.0000002, 1.4901161e-08, 1.0000001, 2.2947788e-06, 3.874302e-07, 0.20442715, -3.5762787e-07)
+transform = Transform3D(-0.5215438, 0.7031534, 0.48328802, 0.8395419, 0.32188594, 0.43767428, 0.15218857, 0.6340069, -0.75820446, -0.1906106, 0.8678433, -0.25373432)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00019738052, 0.00010088379, 0.20473021)
+body_offset = Transform3D(1.0000001, 1.6525388e-05, -2.4028122e-05, -2.4043024e-05, 3.1888485e-06, -1, -1.6488135e-05, 1.0000001, 3.0994415e-06, 0.00020229816, 0.20473021, -0.00010152161)
 
 [node name="Physical Bone mixamorig6_RightLeg" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="14"]
-transform = Transform3D(-0.9979761, -2.571461e-05, 0.06359058, 0.032611802, -0.85869104, 0.51145494, 0.05459151, 0.5124936, 0.856954, -0.13739458, 0.6486283, -0.92581177)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9979994e-06, -1.4014578e-06, 0.19497934)
-body_offset = Transform3D(1.0000002, -1.6950071e-07, 3.5390258e-06, 3.5353005e-06, -1.4901161e-07, -1.0000001, 1.7136335e-07, 1, -1.4901161e-07, -3.6880374e-06, 0.19497937, 1.4305115e-06)
+transform = Transform3D(-0.9908966, -0.030404491, -0.13114718, -0.12306111, -0.19044699, 0.9739538, -0.054589156, 0.9812265, 0.18497168, -0.263514, 0.588455, -0.13500784)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4729459e-05, -9.60773e-06, 0.19499123)
+body_offset = Transform3D(1.0000005, 1.9818544e-06, 3.1597912e-05, 3.1506643e-05, -3.5017729e-06, -1, -2.0973384e-06, 1.0000004, -3.4570694e-06, 8.568168e-06, 0.19499123, 1.0281801e-05)
 
 [node name="Physical Bone mixamorig6_RightFoot" parent="LeanAndRotationPoint/IKCharacterMesh/MixamoRacer/Skeleton3D/PhysicalBoneSimulator3D" index="15"]
-transform = Transform3D(-0.98531866, -0.034283362, 0.16724789, 0.16848755, -0.037169937, 0.98500276, -0.027552608, 0.99872077, 0.042400554, -0.16612644, 0.45257437, -1.097042)
-joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7744138e-05, -1.1948473e-06, 0.0977961)
-body_offset = Transform3D(1.0000001, 0.0002704803, -0.00023188477, -0.00023183913, 4.7795475e-06, -1.0000001, -0.00027042255, 1, 4.980713e-06, -5.066395e-06, 0.09779611, 7.1525574e-07)
+transform = Transform3D(-0.99821955, -0.04712738, -0.036560267, -0.0596453, 0.79162526, 0.60808873, 0.0002843992, 0.6091867, -0.79302675, -0.23451443, 0.3391692, -0.09343562)
+joint_offset = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00014333312, -0.000114538416, 0.09782238)
+body_offset = Transform3D(1.0000005, 0.00035721995, -0.00029130245, -0.00029181503, 0.0010588169, -0.99999964, -0.00035691733, 0.9999995, 0.0010585487, 0.00017187, 0.09782243, 1.0937452e-05)
 
 [node name="HeadTarget" parent="LeanAndRotationPoint/IKCharacterMesh/Targets" index="0"]
 transform = Transform3D(1, -7.2399075e-08, 1.3150904e-08, 7.126601e-08, 0.9084061, -0.41808897, 1.8322893e-08, 0.41808897, 0.9084061, -1.3219673e-07, 1.452965, 0.39370275)
@@ -421,13 +689,13 @@ transform = Transform3D(0.5253975, -0.4328656, 0.73251957, -9.905552e-08, 0.8609
 transform = Transform3D(0.8961884, -0.37939778, 0.23000747, 0.062282406, -0.4057027, -0.9118803, 0.43928, 0.83154255, -0.33995613, -0.284, 0.90103054, 0.44884363)
 
 [node name="ButtTarget" parent="LeanAndRotationPoint/IKCharacterMesh/Targets" index="3"]
-transform = Transform3D(1, -6.837966e-08, 5.3890716e-08, 8.336652e-08, 0.573605, -0.81913203, 2.5099986e-08, 0.81913203, 0.573605, 2.769973e-08, 0.98623186, -0.35969338)
+transform = Transform3D(1, -6.837966e-08, 5.3890705e-08, 8.336652e-08, 0.57360494, -0.819132, 2.51e-08, 0.819132, 0.57360494, 2.769973e-08, 0.98623186, -0.35969338)
 
 [node name="LeftLegTarget" parent="LeanAndRotationPoint/IKCharacterMesh/Targets" index="4"]
-transform = Transform3D(-0.9982336, 0.03612911, -0.047162846, -0.059410863, -0.60704976, 0.7924393, -5.9604645e-08, 0.7938415, 0.60812396, 0.2375038, 0.39871255, -0.17106614)
+transform = Transform3D(-0.99823374, 0.03612911, -0.04716285, -0.05941087, -0.60704976, 0.7924393, -5.960465e-08, 0.7938415, 0.608124, 0.2375038, 0.39871255, -0.17106614)
 
 [node name="RightLegTarget" parent="LeanAndRotationPoint/IKCharacterMesh/Targets" index="5"]
-transform = Transform3D(-0.99822557, 0.03680166, -0.046809744, -0.059539717, -0.60723305, 0.7922895, 0.0007331445, 0.79367083, 0.60834676, -0.238, 0.399, -0.171)
+transform = Transform3D(-0.9982256, 0.036801647, -0.046809755, -0.05953971, -0.6072331, 0.7922896, 0.0007331297, 0.79367113, 0.6083467, -0.238, 0.399, -0.171)
 
 [node name="CrashCamPosition" type="SpringArm3D" parent="LeanAndRotationPoint/IKCharacterMesh"]
 unique_name_in_owner = true

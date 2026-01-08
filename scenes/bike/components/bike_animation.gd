@@ -90,14 +90,14 @@ func _on_boost_anim_finished(anim_name: String):
 func _on_trick_started(trick: int):
     match trick:
         BikeTricks.Trick.HEEL_CLICKER:
-            player_controller.anim_player.play("snap_neck")
+            player_controller.anim_player.play("heel_clicker")
 
 
 func _on_trick_ended(trick: int, _score: float, _duration: float):
     match trick:
         BikeTricks.Trick.HEEL_CLICKER:
-            player_controller.anim_player.play_backwards("snap_neck")
-
+            await player_controller.anim_player.animation_finished
+            player_controller.anim_player.play("RESET")
 
 func _update_brake_light(value: float):
     if tail_light_material:
