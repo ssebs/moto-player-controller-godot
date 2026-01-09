@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("1_config")
 mesh_scene = ExtResource("2_mesh")
+mesh_scale = Vector3(0.018, 0.018, 0.018)
 head_target_position = Vector3(1.6766309, 1.452965, 0.39370275)
 head_target_rotation = Vector3(0.43134058, 0, 0)
 left_arm_target_position = Vector3(0.284, 0.9407963, 0.42305174)
