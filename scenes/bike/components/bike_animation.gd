@@ -91,11 +91,13 @@ func _on_trick_started(trick: int):
     match trick:
         BikeTricks.Trick.HEEL_CLICKER:
             player_controller.anim_player.play("heel_clicker")
+        BikeTricks.Trick.KICKFLIP:
+            player_controller.anim_player.play("kickflip")
 
 
 func _on_trick_ended(trick: int, _score: float, _duration: float):
     match trick:
-        BikeTricks.Trick.HEEL_CLICKER:
+        BikeTricks.Trick.HEEL_CLICKER, BikeTricks.Trick.KICKFLIP:
             await player_controller.anim_player.animation_finished
             player_controller.anim_player.play("RESET")
 

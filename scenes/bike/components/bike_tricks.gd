@@ -35,6 +35,7 @@ enum Trick {
 	DRIFT,
 	HEEL_CLICKER,
 	BOOST,
+    KICKFLIP,
 }
 # Trick data configuration
 # base_points: instant score when trick completes
@@ -47,6 +48,7 @@ const TRICK_DATA: Dictionary[Trick, Dictionary] = {
 	Trick.DRIFT: {"name": "Drift", "base_points": 50, "points_per_sec": 12.0},
 	Trick.HEEL_CLICKER: {"name": "Heel Clicker", "base_points": 200, "points_per_sec": 50.0},
 	Trick.BOOST: {"name": "Boost", "base_points": 0, "points_per_sec": 25.0, "is_modifier": true},
+    Trick.KICKFLIP: {"name": "Kickflip","base_points": 200, "points_per_sec": 0.0},
 }
 #endregion
 
@@ -562,6 +564,10 @@ func _detect_trick() -> Trick:
                 return Trick.DRIFT
             else:
                 return Trick.FISHTAIL
+
+        # Kickflip trick (trick + left)
+        if player_controller.bike_input.trick && Input.is_action_pressed("cam_left"):
+            return Trick.KICKFLIP
 
     return Trick.NONE
 
