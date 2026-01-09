@@ -36,8 +36,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 
-- [x] fix rotation on bike mesh from resource (dirtbike is backwards)
-  - [x] see mesh_container.rotation_degrees = bike_config.mesh_rotation in @bike_mesh and @bike_config
 - [ ] Multiple bike models w/ diff stats
   - [x] Sport bike (move stats to resource)
   - [ ] Dirt bike
@@ -90,6 +88,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] fix rotation on bike mesh from resource (dirtbike is backwards)
+  - [x] see mesh_container.rotation_degrees = bike_config.mesh_rotation in @bike_mesh and @bike_config
 - [x] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
 - [x] can't fall from wheelies
 - [x] Riding animations
