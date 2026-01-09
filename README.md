@@ -43,8 +43,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Move BikeMarkers to this
 
 ## Bugs
-
-
+- [ ] brakes are too easy to mess up (hard to not crash & brake)
 - [ ] Speed carries over even when crashing into collider
 
 ## TODO:
