@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BikeConfig" load_steps=3 format=3 uid="uid://snx5i3i7gr82"]
 
 [ext_resource type="PackedScene" uid="uid://bxh2iw31ju2n2" path="res://assets/bikes/DirtBIKE.fbx" id="1_eg5nu"]
-[ext_resource type="Script" uid="uid://ds32dik0da24x" path="res://scenes/bike/bike_config.gd" id="2_j43n7"]
+[ext_resource type="Script" uid="uid://ds32dik0da24x" path="res://scenes/bike/components/bike_config.gd" id="2_j43n7"]
 
 [resource]
 script = ExtResource("2_j43n7")

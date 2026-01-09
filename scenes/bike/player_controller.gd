@@ -61,7 +61,9 @@ class_name PlayerController extends CharacterBody3D
 
 # Shared state
 @export var state: BikeState = BikeState.new()
-@export var bike_config: BikeConfig
+@export var bike_configs: Array[BikeConfig]
+var current_bike_index: int = 0
+var bike_config: BikeConfig
 
 @export_tool_button("Save IK Targets to Config") var save_ik_btn = _save_ik_targets_to_config
 @export_tool_button("Save IK Targets to RESET Animation") var save_reset_btn = _save_ik_targets_to_reset_anim
@@ -73,17 +75,17 @@ var spawn_rotation: Vector3
 
 func _ready():
     if Engine.is_editor_hint():
-        return  # Don't run game logic in editor
+        return # Don't run game logic in editor
 
     spawn_position = global_position
     spawn_rotation = rotation
 
     # Apply bike config before component setup
-    if bike_config:
-        _apply_bike_config()
-    else:
-        printerr("Load a BikeConfig")
+    if bike_configs.is_empty():
+        printerr("Add BikeConfigs to the bike_configs array")
         return
+    bike_config = bike_configs[current_bike_index]
+    _apply_bike_config()
 
     # TODO: call this from %FunctionalityComponents.get_children()
     bike_input._bike_setup(self)
@@ -96,11 +98,12 @@ func _ready():
     bike_animation._bike_setup(self)
 
     bike_crash.respawn_requested.connect(_respawn)
+    bike_input.bike_switch_pressed.connect(_switch_bike)
 
 
 func _physics_process(delta):
     if Engine.is_editor_hint():
-        return  # Don't run game logic in editor
+        return # Don't run game logic in editor
 
     # Handle crash states first (before input)
     if state.player_state == BikeState.PlayerState.CRASHED || \
@@ -153,6 +156,15 @@ func _respawn():
     state.player_state = BikeState.PlayerState.IDLE
 
 
+func _switch_bike():
+    if bike_configs.is_empty():
+        return
+    current_bike_index = (current_bike_index + 1) % bike_configs.size()
+    bike_config = bike_configs[current_bike_index]
+    _apply_bike_config()
+    _respawn()
+
+
 func _update_player_state():
     # Don't auto-transition out of crash states - they have explicit exits
     if state.player_state in [BikeState.PlayerState.CRASHED, BikeState.PlayerState.CRASHING]:
@@ -172,7 +184,7 @@ func _update_player_state():
 
     state.request_state_change(target)
 
-
+#region bikeConfig & animation library
 func _apply_bike_config():
     # Apply mesh
     _apply_bike_mesh()
@@ -214,15 +226,9 @@ func _apply_bike_config():
 
 
 func _apply_bike_mesh():
-    # Clear existing mesh in BikeItself
-    for child in bike_itself_mesh.get_children():
-        child.queue_free()
-
-    if bike_config.mesh_scene:
-        var mesh_instance = bike_config.mesh_scene.instantiate()
-        mesh_instance.scale = bike_config.mesh_scale
-        bike_itself_mesh.add_child(mesh_instance)
-
+    bike_mesh.bike_config = bike_config
+    bike_mesh._load_from_config()
+    anim_player.play(bike_config.animation_library_name + "/RESET")
 
 func _apply_ik_targets():
     # Get IKCharacterMesh targets (they're under character_mesh/Targets/)
@@ -378,3 +384,5 @@ func _init_all_anims_from_reset():
         updated_count += 1
 
     _save_animation_library(library, "Initialized %d animations from RESET values" % updated_count)
+
+#endregion

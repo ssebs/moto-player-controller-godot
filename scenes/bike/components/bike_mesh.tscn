@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dobqcdavdvkdf"]
 
-[ext_resource type="Script" uid="uid://bt32k5ls4lewx" path="res://scenes/bike/bike_mesh.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bt32k5ls4lewx" path="res://scenes/bike/components/bike_mesh.gd" id="1_script"]
 [ext_resource type="Material" uid="uid://bfxhki5bfmyn1" path="res://assets/materials/tail_light_material.tres" id="3_n1tms"]
 [ext_resource type="PackedScene" uid="uid://bn73ermusily2" path="res://scenes/bike/mods/training_wheels_mod.tscn" id="4_voh27"]
 

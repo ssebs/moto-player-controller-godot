@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="BikeConfig" load_steps=3 format=3 uid="uid://cj6x3q0m1yvhf"]
 
-[ext_resource type="Script" uid="uid://ds32dik0da24x" path="res://scenes/bike/bike_config.gd" id="1_config"]
+[ext_resource type="Script" uid="uid://ds32dik0da24x" path="res://scenes/bike/components/bike_config.gd" id="1_config"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="2_mesh"]
 
 [resource]

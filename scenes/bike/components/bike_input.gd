@@ -10,6 +10,7 @@ signal gear_up_pressed
 signal gear_down_pressed
 signal difficulty_toggled
 signal trick_changed(value: float)
+signal bike_switch_pressed
 
 # Vibration settings
 @export var vibration_duration: float = 0.15
@@ -81,6 +82,9 @@ func _update_input():
 
 	if Input.is_action_just_pressed("change_difficulty"):
 		difficulty_toggled.emit()
+
+	if Input.is_action_just_pressed("switch_bike"):
+		bike_switch_pressed.emit()
 
 
 func add_vibration(weak: float, strong: float):
