@@ -80,7 +80,6 @@ func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
 
-    # Apply bike config before component setup
     if bike_configs.is_empty():
         printerr("Add BikeConfigs to the bike_configs array")
         return
@@ -223,6 +222,10 @@ func _apply_bike_config():
     bike_physics.turn_speed = bike_config.turn_speed
     bike_physics.fall_rate = bike_config.fall_rate
     bike_physics.countersteer_factor = bike_config.countersteer_factor
+
+    # Apply audio tracks
+    engine_sound.stream = bike_config.engine_sound_stream
+    engine_sound.volume_db = bike_config.engine_sound_volume_db
 
 
 func _apply_bike_mesh():

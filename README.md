@@ -37,9 +37,9 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 ## In Progress:
 
 - [ ] Multiple bike models w/ diff stats
-  - [ ] Sounds change from bikeconfig
+  - [x] Sounds change from bikeconfig
   - [x] Sport bike (move stats to resource)
-  - [ ] Dirt bike
+  - [x] Dirt bike
   - [ ] Pocket bike (only 2 gears, lower stats, etc.)
 
 ## Bugs

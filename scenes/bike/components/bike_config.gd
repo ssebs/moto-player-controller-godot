@@ -26,6 +26,10 @@ class_name BikeConfig extends Resource
 # Animation
 @export var animation_library_name: String = "sport_bike"
 
+# Audio
+@export var engine_sound_stream: AudioStream
+@export var engine_sound_volume_db: float = -25.0
+
 # Gearing (applied to BikeGearing component)
 @export var gear_ratios: Array[float] = [2.92, 2.05, 1.6, 1.46, 1.15, 1.0]
 @export var max_rpm: float = 11000.0
