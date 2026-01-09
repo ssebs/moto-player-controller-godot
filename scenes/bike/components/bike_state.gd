@@ -77,7 +77,6 @@ var boost_count: int = 2
 
 # Grip/Crash state
 var grip_usage: float = 0.0  # 0-1, how much grip is being consumed
-var brake_grab_level: float = 0.0
 
 # Difficulty
 var difficulty: PlayerDifficulty = PlayerDifficulty.EASY

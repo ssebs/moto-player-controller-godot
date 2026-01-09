@@ -43,24 +43,21 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Move BikeMarkers to this
 
 ## Bugs
-- [ ] brakes are too easy to mess up (hard to not crash & brake)
+
 - [ ] Speed carries over even when crashing into collider
 
 ## TODO:
 
 - [WIP] Riding animations
   - [x] lean
-  - [ ] wheelie v1 (RB for standing wheelie during wheelie)
-  - [ ] stoppie
+  - [x] wheelie v1 (RB for standing wheelie during wheelie)
+  - [x] stoppie
   - [ ] Idle / stopped (1 leg down)
   - [x] 1 complex trick (heel clicker) (only in-air)
   - [x] kickflip
   - [x] Blend between leaning & tricks (boost)
 - [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] Camera controller
-- [ ] Tune "feeling" of riding the bike & doing tricks
-  - [ ] Bike should fall when too slow, but should be stable at speed (don't have tip-in over 30)
-  - [ ] Counter steering
 - [ ] Drift
 - [ ] Final refactor
   - [ ] Signals that emit from player controller for use in MP
@@ -73,6 +70,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Fix bugs
 
 ## Out of Scope
+
 - [ ] HUD Cleanup
   - [ ] Create hud texture of motorcycle dashboard
   - [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
@@ -98,6 +96,10 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] nollie lazerflip
 
 ## Done:
+- [x] Tune "feeling" of riding the bike & doing tricks
+  - [x] Bike should fall when too slow, but should be stable at speed (don't have tip-in over 30)
+  - [x] Counter steering
+- [x] brakes are too easy to mess up (hard to not crash & brake)
 - [x] Cleanup input map (trick_down vs cam_down)
 - [x] Fix clutch start on easy mode (shouldn't be needed)
 - [x] NOS disable turning during, you can only boost forward
