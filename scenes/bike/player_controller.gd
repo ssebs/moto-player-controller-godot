@@ -4,17 +4,20 @@ class_name PlayerController extends CharacterBody3D
 # Meshes / Character / Animations
 @onready var collision_shape: CollisionShape3D = %CollisionShape3D
 @onready var rotation_root: Node3D = %LeanAndRotationPoint
-@onready var bike_mesh: Node3D = %BikeMesh
+@onready var bike_mesh: BikeMesh = %BikeMesh
 @onready var character_mesh: Node3D = %IKCharacterMesh
 @onready var riding_cam_position: Node3D = %RidingCamPosition
 @onready var crash_cam_position: Node3D = %CrashCamPosition
 @onready var riding_camera: Camera3D = %RidingCamera
 @onready var crashing_camera: Camera3D = %CrashingCamera
-@onready var bike_itself_mesh: Node3D = %BikeItself
+@onready var bike_itself_mesh: Node3D:
+    get: return bike_mesh.get_node("MeshContainer") if bike_mesh else null
 @onready var anim_player: AnimationPlayer = %AnimationPlayer
 @onready var lean_anim_player: AnimationPlayer = %LeanAnimationPlayer
-@onready var tail_light: MeshInstance3D = %TailLight
-@onready var training_wheels: Node3D = %TrainingWheels
+@onready var tail_light: MeshInstance3D:
+    get: return bike_mesh.get_node("TailLight") if bike_mesh else null
+@onready var training_wheels: Node3D:
+    get: return bike_mesh.get_node("Mods/TrainingWheels") if bike_mesh else null
 
 # Markers
 @onready var rear_wheel: Marker3D = %RearWheelMarker
@@ -57,6 +60,7 @@ class_name PlayerController extends CharacterBody3D
 
 # Shared state
 @export var state: BikeState = BikeState.new()
+@export var bike_config: BikeConfig
 
 # Spawn tracking
 var spawn_position: Vector3
@@ -65,6 +69,13 @@ var spawn_rotation: Vector3
 func _ready():
     spawn_position = global_position
     spawn_rotation = rotation
+
+    # Apply bike config before component setup
+    if bike_config:
+        _apply_bike_config()
+    else:
+        printerr("Load a BikeConfig")
+        return
 
     # TODO: call this from %FunctionalityComponents.get_children()
     bike_input._bike_setup(self)
@@ -149,3 +160,72 @@ func _update_player_state():
         target = BikeState.PlayerState.RIDING
 
     state.request_state_change(target)
+
+
+func _apply_bike_config():
+    # Apply mesh
+    _apply_bike_mesh()
+
+    # Apply IK target positions to IKCharacterMesh
+    _apply_ik_targets()
+
+    # Apply wheel marker positions
+    front_wheel.position = bike_config.front_wheel_position
+    rear_wheel.position = bike_config.rear_wheel_position
+
+    # Apply gearing values
+    bike_gearing.gear_ratios = bike_config.gear_ratios
+    bike_gearing.max_rpm = bike_config.max_rpm
+    bike_gearing.idle_rpm = bike_config.idle_rpm
+    bike_gearing.stall_rpm = bike_config.stall_rpm
+    bike_gearing.clutch_engage_speed = bike_config.clutch_engage_speed
+    bike_gearing.clutch_release_speed = bike_config.clutch_release_speed
+    bike_gearing.clutch_tap_amount = bike_config.clutch_tap_amount
+    bike_gearing.clutch_hold_delay = bike_config.clutch_hold_delay
+    bike_gearing.rpm_blend_speed = bike_config.rpm_blend_speed
+    bike_gearing.rev_match_speed = bike_config.rev_match_speed
+
+    # Apply physics values
+    bike_physics.max_speed = bike_config.max_speed
+    bike_physics.acceleration = bike_config.acceleration
+    bike_physics.brake_strength = bike_config.brake_strength
+    bike_physics.friction = bike_config.friction
+    bike_physics.engine_brake_strength = bike_config.engine_brake_strength
+    bike_physics.steering_speed = bike_config.steering_speed
+    bike_physics.max_steering_angle = deg_to_rad(bike_config.max_steering_angle)
+    bike_physics.max_lean_angle = deg_to_rad(bike_config.max_lean_angle)
+    bike_physics.lean_speed = bike_config.lean_speed
+    bike_physics.min_turn_radius = bike_config.min_turn_radius
+    bike_physics.max_turn_radius = bike_config.max_turn_radius
+    bike_physics.turn_speed = bike_config.turn_speed
+    bike_physics.fall_rate = bike_config.fall_rate
+    bike_physics.countersteer_factor = bike_config.countersteer_factor
+
+
+func _apply_bike_mesh():
+    # Clear existing mesh in BikeItself
+    for child in bike_itself_mesh.get_children():
+        child.queue_free()
+
+    if bike_config.mesh_scene:
+        var mesh_instance = bike_config.mesh_scene.instantiate()
+        mesh_instance.scale = bike_config.mesh_scale
+        bike_itself_mesh.add_child(mesh_instance)
+
+
+func _apply_ik_targets():
+    # Get IKCharacterMesh targets (they're under character_mesh/Targets/)
+    var targets = character_mesh.get_node("Targets")
+
+    targets.get_node("HeadTarget").position = bike_config.head_target_position
+    targets.get_node("HeadTarget").rotation = bike_config.head_target_rotation
+    targets.get_node("LeftArmTarget").position = bike_config.left_arm_target_position
+    targets.get_node("LeftArmTarget").rotation = bike_config.left_arm_target_rotation
+    targets.get_node("RightArmTarget").position = bike_config.right_arm_target_position
+    targets.get_node("RightArmTarget").rotation = bike_config.right_arm_target_rotation
+    targets.get_node("ButtTarget").position = bike_config.butt_target_position
+    targets.get_node("ButtTarget").rotation = bike_config.butt_target_rotation
+    targets.get_node("LeftLegTarget").position = bike_config.left_leg_target_position
+    targets.get_node("LeftLegTarget").rotation = bike_config.left_leg_target_rotation
+    targets.get_node("RightLegTarget").position = bike_config.right_leg_target_position
+    targets.get_node("RightLegTarget").rotation = bike_config.right_leg_target_rotation

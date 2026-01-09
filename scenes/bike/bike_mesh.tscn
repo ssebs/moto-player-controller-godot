@@ -1,0 +1,61 @@
+[gd_scene load_steps=6 format=3 uid="uid://dobqcdavdvkdf"]
+
+[ext_resource type="Script" uid="uid://bt32k5ls4lewx" path="res://scenes/bike/bike_mesh.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cj6x3q0m1yvhf" path="res://resources/bikes/sport_bike.tres" id="2_ax8tk"]
+[ext_resource type="Material" uid="uid://bfxhki5bfmyn1" path="res://assets/materials/tail_light_material.tres" id="3_n1tms"]
+[ext_resource type="PackedScene" uid="uid://bn73ermusily2" path="res://scenes/bike/mods/training_wheels_mod.tscn" id="4_voh27"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_sdhfr"]
+size = Vector3(0.3, 0.055, 0.05)
+
+[node name="BikeMesh" type="Node3D"]
+script = ExtResource("1_script")
+bike_config = ExtResource("2_ax8tk")
+
+[node name="MeshContainer" type="Node3D" parent="."]
+
+[node name="TailLight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.94790524, 0.958052)
+mesh = SubResource("BoxMesh_sdhfr")
+surface_material_override/0 = ExtResource("3_n1tms")
+
+[node name="Mods" type="Node3D" parent="."]
+
+[node name="TrainingWheels" type="Node3D" parent="Mods"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.07463604, 0.68403995)
+visible = false
+
+[node name="TrainingWheelsMod" parent="Mods/TrainingWheels" instance=ExtResource("4_voh27")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0.335, 0.117)
+is_left_wheel = false
+
+[node name="TrainingWheelsMod2" parent="Mods/TrainingWheels" instance=ExtResource("4_voh27")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.15, 0.335, 0.117)
+
+[node name="Targets" type="Node3D" parent="."]
+
+[node name="HeadTarget" type="Marker3D" parent="Targets"]
+transform = Transform3D(1, 0, 0, 0, 0.9084061, -0.41808897, 0, 0.41808897, 0.9084061, 1.6766309, 1.452965, 0.39370275)
+
+[node name="LeftArmTarget" type="Marker3D" parent="Targets"]
+transform = Transform3D(0.52539736, -0.43286574, 0.7325195, 0, 0.8609197, 0.5087409, -0.85085696, -0.26729113, 0.45232496, 0.284, 0.9407963, 0.42305174)
+
+[node name="RightArmTarget" type="Marker3D" parent="Targets"]
+transform = Transform3D(0.89618856, -0.37939772, 0.23000756, 0.062282417, -0.40570265, -0.9118806, 0.4392801, 0.83154243, -0.33995625, -0.284, 0.90103054, 0.44884363)
+
+[node name="ButtTarget" type="Marker3D" parent="Targets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.98623186, -0.35969338)
+
+[node name="LeftLegTarget" type="Marker3D" parent="Targets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2375038, 0.39871255, -0.17106614)
+
+[node name="RightLegTarget" type="Marker3D" parent="Targets"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.238, 0.399, -0.171)
+
+[node name="WheelMarkers" type="Node3D" parent="."]
+
+[node name="FrontWheelMarker" type="Marker3D" parent="WheelMarkers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.7181249)
+
+[node name="RearWheelMarker" type="Marker3D" parent="WheelMarkers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.68403995)

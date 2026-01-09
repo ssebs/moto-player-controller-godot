@@ -8,6 +8,13 @@ enum LeanState {CENTER, LEANING_LEFT, HELD_LEFT, RETURNING_LEFT, LEANING_RIGHT, 
 var lean_state: LeanState = LeanState.CENTER
 const LEAN_THRESHOLD := 0.1 # Minimum lean angle to trigger animation
 
+
+func _get_anim(anim_name: String) -> String:
+    if player_controller.bike_config:
+        return player_controller.bike_config.animation_library_name + "/" + anim_name
+    return anim_name
+
+
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
@@ -74,36 +81,36 @@ func _setup_training_wheels():
 func _on_boost_started():
     if player_controller.anim_player.is_playing():
         return
-    player_controller.anim_player.play("naruto_run_start")
+    player_controller.anim_player.play(_get_anim("naruto_run_start"))
     player_controller.anim_player.animation_finished.connect(_on_boost_anim_finished)
 
 
 func _on_boost_ended():
     if player_controller.anim_player.animation_finished.is_connected(_on_boost_anim_finished):
         player_controller.anim_player.animation_finished.disconnect(_on_boost_anim_finished)
-    player_controller.anim_player.play_backwards("naruto_run_start")
+    player_controller.anim_player.play_backwards(_get_anim("naruto_run_start"))
 
 
 func _on_boost_anim_finished(anim_name: String):
-    if anim_name == "naruto_run_start":
-        player_controller.anim_player.play("naruto_run_loop")
+    if anim_name == _get_anim("naruto_run_start"):
+        player_controller.anim_player.play(_get_anim("naruto_run_loop"))
 
 
 func _on_trick_started(trick: int):
     match trick:
         BikeTricks.Trick.HEEL_CLICKER:
             player_controller.lean_anim_player.stop()
-            player_controller.anim_player.play("heel_clicker")
+            player_controller.anim_player.play(_get_anim("heel_clicker"))
         BikeTricks.Trick.KICKFLIP:
             player_controller.lean_anim_player.stop()
-            player_controller.anim_player.play("kickflip")
+            player_controller.anim_player.play(_get_anim("kickflip"))
 
 
 func _on_trick_ended(trick: int, _score: float, _duration: float):
     match trick:
         BikeTricks.Trick.HEEL_CLICKER, BikeTricks.Trick.KICKFLIP:
             await player_controller.anim_player.animation_finished
-            player_controller.anim_player.play("RESET")
+            player_controller.anim_player.play(_get_anim("RESET"))
 
 func _update_brake_light(value: float):
     if tail_light_material:
@@ -205,13 +212,13 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
             player_controller.lean_anim_player.stop()
         BikeState.PlayerState.IDLE:
             if new_state == BikeState.PlayerState.RIDING:
-                player_controller.anim_player.play_backwards("idle_stopped")
+                player_controller.anim_player.play_backwards(_get_anim("idle_stopped"))
 
     # Handle state entry
     match new_state:
         BikeState.PlayerState.IDLE:
             lean_state = LeanState.CENTER
-            player_controller.anim_player.play("idle_stopped")
+            player_controller.anim_player.play(_get_anim("idle_stopped"))
             await player_controller.anim_player.animation_finished
             player_controller.anim_player.pause()
         BikeState.PlayerState.CRASHING:
