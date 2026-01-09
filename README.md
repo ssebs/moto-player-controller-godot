@@ -35,7 +35,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-- [ ] can't fall from wheelies
 - [ ] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
 - [ ] Multiple bike models w/ diff stats
   - [ ] Sport bike (move stats to resource)
@@ -81,7 +80,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] Superman (no hand spread eagle)
   - [ ] Skate tricks for memez (only off **Ramps**)
     - > hop on top of bike, then do it like skater
-    - [ ] kickflip/heelflip
+    - [x] kickflip/heelflip
     - [ ] pop shuvit
     - [ ] hardflip
     - [ ] 360flip
@@ -89,6 +88,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] can't fall from wheelies
 - [x] Riding animations
   - [x] lean
   - [x] wheelie v1 (RB for standing wheelie during wheelie)

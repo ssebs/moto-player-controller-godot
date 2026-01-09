@@ -76,9 +76,8 @@ const DIFFICULTY_MULT: Dictionary = {
 @export var rotation_speed: float = 2.0
 @export var return_speed: float = 3.0
 
-# Wheelie RPM tuning - wheelies start at this RPM ratio and scale up to max at redline
+# Wheelie RPM tuning
 @export var wheelie_rpm_threshold: float = 0.65 # RPM ratio where wheelies can start
-@export var wheelie_rpm_full: float = 0.95 # RPM ratio for maximum wheelie effect
 
 # Fishtail/drift tuning
 @export var max_fishtail_angle: float = deg_to_rad(30)
@@ -261,21 +260,15 @@ func _update_wheelie(delta: float):
     # Can't START a wheelie while turning, but can continue one
     var can_start_trick = not player_controller.bike_physics.is_turning()
 
-    # Wheelie logic - wheelies scale with RPM above threshold
+    # Wheelie initiation requires RPM above threshold or clutch dump
     var rpm_above_threshold = rpm_ratio >= wheelie_rpm_threshold
     var can_pop_wheelie = player_controller.bike_input.lean > 0.3 and player_controller.bike_input.throttle > 0.7 and (rpm_above_threshold or clutch_dump)
-
-    # Calculate how much wheelie power based on where we are in the RPM range
-    # 0 at threshold, 1 at full RPM
-    var rpm_wheelie_factor = 0.0
-    if rpm_ratio >= wheelie_rpm_threshold:
-        rpm_wheelie_factor = clamp((rpm_ratio - wheelie_rpm_threshold) / (wheelie_rpm_full - wheelie_rpm_threshold), 0.0, 1.0)
 
     var wheelie_target = 0.0
     if player_controller.state.speed > 1 and (was_in_wheelie or (can_pop_wheelie and can_start_trick)):
         if player_controller.bike_input.throttle > 0.3:
-            # Wheelie intensity scales with both throttle AND rpm position in the power band
-            wheelie_target = max_wheelie_angle * player_controller.bike_input.throttle * rpm_wheelie_factor
+            # Wheelie intensity scales with throttle and lean
+            wheelie_target = max_wheelie_angle * player_controller.bike_input.throttle
             # Lean back (positive) adds to wheelie
             if player_controller.bike_input.lean > 0:
                 wheelie_target += max_wheelie_angle * player_controller.bike_input.lean * 0.15
@@ -291,10 +284,10 @@ func _update_wheelie(delta: float):
         # Return to neutral if not in stoppie territory
         player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * delta)
 
-    # # On EASY/MEDIUM mode, clamp wheelie angle to prevent crash
-    # if player_controller.state.difficulty != BikeState.PlayerDifficulty.HARD:
-    #     var safe_wheelie_limit = player_controller.bike_crash.crash_wheelie_threshold - deg_to_rad(5)
-    #     player_controller.state.pitch_angle = min(player_controller.state.pitch_angle, safe_wheelie_limit)
+    # On EASY mode, clamp wheelie angle to prevent crash
+    if player_controller.state.difficulty == BikeState.PlayerDifficulty.EASY:
+        var safe_wheelie_limit = player_controller.bike_crash.crash_wheelie_threshold - deg_to_rad(5)
+        player_controller.state.pitch_angle = min(player_controller.state.pitch_angle, safe_wheelie_limit)
 
     # State transitions for wheelies
     var is_in_wheelie = player_controller.state.pitch_angle > deg_to_rad(5)
