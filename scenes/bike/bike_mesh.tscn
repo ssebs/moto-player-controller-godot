@@ -30,21 +30,6 @@ is_left_wheel = false
 [node name="TrainingWheelsMod2" parent="Mods/TrainingWheels" instance=ExtResource("4_voh27")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.15, 0.335, 0.117)
 
-[node name="Targets" type="Node3D" parent="."]
-
-[node name="HeadTarget" type="Marker3D" parent="Targets"]
-
-[node name="LeftArmTarget" type="Marker3D" parent="Targets"]
-transform = Transform3D(0.99999994, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-
-[node name="RightArmTarget" type="Marker3D" parent="Targets"]
-
-[node name="ButtTarget" type="Marker3D" parent="Targets"]
-
-[node name="LeftLegTarget" type="Marker3D" parent="Targets"]
-
-[node name="RightLegTarget" type="Marker3D" parent="Targets"]
-
 [node name="WheelMarkers" type="Node3D" parent="."]
 
 [node name="FrontWheelMarker" type="Marker3D" parent="WheelMarkers"]

@@ -1,3 +1,4 @@
+@tool
 class_name PlayerController extends CharacterBody3D
 
 #region Onready Node References
@@ -62,11 +63,18 @@ class_name PlayerController extends CharacterBody3D
 @export var state: BikeState = BikeState.new()
 @export var bike_config: BikeConfig
 
+@export_tool_button("Save IK Targets to Config") var save_ik_btn = _save_ik_targets_to_config
+@export_tool_button("Save IK Targets to RESET Animation") var save_reset_btn = _save_ik_targets_to_reset_anim
+@export_tool_button("Initialize All Animations from RESET") var init_anims_btn = _init_all_anims_from_reset
+
 # Spawn tracking
 var spawn_position: Vector3
 var spawn_rotation: Vector3
 
 func _ready():
+    if Engine.is_editor_hint():
+        return  # Don't run game logic in editor
+
     spawn_position = global_position
     spawn_rotation = rotation
 
@@ -91,6 +99,9 @@ func _ready():
 
 
 func _physics_process(delta):
+    if Engine.is_editor_hint():
+        return  # Don't run game logic in editor
+
     # Handle crash states first (before input)
     if state.player_state == BikeState.PlayerState.CRASHED || \
         state.player_state == BikeState.PlayerState.CRASHING:
@@ -229,3 +240,122 @@ func _apply_ik_targets():
     targets.get_node("LeftLegTarget").rotation = bike_config.left_leg_target_rotation
     targets.get_node("RightLegTarget").position = bike_config.right_leg_target_position
     targets.get_node("RightLegTarget").rotation = bike_config.right_leg_target_rotation
+
+
+func _save_ik_targets_to_config():
+    if not bike_config:
+        push_error("No BikeConfig assigned")
+        return
+
+    var targets = character_mesh.get_node("Targets")
+
+    bike_config.head_target_position = targets.get_node("HeadTarget").position
+    bike_config.head_target_rotation = targets.get_node("HeadTarget").rotation
+    bike_config.left_arm_target_position = targets.get_node("LeftArmTarget").position
+    bike_config.left_arm_target_rotation = targets.get_node("LeftArmTarget").rotation
+    bike_config.right_arm_target_position = targets.get_node("RightArmTarget").position
+    bike_config.right_arm_target_rotation = targets.get_node("RightArmTarget").rotation
+    bike_config.butt_target_position = targets.get_node("ButtTarget").position
+    bike_config.butt_target_rotation = targets.get_node("ButtTarget").rotation
+    bike_config.left_leg_target_position = targets.get_node("LeftLegTarget").position
+    bike_config.left_leg_target_rotation = targets.get_node("LeftLegTarget").rotation
+    bike_config.right_leg_target_position = targets.get_node("RightLegTarget").position
+    bike_config.right_leg_target_rotation = targets.get_node("RightLegTarget").rotation
+
+    var err = ResourceSaver.save(bike_config, bike_config.resource_path)
+    if err != OK:
+        push_error("Failed to save BikeConfig: %s" % err)
+    else:
+        print("Saved IK targets to: %s" % bike_config.resource_path)
+
+
+func _get_ik_target_tracks() -> Dictionary:
+    var targets = character_mesh.get_node("Targets")
+    return {
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/HeadTarget:position": targets.get_node("HeadTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/LeftArmTarget:position": targets.get_node("LeftArmTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/RightArmTarget:position": targets.get_node("RightArmTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/ButtTarget:position": targets.get_node("ButtTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/LeftLegTarget:position": targets.get_node("LeftLegTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:position": targets.get_node("RightLegTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/ButtTarget:rotation": targets.get_node("ButtTarget").rotation,
+    }
+
+
+func _get_animation_library() -> AnimationLibrary:
+    if not bike_config:
+        push_error("No BikeConfig assigned")
+        return null
+
+    if not anim_player:
+        push_error("No AnimationPlayer found")
+        return null
+
+    var library_name = bike_config.animation_library_name
+    if library_name.is_empty():
+        push_error("BikeConfig has no animation_library_name set")
+        return null
+
+    var library = anim_player.get_animation_library(library_name)
+    if not library:
+        push_error("Animation library '%s' not found" % library_name)
+        return null
+
+    return library
+
+
+func _save_animation_library(library: AnimationLibrary, message: String):
+    if library.resource_path.is_empty():
+        # Library is embedded in scene - save the scene
+        var scene_path = get_tree().edited_scene_root.scene_file_path
+        var packed_scene = PackedScene.new()
+        packed_scene.pack(get_tree().edited_scene_root)
+        var err = ResourceSaver.save(packed_scene, scene_path)
+        if err != OK:
+            push_error("Failed to save scene: %s" % err)
+        else:
+            print("%s (scene saved: %s)" % [message, scene_path])
+    else:
+        var err = ResourceSaver.save(library, library.resource_path)
+        if err != OK:
+            push_error("Failed to save animation library: %s" % err)
+        else:
+            print("%s: %s" % [message, library.resource_path])
+
+
+func _update_animation_first_keyframes(anim: Animation, target_tracks: Dictionary):
+    for i in range(anim.get_track_count()):
+        var path = str(anim.track_get_path(i))
+        if target_tracks.has(path):
+            anim.track_set_key_value(i, 0, target_tracks[path])
+
+
+func _save_ik_targets_to_reset_anim():
+    var library = _get_animation_library()
+    if not library:
+        return
+
+    if not library.has_animation("RESET"):
+        push_error("No RESET animation in library '%s'" % bike_config.animation_library_name)
+        return
+
+    var target_tracks = _get_ik_target_tracks()
+    _update_animation_first_keyframes(library.get_animation("RESET"), target_tracks)
+    _save_animation_library(library, "Saved IK targets to RESET animation")
+
+
+func _init_all_anims_from_reset():
+    var library = _get_animation_library()
+    if not library:
+        return
+
+    var target_tracks = _get_ik_target_tracks()
+    var anim_names = library.get_animation_list()
+    var updated_count = 0
+
+    for anim_name in anim_names:
+        var anim = library.get_animation(anim_name)
+        _update_animation_first_keyframes(anim, target_tracks)
+        updated_count += 1
+
+    _save_animation_library(library, "Initialized %d animations from RESET values" % updated_count)
