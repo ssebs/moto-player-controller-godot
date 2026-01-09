@@ -273,12 +273,17 @@ func _get_ik_target_tracks() -> Dictionary:
     var targets = character_mesh.get_node("Targets")
     return {
         "LeanAndRotationPoint/IKCharacterMesh/Targets/HeadTarget:position": targets.get_node("HeadTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/HeadTarget:rotation": targets.get_node("HeadTarget").rotation,
         "LeanAndRotationPoint/IKCharacterMesh/Targets/LeftArmTarget:position": targets.get_node("LeftArmTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/LeftArmTarget:rotation": targets.get_node("LeftArmTarget").rotation,
         "LeanAndRotationPoint/IKCharacterMesh/Targets/RightArmTarget:position": targets.get_node("RightArmTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/RightArmTarget:rotation": targets.get_node("RightArmTarget").rotation,
         "LeanAndRotationPoint/IKCharacterMesh/Targets/ButtTarget:position": targets.get_node("ButtTarget").position,
-        "LeanAndRotationPoint/IKCharacterMesh/Targets/LeftLegTarget:position": targets.get_node("LeftLegTarget").position,
-        "LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:position": targets.get_node("RightLegTarget").position,
         "LeanAndRotationPoint/IKCharacterMesh/Targets/ButtTarget:rotation": targets.get_node("ButtTarget").rotation,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/LeftLegTarget:position": targets.get_node("LeftLegTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/LeftLegTarget:rotation": targets.get_node("LeftLegTarget").rotation,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:position": targets.get_node("RightLegTarget").position,
+        "LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:rotation": targets.get_node("RightLegTarget").rotation,
     }
 
 
@@ -349,13 +354,27 @@ func _init_all_anims_from_reset():
     if not library:
         return
 
-    var target_tracks = _get_ik_target_tracks()
+    if not library.has_animation("RESET"):
+        push_error("No RESET animation in library '%s'" % bike_config.animation_library_name)
+        return
+
+    # Extract all track values from RESET animation's first keyframe
+    var reset_anim = library.get_animation("RESET")
+    var reset_tracks = {}
+    for i in range(reset_anim.get_track_count()):
+        var path = str(reset_anim.track_get_path(i))
+        if reset_anim.track_get_key_count(i) > 0:
+            reset_tracks[path] = reset_anim.track_get_key_value(i, 0)
+
+    # Apply RESET's first keyframe values to all other animations
     var anim_names = library.get_animation_list()
     var updated_count = 0
 
     for anim_name in anim_names:
+        if anim_name == "RESET":
+            continue
         var anim = library.get_animation(anim_name)
-        _update_animation_first_keyframes(anim, target_tracks)
+        _update_animation_first_keyframes(anim, reset_tracks)
         updated_count += 1
 
     _save_animation_library(library, "Initialized %d animations from RESET values" % updated_count)
