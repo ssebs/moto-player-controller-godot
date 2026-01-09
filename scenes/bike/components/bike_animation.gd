@@ -36,8 +36,10 @@ func _bike_setup(p_controller: PlayerController):
 
 
 func _bike_update(_delta):
-    apply_mesh_rotation()
-    update_lean_animation()
+    # Skip mesh rotation when idle - let the idle_stopped animation control the pose
+    if player_controller.state.player_state != BikeState.PlayerState.IDLE:
+        apply_mesh_rotation()
+        update_lean_animation()
 
 
 func _on_front_brake_changed(value: float):
@@ -201,11 +203,17 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
             lean_state = LeanState.CENTER
             player_controller.anim_player.stop()
             player_controller.lean_anim_player.stop()
+        BikeState.PlayerState.IDLE:
+            if new_state == BikeState.PlayerState.RIDING:
+                player_controller.anim_player.play_backwards("idle_stopped")
 
     # Handle state entry
     match new_state:
         BikeState.PlayerState.IDLE:
             lean_state = LeanState.CENTER
+            player_controller.anim_player.play("idle_stopped")
+            await player_controller.anim_player.animation_finished
+            player_controller.anim_player.pause()
         BikeState.PlayerState.CRASHING:
             # Could trigger crash animation here
             pass
@@ -219,3 +227,4 @@ func _bike_reset():
     lean_state = LeanState.CENTER
     player_controller.anim_player.stop()
     player_controller.lean_anim_player.stop()
+    apply_mesh_rotation()

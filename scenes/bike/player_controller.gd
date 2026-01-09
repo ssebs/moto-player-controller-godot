@@ -143,7 +143,7 @@ func _update_player_state():
     var target: BikeState.PlayerState
     if is_airborne:
         target = BikeState.PlayerState.AIRBORNE
-    elif state.speed < 0.5 and not bike_input.has_input():
+    elif state.speed < 0.5 and bike_input.throttle < 0.1:
         target = BikeState.PlayerState.IDLE
     else:
         target = BikeState.PlayerState.RIDING

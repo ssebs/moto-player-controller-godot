@@ -48,14 +48,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## TODO:
 
-- [WIP] Riding animations
-  - [x] lean
-  - [x] wheelie v1 (RB for standing wheelie during wheelie)
-  - [x] stoppie
-  - [ ] Idle / stopped (1 leg down)
-  - [x] 1 complex trick (heel clicker) (only in-air)
-  - [x] kickflip
-  - [x] Blend between leaning & tricks (boost)
 - [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] Camera controller
 - [ ] Drift
@@ -96,6 +88,15 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] nollie lazerflip
 
 ## Done:
+
+- [x] Riding animations
+  - [x] lean
+  - [x] wheelie v1 (RB for standing wheelie during wheelie)
+  - [x] stoppie
+  - [x] Idle / stopped (1 leg down)
+  - [x] 1 complex trick (heel clicker) (only in-air)
+  - [x] kickflip
+  - [x] Blend between leaning & tricks (boost)
 - [x] Tune "feeling" of riding the bike & doing tricks
   - [x] Bike should fall when too slow, but should be stable at speed (don't have tip-in over 30)
   - [x] Counter steering
