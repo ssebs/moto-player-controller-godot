@@ -90,8 +90,10 @@ func _on_boost_anim_finished(anim_name: String):
 func _on_trick_started(trick: int):
     match trick:
         BikeTricks.Trick.HEEL_CLICKER:
+            player_controller.lean_anim_player.stop()
             player_controller.anim_player.play("heel_clicker")
         BikeTricks.Trick.KICKFLIP:
+            player_controller.lean_anim_player.stop()
             player_controller.anim_player.play("kickflip")
 
 
@@ -114,50 +116,50 @@ func update_lean_animation():
     match lean_state:
         LeanState.CENTER:
             if is_leaning_left:
-                player_controller.anim_player.play("lean_left")
+                player_controller.lean_anim_player.play("lean_left")
                 lean_state = LeanState.LEANING_LEFT
             elif is_leaning_right:
-                player_controller.anim_player.play("lean_right")
+                player_controller.lean_anim_player.play("lean_right")
                 lean_state = LeanState.LEANING_RIGHT
 
         LeanState.LEANING_LEFT:
-            if not player_controller.anim_player.is_playing():
+            if not player_controller.lean_anim_player.is_playing():
                 lean_state = LeanState.HELD_LEFT
             elif not is_leaning_left:
                 # Started returning before animation finished
-                player_controller.anim_player.play_backwards("lean_left")
+                player_controller.lean_anim_player.play_backwards("lean_left")
                 lean_state = LeanState.RETURNING_LEFT
 
         LeanState.HELD_LEFT:
             if not is_leaning_left:
-                player_controller.anim_player.play_backwards("lean_left")
+                player_controller.lean_anim_player.play_backwards("lean_left")
                 lean_state = LeanState.RETURNING_LEFT
 
         LeanState.RETURNING_LEFT:
-            if not player_controller.anim_player.is_playing():
+            if not player_controller.lean_anim_player.is_playing():
                 lean_state = LeanState.CENTER
             elif is_leaning_left:
                 # Changed direction, go back to leaning
-                player_controller.anim_player.play("lean_left")
+                player_controller.lean_anim_player.play("lean_left")
                 lean_state = LeanState.LEANING_LEFT
 
         LeanState.LEANING_RIGHT:
-            if not player_controller.anim_player.is_playing():
+            if not player_controller.lean_anim_player.is_playing():
                 lean_state = LeanState.HELD_RIGHT
             elif not is_leaning_right:
-                player_controller.anim_player.play_backwards("lean_right")
+                player_controller.lean_anim_player.play_backwards("lean_right")
                 lean_state = LeanState.RETURNING_RIGHT
 
         LeanState.HELD_RIGHT:
             if not is_leaning_right:
-                player_controller.anim_player.play_backwards("lean_right")
+                player_controller.lean_anim_player.play_backwards("lean_right")
                 lean_state = LeanState.RETURNING_RIGHT
 
         LeanState.RETURNING_RIGHT:
-            if not player_controller.anim_player.is_playing():
+            if not player_controller.lean_anim_player.is_playing():
                 lean_state = LeanState.CENTER
             elif is_leaning_right:
-                player_controller.anim_player.play("lean_right")
+                player_controller.lean_anim_player.play("lean_right")
                 lean_state = LeanState.LEANING_RIGHT
 
 
@@ -198,6 +200,7 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
             # Reset animations on respawn
             lean_state = LeanState.CENTER
             player_controller.anim_player.stop()
+            player_controller.lean_anim_player.stop()
 
     # Handle state entry
     match new_state:
@@ -215,3 +218,4 @@ func _bike_reset():
     _update_brake_light(0)
     lean_state = LeanState.CENTER
     player_controller.anim_player.stop()
+    player_controller.lean_anim_player.stop()

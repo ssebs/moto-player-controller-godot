@@ -12,6 +12,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var crashing_camera: Camera3D = %CrashingCamera
 @onready var bike_itself_mesh: Node3D = %BikeItself
 @onready var anim_player: AnimationPlayer = %AnimationPlayer
+@onready var lean_anim_player: AnimationPlayer = %LeanAnimationPlayer
 @onready var tail_light: MeshInstance3D = %TailLight
 @onready var training_wheels: Node3D = %TrainingWheels
 
