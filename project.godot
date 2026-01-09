@@ -13,6 +13,7 @@ config_version=5
 config/name="moto-player-controller"
 run/main_scene="uid://j2ul15tv0gig"
 config/features=PackedStringArray("4.5", "Forward Plus")
+boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [display]
@@ -134,4 +135,5 @@ change_difficulty={
 
 [rendering]
 
+anti_aliasing/quality/screen_space_aa=1
 occlusion_culling/use_occlusion_culling=true
