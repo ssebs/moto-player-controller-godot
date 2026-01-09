@@ -291,6 +291,11 @@ func _update_wheelie(delta: float):
         # Return to neutral if not in stoppie territory
         player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * delta)
 
+    # # On EASY/MEDIUM mode, clamp wheelie angle to prevent crash
+    # if player_controller.state.difficulty != BikeState.PlayerDifficulty.HARD:
+    #     var safe_wheelie_limit = player_controller.bike_crash.crash_wheelie_threshold - deg_to_rad(5)
+    #     player_controller.state.pitch_angle = min(player_controller.state.pitch_angle, safe_wheelie_limit)
+
     # State transitions for wheelies
     var is_in_wheelie = player_controller.state.pitch_angle > deg_to_rad(5)
     if is_in_wheelie and not was_in_wheelie:

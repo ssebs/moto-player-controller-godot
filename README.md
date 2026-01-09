@@ -35,7 +35,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-
+- [ ] can't fall from wheelies
 - [ ] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
 - [ ] Multiple bike models w/ diff stats
   - [ ] Sport bike (move stats to resource)
