@@ -62,7 +62,7 @@ class_name PlayerController extends CharacterBody3D
 # Shared state
 @export var state: BikeState = BikeState.new()
 @export var bike_configs: Array[BikeConfig]
-var current_bike_index: int = 0
+@export var current_bike_index: int = 0
 var bike_config: BikeConfig
 
 @export_tool_button("Save IK Targets to Config") var save_ik_btn = _save_ik_targets_to_config
@@ -74,17 +74,18 @@ var spawn_position: Vector3
 var spawn_rotation: Vector3
 
 func _ready():
+    if bike_configs.is_empty():
+        printerr("Add BikeConfigs to the bike_configs array")
+        return
+
+    bike_config = bike_configs[current_bike_index]
+    _apply_bike_config()
     if Engine.is_editor_hint():
         return # Don't run game logic in editor
 
     spawn_position = global_position
     spawn_rotation = rotation
 
-    if bike_configs.is_empty():
-        printerr("Add BikeConfigs to the bike_configs array")
-        return
-    bike_config = bike_configs[current_bike_index]
-    _apply_bike_config()
 
     # TODO: call this from %FunctionalityComponents.get_children()
     bike_input._bike_setup(self)

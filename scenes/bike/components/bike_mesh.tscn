@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://dobqcdavdvkdf"]
+[gd_scene load_steps=6 format=3 uid="uid://dobqcdavdvkdf"]
 
 [ext_resource type="Script" uid="uid://bt32k5ls4lewx" path="res://scenes/bike/components/bike_mesh.gd" id="1_script"]
+[ext_resource type="Resource" path="res://resources/bikes/pocket_bike.tres" id="2_rp2el"]
 [ext_resource type="Material" uid="uid://bfxhki5bfmyn1" path="res://assets/materials/tail_light_material.tres" id="3_n1tms"]
 [ext_resource type="PackedScene" uid="uid://bn73ermusily2" path="res://scenes/bike/mods/training_wheels_mod.tscn" id="4_voh27"]
 
@@ -9,9 +10,9 @@ size = Vector3(0.3, 0.055, 0.05)
 
 [node name="BikeMesh" type="Node3D"]
 script = ExtResource("1_script")
+bike_config = ExtResource("2_rp2el")
 
 [node name="MeshContainer" type="Node3D" parent="."]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
 [node name="TailLight" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.94790524, 0.958052)

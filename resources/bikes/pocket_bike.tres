@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="BikeConfig" load_steps=4 format=3 uid="uid://esy02jvkpkgg"]
+
+[ext_resource type="AudioStream" uid="uid://dn6ey2jxm33vt" path="res://assets/sounds/motorcycle-stable-rpm.ogg" id="1_wl44a"]
+[ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="2_mesh"]
+[ext_resource type="Script" uid="uid://ds32dik0da24x" path="res://scenes/bike/components/bike_config.gd" id="3_53ak8"]
+
+[resource]
+script = ExtResource("3_53ak8")
+mesh_scene = ExtResource("2_mesh")
+mesh_scale = Vector3(0.011, 0.011, 0.011)
+head_target_position = Vector3(0, 1.7771792, 0)
+head_target_rotation = Vector3(0.43134058, 1.4476901e-08, 7.8451706e-08)
+left_arm_target_position = Vector3(0.17065138, 0.54643035, 0.28627902)
+left_arm_target_rotation = Vector3(0.01221927, -0.01631153, 1.204422)
+right_arm_target_position = Vector3(-0.171, 0.546, 0.286)
+right_arm_target_rotation = Vector3(1.3383801, 1.5178877, 1.9168977)
+butt_target_position = Vector3(8.562988e-08, 0.64300925, -0.23276967)
+butt_target_rotation = Vector3(0.53303367, -0.06554695, 0.013797265)
+left_leg_target_position = Vector3(0.19855502, 0.28965372, -0.018588275)
+left_leg_target_rotation = Vector3(-0.9147987, -0.16730168, -3.0440352)
+right_leg_target_position = Vector3(-0.199, 0.29, -0.019)
+right_leg_target_rotation = Vector3(-0.914553, -0.20148091, -3.0438542)
+animation_library_name = "pocket_bike"
+engine_sound_stream = ExtResource("1_wl44a")
+engine_sound_volume_db = -30.0
+max_speed = 60.0
+acceleration = 6.0
+countersteer_factor = 0.5

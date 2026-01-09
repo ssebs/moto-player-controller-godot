@@ -36,11 +36,9 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 
-- [ ] Multiple bike models w/ diff stats
-  - [x] Sounds change from bikeconfig
-  - [x] Sport bike (move stats to resource)
-  - [x] Dirt bike
-  - [ ] Pocket bike (only 2 gears, lower stats, etc.)
+- [ ] Move bikemods into resource
+- [ ] Fix lean animations across diff bikes / final animation config cleanup
+  - [ ] legs get reset on dirt bike - esp right one
 
 ## Bugs
 
@@ -48,9 +46,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## TODO:
 
-- [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] Camera controller
-- [ ] Drift
+- [ ] Drift trick
 - [ ] Final refactor
   - [ ] Signals that emit from player controller for use in MP
   - [ ] Simpify physics logic
@@ -63,6 +60,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Out of Scope
 
+- [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] HUD Cleanup
   - [ ] Create hud texture of motorcycle dashboard
   - [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
@@ -89,6 +87,11 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] Multiple bike models w/ diff stats
+  - [x] Sounds change from bikeconfig
+  - [x] Sport bike (move stats to resource)
+  - [x] Dirt bike
+  - [x] Pocket bike
 - [x] fix rotation on bike mesh from resource (dirtbike is backwards)
   - [x] see mesh_container.rotation_degrees = bike_config.mesh_rotation in @bike_mesh and @bike_config
 - [x] Bike stats / mesh / marker positions for tricks should be in a resource so you can add multiple bikes
