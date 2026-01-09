@@ -2,5 +2,6 @@
 .godot/
 /android/
 !dist/.stub
+!dist/web/.stub
 dist/
 *.tmp
