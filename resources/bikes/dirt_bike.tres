@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="BikeConfig" load_steps=3 format=3 uid="uid://snx5i3i7gr82"]
+
+[ext_resource type="PackedScene" uid="uid://bxh2iw31ju2n2" path="res://assets/bikes/DirtBIKE.fbx" id="1_eg5nu"]
+[ext_resource type="Script" uid="uid://ds32dik0da24x" path="res://scenes/bike/bike_config.gd" id="2_j43n7"]
+
+[resource]
+script = ExtResource("2_j43n7")
+mesh_scene = ExtResource("1_eg5nu")
+mesh_scale = Vector3(0.75, 0.75, 0.75)
+mesh_rotation = Vector3(0, 180, 0)
+head_target_position = Vector3(0, 1.7771792, 0)
+left_arm_target_position = Vector3(-0.325, 1.237, -0.274)
+right_arm_target_position = Vector3(0.3254943, 1.236994, -0.27439195)
+butt_target_position = Vector3(0, 0.9634783, 0.3343318)
+left_leg_target_position = Vector3(-0.18422365, 0.39655596, -0.039456755)
+right_leg_target_position = Vector3(0.184, 0.397, -0.039)
+front_wheel_position = Vector3(0, 0, -0.6935269)
+rear_wheel_position = Vector3(0, 0, 0.7299706)
+animation_library_name = "dirt_bike"
+max_rpm = 8000.0
+max_speed = 80.0
+countersteer_factor = 1.0
+metadata/_custom_type_script = "uid://ds32dik0da24x"

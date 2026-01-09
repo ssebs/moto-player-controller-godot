@@ -2,7 +2,8 @@ class_name BikeConfig extends Resource
 
 # Visual
 @export var mesh_scene: PackedScene
-@export var mesh_scale: Vector3 = Vector3(0.018, 0.018, 0.018)
+@export var mesh_scale: Vector3 = Vector3(1.0, 1.0, 1.0)
+@export var mesh_rotation: Vector3 = Vector3(0, 0, 0)
 
 # IK Target Positions (applied to IKCharacterMesh/Targets/ at runtime)
 @export var head_target_position: Vector3
@@ -44,8 +45,8 @@ class_name BikeConfig extends Resource
 @export var friction: float = 2.0
 @export var engine_brake_strength: float = 12.0
 @export var steering_speed: float = 4.0
-@export var max_steering_angle: float = 35.0  # degrees, converted to radians on apply
-@export var max_lean_angle: float = 45.0      # degrees, converted to radians on apply
+@export var max_steering_angle: float = 35.0 # degrees, converted to radians on apply
+@export var max_lean_angle: float = 45.0 # degrees, converted to radians on apply
 @export var lean_speed: float = 3.5
 @export var min_turn_radius: float = 0.25
 @export var max_turn_radius: float = 3.0

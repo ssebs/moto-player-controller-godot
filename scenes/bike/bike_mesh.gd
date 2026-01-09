@@ -59,6 +59,7 @@ func _apply_mesh():
 	# Instance new mesh
 	_mesh_instance = bike_config.mesh_scene.instantiate()
 	_mesh_instance.scale = bike_config.mesh_scale
+	# _mesh_instance.rotation_degrees = bike_config.mesh_rotation
 	mesh_container.add_child(_mesh_instance)
 
 
@@ -85,6 +86,9 @@ func _load_from_config():
 	right_leg_target.rotation = bike_config.right_leg_target_rotation
 	front_wheel_marker.position = bike_config.front_wheel_position
 	rear_wheel_marker.position = bike_config.rear_wheel_position
+
+	# _mesh_instance.scale = bike_config.mesh_scale
+	mesh_container.rotation_degrees = bike_config.mesh_rotation # TODO: fixme
 
 
 func _save_to_config():
