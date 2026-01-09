@@ -108,6 +108,7 @@ const GRIP_TUNING: Dictionary = {
 @export var boost_duration: float = 2.0
 @export var starting_boosts: int = 2
 @export var wheelie_time_for_boost: float = 5.0 # seconds
+@export var boost_steering_multiplier: float = 0.5  # Reduce steering during boost
 #endregion
 
 #region local state
@@ -286,7 +287,13 @@ func _update_wheelie(delta: float):
         if player_controller.bike_input.throttle > 0.3:
             # Wheelie intensity scales with both throttle AND rpm position in the power band
             wheelie_target = max_wheelie_angle * player_controller.bike_input.throttle * rpm_wheelie_factor
-            wheelie_target += max_wheelie_angle * player_controller.bike_input.lean * 0.15
+            # Lean back (positive) adds to wheelie
+            if player_controller.bike_input.lean > 0:
+                wheelie_target += max_wheelie_angle * player_controller.bike_input.lean * 0.15
+
+    # Lean forward actively brings wheel down (works even during wheelie)
+    if player_controller.bike_input.lean < 0 and player_controller.state.pitch_angle > 0:
+        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * abs(player_controller.bike_input.lean) * 2.0 * delta)
 
     # Apply wheelie pitch
     if wheelie_target > 0:

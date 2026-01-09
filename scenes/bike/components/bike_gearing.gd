@@ -26,6 +26,10 @@ signal gear_grind # Tried to shift without clutch
 @export var auto_shift_up_rpm: float = 0.85 # RPM ratio to shift up
 @export var auto_shift_down_rpm: float = 0.35 # RPM ratio to shift down
 
+# Rev limiter
+@export var redline_cut_amount: float = 1000.0 # RPM drop when hitting limiter
+@export var redline_threshold: float = 200.0 # How close to max_rpm before limiter kicks in
+
 # Input state (from signals - clutch needs special handling)
 var clutch_held: bool = false
 var clutch_just_pressed: bool = false
@@ -128,7 +132,8 @@ func update_rpm(delta: float):
         # Restart engine with throttle + clutch while stalled
         if player_controller.state.clutch_value > 0.5 and player_controller.bike_input.throttle > 0.3:
             should_start = true
-        if is_easy_mode:
+        # Easy mode: auto-start with throttle only (no clutch required)
+        if is_easy_mode and player_controller.bike_input.throttle > 0.1:
             should_start = true
         
         if should_start:
@@ -146,6 +151,10 @@ func update_rpm(delta: float):
 
     # Throttle-driven RPM (instant - no smoothing, engine revs freely)
     var throttle_rpm = lerpf(idle_rpm, max_rpm, player_controller.bike_input.throttle)
+
+    # Easy mode: automatic clutch - disengage when stationary/slow to allow revving
+    if is_easy_mode and player_controller.state.speed < 5.0:
+        engagement = clamp(player_controller.state.speed / 5.0, 0.0, 1.0)
 
     # Blend between throttle RPM and wheel RPM based on clutch engagement
     # engagement = 0: clutch in, engine free-revs (fast response)
@@ -165,12 +174,17 @@ func update_rpm(delta: float):
         var blend_speed = lerpf(12.0, rpm_blend_speed, engagement)
         player_controller.state.current_rpm = lerpf(player_controller.state.current_rpm, target_rpm, blend_speed * delta)
 
-    # Check for stall when clutch is mostly engaged and RPM too low
-    if engagement > 0.9 and player_controller.state.current_rpm < stall_rpm:
+    # Check for stall when clutch is mostly engaged and RPM too low (skip on easy mode)
+    if not is_easy_mode and engagement > 0.9 and player_controller.state.current_rpm < stall_rpm:
         player_controller.state.is_stalled = true
         player_controller.state.current_gear = 1
         engine_stalled.emit()
         return
+
+    # Rev limiter: cut RPM when at redline with throttle (creates oscillation)
+    var limiter_point = max_rpm - redline_threshold
+    if player_controller.state.current_rpm >= limiter_point and player_controller.bike_input.throttle > 0.5:
+        player_controller.state.current_rpm = limiter_point - redline_cut_amount
 
     player_controller.state.current_rpm = clamp(player_controller.state.current_rpm, idle_rpm, max_rpm)
 

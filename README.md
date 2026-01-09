@@ -44,11 +44,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Bugs
 
-- [ ] Cleanup input map (trick_down vs cam_down)
-- [ ] Fix clutch start on easy mode (shouldn't be needed)
-- [ ] NOS disable turning during, you can only boost forward
-- [ ] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
-- [ ] Redline sound (bang limiter)
+
 - [ ] Speed carries over even when crashing into collider
 
 ## TODO:
@@ -102,7 +98,11 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] nollie lazerflip
 
 ## Done:
-
+- [x] Cleanup input map (trick_down vs cam_down)
+- [x] Fix clutch start on easy mode (shouldn't be needed)
+- [x] NOS disable turning during, you can only boost forward
+- [x] wheelie if you're on KBM, press down then hold up & the wheelie stays at perfect amount
+- [x] Redline sound (bang limiter)
 - [x] refactor bike_tricks w/ Trick enum
   - [x] Cleanup file
   - [x] have bike_trick's stoppie logic handle bike_crash's "brake_danger" and rename it

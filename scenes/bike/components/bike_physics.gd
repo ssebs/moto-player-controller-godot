@@ -196,6 +196,10 @@ func handle_steering(delta):
     var speed_factor = clamp(player_controller.state.speed / 20.0, 0.3, 1.0)
     var target_steer = clamp(input_steer + lean_induced_steer * speed_factor, -max_steering_angle, max_steering_angle)
 
+    # Reduce steering during boost
+    if player_controller.state.is_boosting:
+        target_steer *= player_controller.bike_tricks.boost_steering_multiplier
+
     # Smooth interpolation to target
     player_controller.state.steering_angle = lerpf(player_controller.state.steering_angle, target_steer, steering_speed * delta)
 

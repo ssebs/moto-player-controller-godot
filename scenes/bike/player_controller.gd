@@ -79,9 +79,6 @@ func _ready():
 
 
 func _physics_process(delta):
-    if Input.is_action_just_pressed("trick_down"):
-        bike_crash.trigger_crash()
-
     # Handle crash states first (before input)
     if state.player_state == BikeState.PlayerState.CRASHED || \
         state.player_state == BikeState.PlayerState.CRASHING:
