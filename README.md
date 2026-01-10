@@ -40,9 +40,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## TODO:
 
-- [ ] Drift trick
+- [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
 - [ ] Final refactor
-  - [ ] Signals that emit from player controller for use in MP
   - [ ] Simpify physics logic
   - [ ] Simplify gearing logic
   - [ ] Simplify tricks logic
@@ -203,6 +202,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Out of Scope
 
+- [ ] Drift trick
 - [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] HUD Cleanup
   - [ ] Create hud texture of motorcycle dashboard
