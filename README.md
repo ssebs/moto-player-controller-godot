@@ -40,7 +40,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## TODO:
 
-- [ ] Camera controller
 - [ ] Drift trick
 - [ ] Final refactor
   - [ ] Signals that emit from player controller for use in MP
@@ -55,6 +54,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] Camera controller
 - [x] lean animation broken with diff bikes
 - [x] refactor setters in \_apply_bike_config to use the resource values directly
 - [x] Fix lean animations across diff bikes / final animation config cleanup

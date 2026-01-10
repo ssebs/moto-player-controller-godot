@@ -16,6 +16,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var crash_cam_position: Node3D = %CrashCamPosition
 @onready var riding_camera: Camera3D = %RidingCamera
 @onready var crashing_camera: Camera3D = %CrashingCamera
+@onready var camera_rotate_node: Node3D = %CameraRotateNode
 
 @onready var anim_player: AnimationPlayer = %AnimationPlayer
 
@@ -56,6 +57,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var bike_audio: BikeAudio = %BikeAudio
 @onready var bike_ui: BikeUI = %BikeUI
 @onready var bike_animation: BikeAnimation = %BikeAnimation
+@onready var bike_camera: BikeCamera = %BikeCamera
 #endregion
 
 # Shared state
@@ -66,6 +68,7 @@ class_name PlayerController extends CharacterBody3D
     preload("res://scenes/bike/resources/pocket_bike.tres"),
 ]
 @export var current_bike_index: int = 0
+@export var invert_camera_y: bool = false
 var bike_resource: BikeResource
 
 @export_tool_button("Save IK Targets to bike_resource") var save_ik_btn = _save_ik_targets_to_config
@@ -101,6 +104,7 @@ func _ready():
     bike_audio._bike_setup(self)
     bike_ui._bike_setup(self)
     bike_animation._bike_setup(self)
+    bike_camera._bike_setup(self)
 
     bike_crash.respawn_requested.connect(_respawn)
     bike_input.bike_switch_pressed.connect(_switch_bike)
@@ -130,6 +134,7 @@ func _physics_process(delta):
     bike_crash._bike_update(delta)
     bike_audio._bike_update(delta)
     bike_ui._bike_update(delta)
+    bike_camera._bike_update(delta)
 
     # Movement
     bike_physics.apply_movement(delta)
@@ -174,6 +179,7 @@ func _respawn():
     bike_audio._bike_reset()
     bike_ui._bike_reset()
     bike_animation._bike_reset()
+    bike_camera._bike_reset()
 
     # Reset to idle state
     state.player_state = BikeState.PlayerState.IDLE
