@@ -1,7 +1,6 @@
 class_name BikeAnimation extends BikeComponent
 
-# Lean tuning
-@export var max_butt_offset: float = 0.25
+# Local config (not in BikeResource)
 @export var lean_lerp_speed: float = 5.0
 
 # Local state
@@ -116,7 +115,7 @@ func _update_brake_light(value: float):
 
 func update_lean_animation(delta: float):
     var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
-    var target_offset = signf(total_lean) * max_butt_offset if absf(total_lean) > 0.1 else 0.0
+    var target_offset = signf(total_lean) * player_controller.bike_resource.max_butt_offset if absf(total_lean) > 0.1 else 0.0
     butt_position_offset = lerpf(butt_position_offset, target_offset, lean_lerp_speed * delta)
     _apply_butt_offset()
 

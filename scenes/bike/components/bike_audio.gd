@@ -1,9 +1,6 @@
 class_name BikeAudio extends BikeComponent
 
-# Audio settings
-@export var engine_min_pitch: float = 0.25
-@export var engine_max_pitch: float = 2.2
-@export var engine_boost_max_pitch: float = 2.4
+# Audio settings (local config)
 @export var gear_grind_volume: float = 0.3
 @export var stoppie_volume: float = 0.4
 @export var fishtail_volume: float = 0.4
@@ -79,8 +76,9 @@ func update_engine_audio(delta: float, rpm_ratio: float):
         if !player_controller.engine_sound.playing:
             player_controller.engine_sound.play()
 
-        var max_pitch = engine_boost_max_pitch if player_controller.state.is_boosting else engine_max_pitch
-        var target_pitch = lerpf(engine_min_pitch, max_pitch, clamp(rpm_ratio, 0.0, 1.0))
+        var br := player_controller.bike_resource
+        var max_pitch = br.engine_boost_max_pitch if player_controller.state.is_boosting else br.engine_max_pitch
+        var target_pitch = lerpf(br.engine_min_pitch, max_pitch, clamp(rpm_ratio, 0.0, 1.0))
         player_controller.engine_sound.pitch_scale = target_pitch
     else:
         if player_controller.engine_sound.playing:

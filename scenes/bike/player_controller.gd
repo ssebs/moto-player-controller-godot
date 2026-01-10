@@ -196,39 +196,9 @@ func _apply_bike_config():
     # Apply IK target positions to IKCharacterMesh
     _apply_ik_targets()
 
-    # TODO: refactor these setters to use the resource values directly
-
     # Apply wheel marker positions
     front_wheel.position = bike_resource.front_wheel_position
     rear_wheel.position = bike_resource.rear_wheel_position
-
-    # Apply gearing values
-    bike_gearing.gear_ratios = bike_resource.gear_ratios
-    bike_gearing.max_rpm = bike_resource.max_rpm
-    bike_gearing.idle_rpm = bike_resource.idle_rpm
-    bike_gearing.stall_rpm = bike_resource.stall_rpm
-    bike_gearing.clutch_engage_speed = bike_resource.clutch_engage_speed
-    bike_gearing.clutch_release_speed = bike_resource.clutch_release_speed
-    bike_gearing.clutch_tap_amount = bike_resource.clutch_tap_amount
-    bike_gearing.clutch_hold_delay = bike_resource.clutch_hold_delay
-    bike_gearing.rpm_blend_speed = bike_resource.rpm_blend_speed
-    bike_gearing.rev_match_speed = bike_resource.rev_match_speed
-
-    # Apply physics values
-    bike_physics.max_speed = bike_resource.max_speed
-    bike_physics.acceleration = bike_resource.acceleration
-    bike_physics.brake_strength = bike_resource.brake_strength
-    bike_physics.friction = bike_resource.friction
-    bike_physics.engine_brake_strength = bike_resource.engine_brake_strength
-    bike_physics.steering_speed = bike_resource.steering_speed
-    bike_physics.max_steering_angle = deg_to_rad(bike_resource.max_steering_angle)
-    bike_physics.max_lean_angle = deg_to_rad(bike_resource.max_lean_angle)
-    bike_physics.lean_speed = bike_resource.lean_speed
-    bike_physics.min_turn_radius = bike_resource.min_turn_radius
-    bike_physics.max_turn_radius = bike_resource.max_turn_radius
-    bike_physics.turn_speed = bike_resource.turn_speed
-    bike_physics.fall_rate = bike_resource.fall_rate
-    bike_physics.countersteer_factor = bike_resource.countersteer_factor
 
     # Apply audio tracks
     engine_sound.stream = bike_resource.engine_sound_stream

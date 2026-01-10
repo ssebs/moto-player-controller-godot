@@ -29,9 +29,16 @@ class_name BikeResource extends Resource
 # Audio
 @export var engine_sound_stream: AudioStream
 @export var engine_sound_volume_db: float = -25.0
+@export var engine_min_pitch: float = 0.25
+@export var engine_max_pitch: float = 2.2
+@export var engine_boost_max_pitch: float = 2.4
+
+# Animation
+@export var max_butt_offset: float = 0.25
 
 # Gearing (applied to BikeGearing component)
 @export var gear_ratios: Array[float] = [2.92, 2.05, 1.6, 1.46, 1.15, 1.0]
+@export var num_gears: int = 6
 @export var max_rpm: float = 11000.0
 @export var idle_rpm: float = 1000.0
 @export var stall_rpm: float = 800.0
@@ -41,6 +48,8 @@ class_name BikeResource extends Resource
 @export var clutch_hold_delay: float = 0.05
 @export var rpm_blend_speed: float = 12.0
 @export var rev_match_speed: float = 8.0
+@export var redline_cut_amount: float = 1000.0
+@export var redline_threshold: float = 200.0
 
 # Physics (applied to BikePhysics component)
 @export var max_speed: float = 120.0
@@ -57,3 +66,10 @@ class_name BikeResource extends Resource
 @export var turn_speed: float = 2.0
 @export var fall_rate: float = 0.5
 @export var countersteer_factor: float = 1.2
+
+# Computed getters (degrees to radians)
+var max_steering_angle_rad: float:
+    get: return deg_to_rad(max_steering_angle)
+
+var max_lean_angle_rad: float:
+    get: return deg_to_rad(max_lean_angle)

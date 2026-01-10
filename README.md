@@ -36,7 +36,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 
-- [ ] refactor setters in \_apply_bike_config to use the resource values directly
 - [ ] Move bikemods into resource
 
 ## Bugs
@@ -87,6 +86,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] refactor setters in \_apply_bike_config to use the resource values directly
 - [x] Fix lean animations across diff bikes / final animation config cleanup
   - [x] legs get reset on dirt bike - esp right one
 - [x] change bikemesh

@@ -2,29 +2,7 @@ class_name BikePhysics extends BikeComponent
 
 signal brake_stopped
 
-# Movement tuning
-@export var max_speed: float = 120.0
-@export var acceleration: float = 12.0
-@export var brake_strength: float = 20.0
-@export var friction: float = 2.0
-@export var engine_brake_strength: float = 12.0 # Max engine braking at high RPM
-
-# Steering tuning
-@export var steering_speed: float = 4.0
-@export var max_steering_angle: float = deg_to_rad(35)
-@export var max_lean_angle: float = deg_to_rad(45)
-@export var lean_speed: float = 3.5
-
-# Turn radius
-@export var min_turn_radius: float = 0.25
-@export var max_turn_radius: float = 3.0
-@export var turn_speed: float = 2.0
-
-# Fall physics
-@export var fall_rate: float = 0.5 # How fast bike falls over at zero speed
-@export var countersteer_factor: float = 1.2 # How much lean induces automatic steering
-
-# Ground alignment
+# Local config (not in BikeResource)
 @export var ground_align_speed: float = 10.0
 
 # Local state
@@ -56,7 +34,7 @@ func _bike_update(delta):
 
 func _update_idle(delta):
     # Keep bike stable at rest, handle braking to full stop
-    player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, 0, fall_rate * 2.0 * delta)
+    player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, 0, player_controller.bike_resource.fall_rate * 2.0 * delta)
     handle_acceleration(
         delta,
         player_controller.bike_gearing.get_power_output(),
@@ -94,6 +72,7 @@ func _update_trick_ground(delta):
 
 func handle_acceleration(delta, power_output: float, gear_max_speed: float,
                            front_wheel_locked: bool = false):
+    var br := player_controller.bike_resource
     # Apply boost multiplier to max speed
     var effective_max_speed = player_controller.bike_tricks.get_boosted_max_speed(gear_max_speed)
 
@@ -102,19 +81,19 @@ func handle_acceleration(delta, power_output: float, gear_max_speed: float,
         var front_effectiveness = 0.6 if front_wheel_locked else 1.0
         var rear_effectiveness = 0.6 if player_controller.bike_input.rear_brake > 0.5 else 1.0
         var total_braking = clamp(player_controller.bike_input.front_brake * front_effectiveness + player_controller.bike_input.rear_brake * rear_effectiveness, 0, 1)
-        player_controller.state.speed = move_toward(player_controller.state.speed, 0, brake_strength * total_braking * delta)
+        player_controller.state.speed = move_toward(player_controller.state.speed, 0, br.brake_strength * total_braking * delta)
 
     if player_controller.state.is_stalled:
-        player_controller.state.speed = move_toward(player_controller.state.speed, 0, friction * delta)
+        player_controller.state.speed = move_toward(player_controller.state.speed, 0, br.friction * delta)
         return
 
     # Acceleration
     if power_output > 0:
         if player_controller.state.speed < effective_max_speed:
-            player_controller.state.speed += acceleration * power_output * delta
+            player_controller.state.speed += br.acceleration * power_output * delta
             player_controller.state.speed = min(player_controller.state.speed, effective_max_speed)
         else:
-            player_controller.state.speed = move_toward(player_controller.state.speed, effective_max_speed, friction * 2.0 * delta)
+            player_controller.state.speed = move_toward(player_controller.state.speed, effective_max_speed, br.friction * 2.0 * delta)
 
     # Engine braking when coasting (includes friction + RPM-based drag)
     if player_controller.bike_input.throttle == 0 and player_controller.bike_input.front_brake == 0 and player_controller.bike_input.rear_brake == 0:
@@ -122,7 +101,7 @@ func handle_acceleration(delta, power_output: float, gear_max_speed: float,
         var rpm_ratio = player_controller.state.rpm_ratio
         # Clutch engaged: friction + RPM-based engine braking
         # Clutch disengaged: reduced friction only (freewheeling)
-        var drag = friction * (0.5 + clutch_engagement * 0.5) + engine_brake_strength * rpm_ratio * clutch_engagement
+        var drag = br.friction * (0.5 + clutch_engagement * 0.5) + br.engine_brake_strength * rpm_ratio * clutch_engagement
         player_controller.state.speed = move_toward(player_controller.state.speed, 0, drag * delta)
 
 
@@ -141,7 +120,7 @@ func handle_fall_physics(delta):
         return
 
     # pull upright if speed increases
-    player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, 0, fall_rate * 2.0 * delta)
+    player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, 0, player_controller.bike_resource.fall_rate * 2.0 * delta)
 
 func apply_fishtail_friction(_delta, fishtail_speed_loss: float):
     player_controller.state.speed = move_toward(player_controller.state.speed, 0, fishtail_speed_loss)
@@ -175,9 +154,10 @@ func handle_steering(delta):
     Steering radius depends on lean angle and speed.
     Releasing steer while on throttle straightens the bike.
     """
+    var br := player_controller.bike_resource
     # If no steer input and throttle is applied, straighten out
     if abs(player_controller.bike_input.steer) < 0.1 and player_controller.bike_input.throttle > 0.1:
-        player_controller.state.steering_angle = lerpf(player_controller.state.steering_angle, 0, steering_speed * delta)
+        player_controller.state.steering_angle = lerpf(player_controller.state.steering_angle, 0, br.steering_speed * delta)
         return
 
     # Total lean (visual lean + fall) drives automatic countersteer
@@ -185,23 +165,23 @@ func handle_steering(delta):
 
     # Countersteer: lean induces steering in same direction
     # More lean = tighter turn radius (more steering)
-    var lean_induced_steer = - total_lean * countersteer_factor
+    var lean_induced_steer = - total_lean * br.countersteer_factor
     if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
         lean_induced_steer = 0
 
     # Player input adds to the automatic countersteer
-    var input_steer = max_steering_angle * player_controller.bike_input.steer
+    var input_steer = br.max_steering_angle_rad * player_controller.bike_input.steer
 
     # At higher speeds, countersteer effect is stronger (bike turns more from lean)
     var speed_factor = clamp(player_controller.state.speed / 20.0, 0.3, 1.0)
-    var target_steer = clamp(input_steer + lean_induced_steer * speed_factor, -max_steering_angle, max_steering_angle)
+    var target_steer = clamp(input_steer + lean_induced_steer * speed_factor, -br.max_steering_angle_rad, br.max_steering_angle_rad)
 
     # Reduce steering during boost
     if player_controller.state.is_boosting:
         target_steer *= player_controller.bike_tricks.boost_steering_multiplier
 
     # Smooth interpolation to target
-    player_controller.state.steering_angle = lerpf(player_controller.state.steering_angle, target_steer, steering_speed * delta)
+    player_controller.state.steering_angle = lerpf(player_controller.state.steering_angle, target_steer, br.steering_speed * delta)
 
 
 func update_lean(delta):
@@ -209,24 +189,26 @@ func update_lean(delta):
     Visual lean angle based on steering and player input.
     Fall angle is added separately in mesh rotation.
     """
+    var br := player_controller.bike_resource
     # Lean from steering (centripetal force in turns)
     var speed_factor = clamp(player_controller.state.speed / 20.0, 0.0, 1.0)
     var steer_lean = - player_controller.state.steering_angle * speed_factor * 1.2
 
     # Direct player lean input
-    var input_lean = - player_controller.bike_input.steer * max_lean_angle * 0.3
+    var input_lean = - player_controller.bike_input.steer * br.max_lean_angle_rad * 0.3
 
     var target_lean = steer_lean + input_lean
-    target_lean = clamp(target_lean, -max_lean_angle, max_lean_angle)
+    target_lean = clamp(target_lean, -br.max_lean_angle_rad, br.max_lean_angle_rad)
 
     # Smooth interpolation
-    player_controller.state.lean_angle = lerpf(player_controller.state.lean_angle, target_lean, lean_speed * delta)
+    player_controller.state.lean_angle = lerpf(player_controller.state.lean_angle, target_lean, br.lean_speed * delta)
 
 
 func get_turn_rate() -> float:
-    var speed_pct = player_controller.state.speed / max_speed
-    var turn_radius = lerpf(min_turn_radius, max_turn_radius, speed_pct)
-    return turn_speed / turn_radius
+    var br := player_controller.bike_resource
+    var speed_pct = player_controller.state.speed / br.max_speed
+    var turn_radius = lerpf(br.min_turn_radius, br.max_turn_radius, speed_pct)
+    return br.turn_speed / turn_radius
 
 
 func is_turning() -> bool:
