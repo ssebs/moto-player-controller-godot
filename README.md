@@ -29,18 +29,14 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - death wobble after landing too hard
     - if the front tire skids and regains traction, the bike should high-side crash.
   - Failing a trick (hit the ground before you're back on the bike)
-
+- [Controls](https://www.padcrafter.com/?templates=Controller+Scheme+1&leftTrigger=Front+Brake&rightTrigger=Throttle&leftBumper=Clutch&leftStick=Steer+%26+Lean&dpadUp=&dpadRight=&aButton=Rear+Brake&yButton=&xButton=Shift+Down&bButton=Shift+Up&rightBumper=Trick&rightStick=Camera.+If+RB+held%2C+Trick&leftStickClick=Switch+Bike&backButton=Change+Difficulty)
 ---
 
 # Planning / Tasks
 
 ## In Progress:
 
-- [ ] Move bikemods into resource
-
-## Bugs
-
-- [ ] Speed carries over even when crashing into collider
+- [ ] Move bikemods into resource + new bike_component
 
 ## TODO:
 
@@ -55,37 +51,11 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Simplify state machines / animation logic
   - [ ] Simplify UI logic
 - [ ] Fix bugs
-
-## Out of Scope
-
-- [x] lean animation broken with diff bikes
-- [ ] Bike crash physics (swich to Rigidbody?)
-- [ ] HUD Cleanup
-  - [ ] Create hud texture of motorcycle dashboard
-  - [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
-  - [ ] Font / style / etc.
-- [ ] All Tricks (TODO: move to DankNooner)
-  - [ ] Standing wheelie
-  - [ ] One leg over wheelie
-  - [ ] Stoppie to 180
-  - [ ] Drift
-  - [ ] Burnout
-  - [ ] Biker Boyz w/ 2 legs over the side (sparks)
-  - [ ] FMX tricks (only off **Ramps**)
-    - [ ] Back / Front flip
-    - [ ] 360 / 180 turns
-    - [ ] Whip (table)
-    - [ ] Superman (no hand spread eagle)
-  - [ ] Skate tricks for memez (only off **Ramps**)
-    - > hop on top of bike, then do it like skater
-    - [x] kickflip/heelflip
-    - [ ] pop shuvit
-    - [ ] hardflip
-    - [ ] 360flip
-    - [ ] nollie lazerflip
+  - [ ] Speed carries over even when crashing into collider
 
 ## Done:
 
+- [x] lean animation broken with diff bikes
 - [x] refactor setters in \_apply_bike_config to use the resource values directly
 - [x] Fix lean animations across diff bikes / final animation config cleanup
   - [x] legs get reset on dirt bike - esp right one
@@ -231,27 +201,29 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
       - Gamepad: **Start**
       - KBM: `ESC`
 
-# Notes copied from ../README.md
+## Out of Scope
 
-### To implement
-
-- Basic controls / movement (gas, steer, brake, cluch?, gears?)
-- State machine to sync animations to movement state
-- Riding bike Animations (lean/steer, wheelie, start/stop w/ leg down)
-- Sync'd animations w/ state machine
-
-### Goals
-
-- Animations
-  - IK to animate to hold on to handlebars / lean
-  - Ragdoll when you fall off
-- Mechanics
-  - Fun but challenging
-    - Multiple difficult levels
-      - **Easy** - Automatic, can't fall off bike unless crashing
-      - **Medium** - Manual, can't fall easily from mistakes (e.g. lowside)
-      - **Hard** - Manual, can fall (e.g. low side crash if leaning and grabbing a fist full of brake)
-  - Manage clutch, balancing, throttle, steering (need to be smooth, don't just slam it.)
-  - Falling / crashing has ragdoll physics, player goes flying until they stop moving (or press btn)
-- Gameplay
-  - Doing wheelies gives you NOS
+- [ ] Bike crash physics (swich to Rigidbody?)
+- [ ] HUD Cleanup
+  - [ ] Create hud texture of motorcycle dashboard
+  - [ ] make brakedanger only show up when val > 0.2 & move to bottom / center of screen
+  - [ ] Font / style / etc.
+- [ ] All Tricks (TODO: move to DankNooner)
+  - [ ] Standing wheelie
+  - [ ] One leg over wheelie
+  - [ ] Stoppie to 180
+  - [ ] Drift
+  - [ ] Burnout
+  - [ ] Biker Boyz w/ 2 legs over the side (sparks)
+  - [ ] FMX tricks (only off **Ramps**)
+    - [ ] Back / Front flip
+    - [ ] 360 / 180 turns
+    - [ ] Whip (table)
+    - [ ] Superman (no hand spread eagle)
+  - [ ] Skate tricks for memez (only off **Ramps**)
+    - > hop on top of bike, then do it like skater
+    - [x] kickflip/heelflip
+    - [ ] pop shuvit
+    - [ ] hardflip
+    - [ ] 360flip
+    - [ ] nollie lazerflip
