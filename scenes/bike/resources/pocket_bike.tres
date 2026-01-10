@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="BikeConfig" load_steps=4 format=3 uid="uid://esy02jvkpkgg"]
+[gd_resource type="Resource" script_class="BikeResource" load_steps=4 format=3 uid="uid://dcjfcorrb2vtt"]
 
+[ext_resource type="Script" uid="uid://d1bbnsiw21th1" path="res://scenes/bike/resources/bike_resource.gd" id="1_dwgpo"]
 [ext_resource type="AudioStream" uid="uid://dn6ey2jxm33vt" path="res://assets/sounds/motorcycle-stable-rpm.ogg" id="1_wl44a"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="2_mesh"]
-[ext_resource type="Script" uid="uid://ds32dik0da24x" path="res://scenes/bike/components/bike_config.gd" id="3_53ak8"]
 
 [resource]
-script = ExtResource("3_53ak8")
+script = ExtResource("1_dwgpo")
 mesh_scene = ExtResource("2_mesh")
 mesh_scale = Vector3(0.011, 0.011, 0.011)
 head_target_position = Vector3(0, 1.7771792, 0)
@@ -26,3 +26,4 @@ engine_sound_volume_db = -30.0
 max_speed = 60.0
 acceleration = 6.0
 countersteer_factor = 0.5
+metadata/_custom_type_script = "uid://d1bbnsiw21th1"

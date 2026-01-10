@@ -10,8 +10,8 @@ const LEAN_THRESHOLD := 0.1 # Minimum lean angle to trigger animation
 
 
 func _get_anim(anim_name: String) -> String:
-    if player_controller.bike_config:
-        return player_controller.bike_config.animation_library_name + "/" + anim_name
+    if player_controller.bike_resource:
+        return player_controller.bike_resource.animation_library_name + "/" + anim_name
     return anim_name
 
 
