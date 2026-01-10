@@ -1,33 +1,22 @@
-[gd_scene load_steps=3 format=3 uid="uid://bdv4bgnhiss2w"]
+[gd_scene load_steps=2 format=3 uid="uid://xxhgdsr16tir"]
 
-[ext_resource type="Script" uid="uid://buljvdh8gx72l" path="res://scenes/level/main_menu.gd" id="1_6egh8"]
-[ext_resource type="Texture2D" uid="uid://dkcevwwoaaom4" path="res://assets/textures/controls.png" id="1_w0sx8"]
+[ext_resource type="Texture2D" uid="uid://dkcevwwoaaom4" path="res://assets/textures/controls.png" id="1_xgetw"]
 
-[node name="MainMenu" type="Control"]
-layout_mode = 3
+[node name="LevelSelect" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_6egh8")
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="ColorRect" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 color = Color(0.13333334, 0.13333334, 0.13333334, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 theme_override_constants/margin_left = 64
 theme_override_constants/margin_top = 64
 theme_override_constants/margin_right = 64
@@ -56,22 +45,11 @@ text = "Controls:"
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-texture = ExtResource("1_w0sx8")
+texture = ExtResource("1_xgetw")
 stretch_mode = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="controls3" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_constants/separation = 24
-
-[node name="CityLevelBtn" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Start City Level"
-
-[node name="RaceTrackLevelBtn" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Start Race Track Level"
+theme_override_font_sizes/font_size = 64
+text = "Press any button to continue."

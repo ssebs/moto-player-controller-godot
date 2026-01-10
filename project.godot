@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="moto-player-controller"
-run/main_scene="uid://j2ul15tv0gig"
+run/main_scene="uid://bdv4bgnhiss2w"
 config/features=PackedStringArray("4.5", "Forward Plus")
 boot_splash/show_image=false
 config/icon="res://icon.svg"

@@ -53,7 +53,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Speed carries over even when crashing into collider
 
 ## Done:
-
+- [x] race track w/ level select
 - [x] Camera controller
 - [x] lean animation broken with diff bikes
 - [x] refactor setters in \_apply_bike_config to use the resource values directly
