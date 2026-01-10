@@ -35,10 +35,9 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-- [ ] lean animation broken with diff bikes
-- [ ] refactor setters in _apply_bike_config to use the resource values directly
-- [ ] Move bikemods into resource
 
+- [ ] refactor setters in \_apply_bike_config to use the resource values directly
+- [ ] Move bikemods into resource
 
 ## Bugs
 
@@ -60,6 +59,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Out of Scope
 
+- [x] lean animation broken with diff bikes
 - [ ] Bike crash physics (swich to Rigidbody?)
 - [ ] HUD Cleanup
   - [ ] Create hud texture of motorcycle dashboard
@@ -86,6 +86,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] nollie lazerflip
 
 ## Done:
+
 - [x] Fix lean animations across diff bikes / final animation config cleanup
   - [x] legs get reset on dirt bike - esp right one
 - [x] change bikemesh

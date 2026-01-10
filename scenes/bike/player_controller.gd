@@ -18,7 +18,6 @@ class_name PlayerController extends CharacterBody3D
 @onready var crashing_camera: Camera3D = %CrashingCamera
 
 @onready var anim_player: AnimationPlayer = %AnimationPlayer
-@onready var lean_anim_player: AnimationPlayer = %LeanAnimationPlayer
 
 # Markers
 @onready var rear_wheel: Marker3D = %RearWheelMarker

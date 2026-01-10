@@ -1,13 +1,12 @@
 class_name BikeAnimation extends BikeComponent
 
+# Lean tuning
+@export var max_butt_offset: float = 0.25
+@export var lean_lerp_speed: float = 5.0
+
 # Local state
 var tail_light_material: StandardMaterial3D = null
-
-# Lean animation state
-enum LeanState {CENTER, LEANING_LEFT, HELD_LEFT, RETURNING_LEFT, LEANING_RIGHT, HELD_RIGHT, RETURNING_RIGHT}
-var lean_state: LeanState = LeanState.CENTER
-const LEAN_THRESHOLD := 0.1 # Minimum lean angle to trigger animation
-
+var butt_position_offset: float = 0.0
 
 func _get_anim(anim_name: String) -> String:
     if player_controller.bike_resource:
@@ -42,11 +41,11 @@ func _bike_setup(p_controller: PlayerController):
     _setup_training_wheels()
 
 
-func _bike_update(_delta):
+func _bike_update(delta):
     # Skip mesh rotation when idle - let the idle_stopped animation control the pose
     if player_controller.state.player_state != BikeState.PlayerState.IDLE:
         apply_mesh_rotation()
-        update_lean_animation()
+        update_lean_animation(delta)
 
 
 func _on_front_brake_changed(value: float):
@@ -99,10 +98,8 @@ func _on_boost_anim_finished(anim_name: String):
 func _on_trick_started(trick: int):
     match trick:
         BikeTricks.Trick.HEEL_CLICKER:
-            player_controller.lean_anim_player.stop()
             player_controller.anim_player.play(_get_anim("heel_clicker"))
         BikeTricks.Trick.KICKFLIP:
-            player_controller.lean_anim_player.stop()
             player_controller.anim_player.play(_get_anim("kickflip"))
 
 
@@ -117,59 +114,17 @@ func _update_brake_light(value: float):
         tail_light_material.emission_enabled = value > 0.01
 
 
-func update_lean_animation():
+func update_lean_animation(delta: float):
     var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
-    var is_leaning_left = total_lean > LEAN_THRESHOLD
-    var is_leaning_right = total_lean < -LEAN_THRESHOLD
+    var target_offset = signf(total_lean) * max_butt_offset if absf(total_lean) > 0.1 else 0.0
+    butt_position_offset = lerpf(butt_position_offset, target_offset, lean_lerp_speed * delta)
+    _apply_butt_offset()
 
-    match lean_state:
-        LeanState.CENTER:
-            if is_leaning_left:
-                player_controller.lean_anim_player.play("lean_left")
-                lean_state = LeanState.LEANING_LEFT
-            elif is_leaning_right:
-                player_controller.lean_anim_player.play("lean_right")
-                lean_state = LeanState.LEANING_RIGHT
 
-        LeanState.LEANING_LEFT:
-            if not player_controller.lean_anim_player.is_playing():
-                lean_state = LeanState.HELD_LEFT
-            elif not is_leaning_left:
-                # Started returning before animation finished
-                player_controller.lean_anim_player.play_backwards("lean_left")
-                lean_state = LeanState.RETURNING_LEFT
-
-        LeanState.HELD_LEFT:
-            if not is_leaning_left:
-                player_controller.lean_anim_player.play_backwards("lean_left")
-                lean_state = LeanState.RETURNING_LEFT
-
-        LeanState.RETURNING_LEFT:
-            if not player_controller.lean_anim_player.is_playing():
-                lean_state = LeanState.CENTER
-            elif is_leaning_left:
-                # Changed direction, go back to leaning
-                player_controller.lean_anim_player.play("lean_left")
-                lean_state = LeanState.LEANING_LEFT
-
-        LeanState.LEANING_RIGHT:
-            if not player_controller.lean_anim_player.is_playing():
-                lean_state = LeanState.HELD_RIGHT
-            elif not is_leaning_right:
-                player_controller.lean_anim_player.play_backwards("lean_right")
-                lean_state = LeanState.RETURNING_RIGHT
-
-        LeanState.HELD_RIGHT:
-            if not is_leaning_right:
-                player_controller.lean_anim_player.play_backwards("lean_right")
-                lean_state = LeanState.RETURNING_RIGHT
-
-        LeanState.RETURNING_RIGHT:
-            if not player_controller.lean_anim_player.is_playing():
-                lean_state = LeanState.CENTER
-            elif is_leaning_right:
-                player_controller.lean_anim_player.play("lean_right")
-                lean_state = LeanState.LEANING_RIGHT
+func _apply_butt_offset():
+    var base_pos = player_controller.bike_resource.butt_target_position
+    var butt_target = player_controller.character_mesh.get_node("Targets/ButtTarget")
+    butt_target.position = base_pos + Vector3(butt_position_offset, 0, 0)
 
 
 func apply_mesh_rotation():
@@ -207,9 +162,8 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
     match old_state:
         BikeState.PlayerState.CRASHED:
             # Reset animations on respawn
-            lean_state = LeanState.CENTER
+            butt_position_offset = 0.0
             player_controller.anim_player.stop()
-            player_controller.lean_anim_player.stop()
         BikeState.PlayerState.IDLE:
             if new_state == BikeState.PlayerState.RIDING:
                 player_controller.anim_player.play_backwards(_get_anim("idle_stopped"))
@@ -217,7 +171,7 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
     # Handle state entry
     match new_state:
         BikeState.PlayerState.IDLE:
-            lean_state = LeanState.CENTER
+            butt_position_offset = 0.0
             player_controller.anim_player.play(_get_anim("idle_stopped"))
             await player_controller.anim_player.animation_finished
             player_controller.anim_player.pause()
@@ -231,7 +185,6 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
 
 func _bike_reset():
     _update_brake_light(0)
-    lean_state = LeanState.CENTER
+    butt_position_offset = 0.0
     player_controller.anim_player.stop()
-    player_controller.lean_anim_player.stop()
     apply_mesh_rotation()
