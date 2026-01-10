@@ -70,7 +70,7 @@ class_name PlayerController extends CharacterBody3D
 var bike_resource: BikeResource
 
 @export_tool_button("Save IK Targets to Config") var save_ik_btn = _save_ik_targets_to_config
-@export_tool_button("Save IK Targets to RESET Animation") var save_reset_btn = _save_ik_targets_to_reset_anim
+@export_tool_button("Save IK Targets to RESET Animation") var save_reset_btn = _save_ik_targets_to_reset
 @export_tool_button("Initialize All Animations from RESET") var init_anims_btn = _init_all_anims_from_reset
 
 # Spawn tracking
@@ -81,7 +81,7 @@ var spawn_rotation: Vector3
 
 func _ready():
     if bike_resources.is_empty():
-        printerr("Add BikeConfigs to the bike_resources array")
+        printerr("Add bike_resources to the bike_resources array")
         return
 
     bike_resource = bike_resources[current_bike_index]
@@ -147,7 +147,7 @@ func _update_player_state():
     if state.player_state in [BikeState.PlayerState.TRICK_GROUND, BikeState.PlayerState.TRICK_AIR]:
         return
 
-    var is_airborne = not is_on_floor()
+    var is_airborne = !is_on_floor()
     var target: BikeState.PlayerState
     if is_airborne:
         target = BikeState.PlayerState.AIRBORNE
@@ -180,7 +180,7 @@ func _respawn():
     state.player_state = BikeState.PlayerState.IDLE
 #endregion
 
-#region bikeConfig & animation library
+#region bike_resource applies
 func _switch_bike():
     if bike_resources.is_empty():
         printerr("cant switch bike since bike_resources is_empty")
@@ -189,7 +189,6 @@ func _switch_bike():
     bike_resource = bike_resources[current_bike_index]
     _apply_bike_config()
     _respawn()
-
 
 func _apply_bike_config():
     # Apply mesh
@@ -236,14 +235,14 @@ func _apply_bike_config():
     engine_sound.stream = bike_resource.engine_sound_stream
     engine_sound.volume_db = bike_resource.engine_sound_volume_db
 
-
+## Clear mesh under bike_mesh, spawn from bike_resource, apply transforms, play RESET
 func _apply_bike_mesh():
     # Clear existing mesh
     if bike_mesh.get_child_count() != 0:
         for child in bike_mesh.get_children():
             child.queue_free()
 
-    var _mesh_instance =  bike_resource.mesh_scene.instantiate() as Node3D
+    var _mesh_instance = bike_resource.mesh_scene.instantiate() as Node3D
 
     # Apply transforms from resource
     _mesh_instance.scale = bike_resource.mesh_scale
@@ -272,7 +271,7 @@ func _apply_ik_targets():
 
 ## Save Target's position/rotate to values to bike_resource's file
 func _save_ik_targets_to_config():
-    if not bike_resource:
+    if !bike_resource:
         push_error("No bike_resource assigned")
         return
 
@@ -293,11 +292,104 @@ func _save_ik_targets_to_config():
 
     var err = ResourceSaver.save(bike_resource, bike_resource.resource_path)
     if err != OK:
-        push_error("Failed to save BikeConfig: %s" % err)
+        push_error("Failed to save bike_resource: %s" % err)
     else:
         print("Saved IK targets to: %s" % bike_resource.resource_path)
+#endregion
+
+#region animation library
+func _get_animation_library() -> AnimationLibrary:
+    if !bike_resource:
+        push_error("No bike_resource assigned")
+        return null
+
+    if !anim_player:
+        push_error("No AnimationPlayer found")
+        return null
+
+    var library_name = bike_resource.animation_library_name
+    if library_name.is_empty():
+        push_error("bike_resource has no animation_library_name set")
+        return null
+
+    var library = anim_player.get_animation_library(library_name)
+    if !library:
+        push_error("Animation library '%s' not found" % library_name)
+        return null
+
+    return library
 
 
+## Save animation library to its path or scene path. Return true on success
+func _save_animation_library(library: AnimationLibrary, message: String) -> bool:
+    if library.resource_path.is_empty():
+        # Library is embedded in scene - save the scene
+        var scene_path = get_tree().edited_scene_root.scene_file_path
+        var packed_scene = PackedScene.new()
+        packed_scene.pack(get_tree().edited_scene_root)
+        var err = ResourceSaver.save(packed_scene, scene_path)
+        if err != OK:
+            push_error("Failed to save scene: %s" % err)
+            return false
+        else:
+            print("%s (scene saved: %s)" % [message, scene_path])
+            return true
+    else:
+        var err = ResourceSaver.save(library, library.resource_path)
+        if err != OK:
+            push_error("Failed to save animation library: %s" % err)
+            return false
+        else:
+            print("%s: %s" % [message, library.resource_path])
+            return true
+
+## Set first keyframes to values from Target's transforms
+func _update_animation_first_keyframes(anim: Animation):
+    var target_tracks = _get_ik_target_tracks()
+    for i in range(anim.get_track_count()):
+        var path = str(anim.track_get_path(i))
+        if target_tracks.has(path):
+            anim.track_set_key_value(i, 0, target_tracks[path])
+
+func _save_ik_targets_to_reset():
+    _save_ik_targets_to_anim("RESET")
+
+## Save IK targets to first keyframe in anim_name. Return true on success
+func _save_ik_targets_to_anim(anim_name: String) -> bool:
+    var library = _get_animation_library()
+    if !library:
+        return false
+
+    if !library.has_animation(anim_name):
+        push_error("No %s animation in library '%s'" % [anim_name, bike_resource.animation_library_name])
+        return false
+
+    _update_animation_first_keyframes(library.get_animation(anim_name))
+    
+    return _save_animation_library(library, "Saved IK targets to %s animation" % anim_name)
+
+
+## Set first keyframe in all animationlibrary's animations from the values in RESET animation
+func _init_all_anims_from_reset():
+    var library = _get_animation_library()
+    if !library || !library.has_animation("RESET"):
+        push_error("No RESET animation in library '%s'" % bike_resource.animation_library_name)
+        return
+
+    # play RESET, then _save_ik_targets_to all anims
+    anim_player.play(bike_resource.animation_library_name + "/RESET")
+
+    # Apply RESET's first keyframe values to all other animations
+    var updated_count = 0
+    for anim_name in library.get_animation_list():
+        if anim_name == "RESET":
+            continue
+        _update_animation_first_keyframes(library.get_animation(anim_name))
+        updated_count += 1
+
+    _save_animation_library(library, "Initialized %d animations from RESET values" % updated_count)
+
+## Super hard-coded #TODO: clean this?
 func _get_ik_target_tracks() -> Dictionary:
     var targets = character_mesh.get_node("Targets")
     return {
@@ -314,98 +406,5 @@ func _get_ik_target_tracks() -> Dictionary:
         "LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:position": targets.get_node("RightLegTarget").position,
         "LeanAndRotationPoint/IKCharacterMesh/Targets/RightLegTarget:rotation": targets.get_node("RightLegTarget").rotation,
     }
-
-
-func _get_animation_library() -> AnimationLibrary:
-    if not bike_resource:
-        push_error("No BikeConfig assigned")
-        return null
-
-    if not anim_player:
-        push_error("No AnimationPlayer found")
-        return null
-
-    var library_name = bike_resource.animation_library_name
-    if library_name.is_empty():
-        push_error("BikeConfig has no animation_library_name set")
-        return null
-
-    var library = anim_player.get_animation_library(library_name)
-    if not library:
-        push_error("Animation library '%s' not found" % library_name)
-        return null
-
-    return library
-
-
-func _save_animation_library(library: AnimationLibrary, message: String):
-    if library.resource_path.is_empty():
-        # Library is embedded in scene - save the scene
-        var scene_path = get_tree().edited_scene_root.scene_file_path
-        var packed_scene = PackedScene.new()
-        packed_scene.pack(get_tree().edited_scene_root)
-        var err = ResourceSaver.save(packed_scene, scene_path)
-        if err != OK:
-            push_error("Failed to save scene: %s" % err)
-        else:
-            print("%s (scene saved: %s)" % [message, scene_path])
-    else:
-        var err = ResourceSaver.save(library, library.resource_path)
-        if err != OK:
-            push_error("Failed to save animation library: %s" % err)
-        else:
-            print("%s: %s" % [message, library.resource_path])
-
-
-func _update_animation_first_keyframes(anim: Animation, target_tracks: Dictionary):
-    for i in range(anim.get_track_count()):
-        var path = str(anim.track_get_path(i))
-        if target_tracks.has(path):
-            anim.track_set_key_value(i, 0, target_tracks[path])
-
-
-func _save_ik_targets_to_reset_anim():
-    var library = _get_animation_library()
-    if not library:
-        return
-
-    if not library.has_animation("RESET"):
-        push_error("No RESET animation in library '%s'" % bike_resource.animation_library_name)
-        return
-
-    var target_tracks = _get_ik_target_tracks()
-    _update_animation_first_keyframes(library.get_animation("RESET"), target_tracks)
-    _save_animation_library(library, "Saved IK targets to RESET animation")
-
-
-func _init_all_anims_from_reset():
-    var library = _get_animation_library()
-    if not library:
-        return
-
-    if not library.has_animation("RESET"):
-        push_error("No RESET animation in library '%s'" % bike_resource.animation_library_name)
-        return
-
-    # Extract all track values from RESET animation's first keyframe
-    var reset_anim = library.get_animation("RESET")
-    var reset_tracks = {}
-    for i in range(reset_anim.get_track_count()):
-        var path = str(reset_anim.track_get_path(i))
-        if reset_anim.track_get_key_count(i) > 0:
-            reset_tracks[path] = reset_anim.track_get_key_value(i, 0)
-
-    # Apply RESET's first keyframe values to all other animations
-    var anim_names = library.get_animation_list()
-    var updated_count = 0
-
-    for anim_name in anim_names:
-        if anim_name == "RESET":
-            continue
-        var anim = library.get_animation(anim_name)
-        _update_animation_first_keyframes(anim, reset_tracks)
-        updated_count += 1
-
-    _save_animation_library(library, "Initialized %d animations from RESET values" % updated_count)
 
 #endregion
