@@ -69,9 +69,9 @@ class_name PlayerController extends CharacterBody3D
 @export var current_bike_index: int = 0
 var bike_resource: BikeResource
 
-@export_tool_button("Save IK Targets to Config") var save_ik_btn = _save_ik_targets_to_config
+@export_tool_button("Save IK Targets to bike_resource") var save_ik_btn = _save_ik_targets_to_config
 @export_tool_button("Save IK Targets to RESET Animation") var save_reset_btn = _save_ik_targets_to_reset
-@export_tool_button("Initialize All Animations from RESET") var init_anims_btn = _init_all_anims_from_reset
+@export_tool_button("Set All Animations first frame to RESET") var init_anims_btn = _init_all_anims_from_reset
 
 # Spawn tracking
 var spawn_position: Vector3
@@ -317,6 +317,7 @@ func _get_animation_library() -> AnimationLibrary:
         push_error("Animation library '%s' not found" % library_name)
         return null
 
+    print("library: %s" % bike_resource.animation_library_name)
     return library
 
 
@@ -366,7 +367,8 @@ func _save_ik_targets_to_anim(anim_name: String) -> bool:
 
     _update_animation_first_keyframes(library.get_animation(anim_name))
     
-    return _save_animation_library(library, "Saved IK targets to %s animation" % anim_name)
+    var ok = _save_animation_library(library, "Saved IK targets to %s animation" % anim_name)
+    return ok
 
 
 ## Set first keyframe in all animationlibrary's animations from the values in RESET animation

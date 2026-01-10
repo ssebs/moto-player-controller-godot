@@ -36,7 +36,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 
-- [ ]change bikemesh
+- [ ] change bikemesh
   - instead of having a scene that has a resource in it, make a resource that takes in a scene AKA the model
 - [ ] refactor setters in _apply_bike_config to use the resource values directly
 - [ ] Move bikemods into resource
