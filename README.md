@@ -36,8 +36,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 
-- [ ] change bikemesh
-  - instead of having a scene that has a resource in it, make a resource that takes in a scene AKA the model
+l
 - [ ] refactor setters in _apply_bike_config to use the resource values directly
 - [ ] Move bikemods into resource
 - [ ] Fix lean animations across diff bikes / final animation config cleanup
@@ -89,7 +88,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - [ ] nollie lazerflip
 
 ## Done:
-
+- [x] change bikemesh
+  - instead of having a scene that has a resource in it, make a resource that takes in a scene AKA the mode
 - [x] Multiple bike models w/ diff stats
   - [x] Sounds change from bikeconfig
   - [x] Sport bike (move stats to resource)

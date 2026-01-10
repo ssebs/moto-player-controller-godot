@@ -353,6 +353,7 @@ func _update_animation_first_keyframes(anim: Animation):
             anim.track_set_key_value(i, 0, target_tracks[path])
 
 func _save_ik_targets_to_reset():
+    _apply_bike_config()
     _save_ik_targets_to_anim("RESET")
 
 ## Save IK targets to first keyframe in anim_name. Return true on success
