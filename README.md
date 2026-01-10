@@ -35,12 +35,10 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-
-l
+- [ ] lean animation broken with diff bikes
 - [ ] refactor setters in _apply_bike_config to use the resource values directly
 - [ ] Move bikemods into resource
-- [ ] Fix lean animations across diff bikes / final animation config cleanup
-  - [ ] legs get reset on dirt bike - esp right one
+
 
 ## Bugs
 
@@ -88,6 +86,8 @@ l
     - [ ] nollie lazerflip
 
 ## Done:
+- [x] Fix lean animations across diff bikes / final animation config cleanup
+  - [x] legs get reset on dirt bike - esp right one
 - [x] change bikemesh
   - instead of having a scene that has a resource in it, make a resource that takes in a scene AKA the mode
 - [x] Multiple bike models w/ diff stats
