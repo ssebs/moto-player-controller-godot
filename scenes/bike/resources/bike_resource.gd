@@ -1,4 +1,4 @@
-class_name BikeConfig extends Resource
+class_name BikeResource extends Resource
 
 # Visual
 @export var mesh_scene: PackedScene

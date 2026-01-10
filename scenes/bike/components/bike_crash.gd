@@ -160,8 +160,8 @@ func _do_respawn():
     player_controller.state.request_state_change(BikeState.PlayerState.CRASHED)
     player_controller.character_mesh.stop_ragdoll()
     var reset_anim = "RESET"
-    if player_controller.bike_config:
-        reset_anim = player_controller.bike_config.animation_library_name + "/RESET"
+    if player_controller.bike_resource:
+        reset_anim = player_controller.bike_resource.animation_library_name + "/RESET"
     player_controller.anim_player.play(reset_anim)
     respawn_requested.emit()
 
