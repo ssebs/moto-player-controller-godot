@@ -18,6 +18,8 @@ var clutch_just_pressed: bool = false
 var clutch_hold_time: float = 0.0
 var br: BikeResource # Cached reference for brevity
 
+# TODO: final refactor: split up update_rpm into multiple funcs
+
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
