@@ -18,7 +18,7 @@ var clutch_just_pressed: bool = false
 # Local state
 var clutch_hold_time: float = 0.0
 
-
+#region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
@@ -30,7 +30,7 @@ func _bike_update(delta):
     match player_controller.state.player_state:
         BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
             # Engine stalls during crash
-            if not player_controller.state.is_stalled:
+            if !player_controller.state.is_stalled:
                 player_controller.state.is_stalled = true
                 engine_stalled.emit()
             player_controller.state.rpm_ratio = 0.0
@@ -42,9 +42,18 @@ func _bike_update(delta):
             # Cache RPM ratio for other components to use
             player_controller.state.rpm_ratio = get_rpm_ratio()
             # Auto-shift during boost or easy mode
-            if player_controller.state.is_boosting or player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+            if player_controller.state.is_boosting or player_controller.state.isEasyDifficulty():
                 _update_auto_shift()
 
+func _bike_reset():
+    player_controller.state.current_gear = 1
+    player_controller.state.current_rpm = player_controller.bike_resource.idle_rpm
+    player_controller.state.is_stalled = false
+    player_controller.state.clutch_value = 0.0
+    clutch_hold_time = 0.0
+#endregion
+
+#region input handlers
 func _on_clutch_input(held: bool, just_pressed: bool):
     clutch_held = held
     clutch_just_pressed = just_pressed
@@ -52,10 +61,10 @@ func _on_clutch_input(held: bool, just_pressed: bool):
 
 func _on_gear_up():
     # Easy mode: auto-shift handles this, ignore manual input
-    if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+    if player_controller.state.isEasyDifficulty():
         return
     # Medium: no clutch needed, Hard: clutch required
-    var can_shift = player_controller.state.difficulty == player_controller.state.PlayerDifficulty.MEDIUM or player_controller.state.clutch_value > gear_shift_threshold
+    var can_shift = player_controller.state.isMediumDifficulty() or player_controller.state.clutch_value > gear_shift_threshold
     if can_shift:
         if player_controller.state.current_gear < player_controller.bike_resource.num_gears:
             player_controller.state.current_gear += 1
@@ -66,17 +75,17 @@ func _on_gear_up():
 
 func _on_gear_down():
     # Easy mode: auto-shift handles this, ignore manual input
-    if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+    if player_controller.state.isEasyDifficulty():
         return
     # Medium: no clutch needed, Hard: clutch required
-    var can_shift = player_controller.state.difficulty == player_controller.state.PlayerDifficulty.MEDIUM or player_controller.state.clutch_value > gear_shift_threshold
+    var can_shift = player_controller.state.isMediumDifficulty() or player_controller.state.clutch_value > gear_shift_threshold
     if can_shift:
         if player_controller.state.current_gear > 1:
             player_controller.state.current_gear -= 1
             gear_changed.emit(player_controller.state.current_gear)
     else:
         gear_grind.emit()
-
+#endregion
 
 func update_clutch(delta: float):
     var br := player_controller.bike_resource
@@ -108,7 +117,6 @@ func get_max_speed_for_gear() -> float:
 
 func update_rpm(delta: float):
     var br := player_controller.bike_resource
-    var is_easy_mode := player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY
 
     if player_controller.state.is_stalled:
         player_controller.state.current_rpm = 0.0
@@ -117,7 +125,7 @@ func update_rpm(delta: float):
         if player_controller.state.clutch_value > 0.5 and player_controller.bike_input.throttle > 0.3:
             should_start = true
         # Easy mode: auto-start with throttle only (no clutch required)
-        if is_easy_mode and player_controller.bike_input.throttle > 0.1:
+        if player_controller.state.isEasyDifficulty() and player_controller.bike_input.throttle > 0.1:
             should_start = true
 
         if should_start:
@@ -137,7 +145,7 @@ func update_rpm(delta: float):
     var throttle_rpm = lerpf(br.idle_rpm, br.max_rpm, player_controller.bike_input.throttle)
 
     # Easy mode: automatic clutch - disengage when stationary/slow to allow revving
-    if is_easy_mode and player_controller.state.speed < 5.0:
+    if player_controller.state.isEasyDifficulty() and player_controller.state.speed < 5.0:
         engagement = clamp(player_controller.state.speed / 5.0, 0.0, 1.0)
 
     # Blend between throttle RPM and wheel RPM based on clutch engagement
@@ -147,7 +155,7 @@ func update_rpm(delta: float):
 
     # When clutch is fully engaged, RPM follows wheel speed
     if engagement > 0.95:
-        if player_controller.state.difficulty != player_controller.state.PlayerDifficulty.HARD:
+        if !player_controller.state.isHardDifficulty():
             # Easy/Medium: smooth rev-matching when shifting (RPM blends to new gear's wheel RPM)
             player_controller.state.current_rpm = lerpf(player_controller.state.current_rpm, wheel_rpm, br.rev_match_speed * delta)
         else:
@@ -159,7 +167,7 @@ func update_rpm(delta: float):
         player_controller.state.current_rpm = lerpf(player_controller.state.current_rpm, target_rpm, blend_speed * delta)
 
     # Check for stall when clutch is mostly engaged and RPM too low (skip on easy mode)
-    if not is_easy_mode and engagement > 0.9 and player_controller.state.current_rpm < br.stall_rpm:
+    if !player_controller.state.isEasyDifficulty() and engagement > 0.9 and player_controller.state.current_rpm < br.stall_rpm:
         player_controller.state.is_stalled = true
         player_controller.state.current_gear = 1
         engine_stalled.emit()
@@ -195,7 +203,7 @@ func get_power_output() -> float:
         return 0.0
 
     var engagement = get_clutch_engagement()
-    if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+    if player_controller.state.isEasyDifficulty():
         engagement = 1.0
     elif engagement < 0.05:
         return 0.0
@@ -215,11 +223,3 @@ func get_power_output() -> float:
 func is_clutch_dump(last_clutch: float) -> bool:
     """Returns true if clutch was just dumped while revving"""
     return last_clutch > 0.7 and player_controller.state.clutch_value < 0.3 and player_controller.bike_input.throttle > 0.5
-
-
-func _bike_reset():
-    player_controller.state.current_gear = 1
-    player_controller.state.current_rpm = player_controller.bike_resource.idle_rpm
-    player_controller.state.is_stalled = false
-    player_controller.state.clutch_value = 0.0
-    clutch_hold_time = 0.0

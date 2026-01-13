@@ -44,6 +44,13 @@ func request_state_change(new_state: PlayerState) -> bool:
 	state_changed.emit(old, new_state)
 	return true
 
+func isEasyDifficulty() -> bool:
+	return difficulty == PlayerDifficulty.EASY
+func isMediumDifficulty() -> bool:
+	return difficulty == PlayerDifficulty.MEDIUM
+func isHardDifficulty() -> bool:
+	return difficulty == PlayerDifficulty.HARD
+
 
 # Physics state
 var speed: float = 0.0
@@ -56,17 +63,17 @@ var current_gear: int = 1
 var current_rpm: float = 1000.0
 var clutch_value: float = 0.0
 var is_stalled: bool = false
-var rpm_ratio: float = 0.0  # Cached per frame by BikeGearing
+var rpm_ratio: float = 0.0 # Cached per frame by BikeGearing
 
 # Tricks state
 var pitch_angle: float = 0.0
 var fishtail_angle: float = 0.0
 
 # Trick scoring state
-var active_trick: int = 0  # BikeTricks.Trick enum (0 = NONE)
+var active_trick: int = 0 # BikeTricks.Trick enum (0 = NONE)
 var trick_start_time: float = 0.0
 var trick_score: float = 0.0
-var boost_trick_score: float = 0.0  # Separate score for boost modifier
+var boost_trick_score: float = 0.0 # Separate score for boost modifier
 var total_score: float = 0.0
 var combo_multiplier: float = 1.0
 var combo_count: int = 0
@@ -76,7 +83,7 @@ var is_boosting: bool = false
 var boost_count: int = 2
 
 # Grip/Crash state
-var grip_usage: float = 0.0  # 0-1, how much grip is being consumed
+var grip_usage: float = 0.0 # 0-1, how much grip is being consumed
 
 # Difficulty
 var difficulty: PlayerDifficulty = PlayerDifficulty.EASY
