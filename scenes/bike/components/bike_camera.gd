@@ -7,6 +7,8 @@ signal camera_reset_completed
 @export var vertical_clamp: Vector2 = Vector2(-90, 90) # min/max pitch
 @export var reset_duration: float = 1.0 # seconds to lerp back
 @export var reset_delay: float = 1.0 # seconds to wait before starting lerp
+@export var base_fov: float = 70
+@export var max_fov: float = 100
 
 var current_yaw: float = 0.0
 var current_pitch: float = 0.0
@@ -14,6 +16,9 @@ var is_resetting: bool = false
 var reset_timer: float = 0.0
 var reset_start_yaw: float = 0.0
 var reset_start_pitch: float = 0.0
+var fov_offset: float = 0.0
+
+var last_speed: float = 0.0
 
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
@@ -24,6 +29,7 @@ func _bike_setup(p_controller: PlayerController):
 
 func _bike_update(delta: float):
     _update_camera(delta)
+    _update_fov_from_speed()
 
 func _bike_reset():
     current_yaw = 0.0
@@ -32,6 +38,15 @@ func _bike_reset():
     _apply_rotation()
 
 #endregion
+
+## Set FOV based on speed
+func _update_fov_from_speed():
+    if last_speed == player_controller.state.speed:
+        return
+    last_speed = player_controller.state.speed
+
+    var calcd = clampf(last_speed / player_controller.bike_resource.max_speed, 0.0, 1.0)
+    player_controller.riding_camera.fov = lerp(base_fov, max_fov, calcd)
 
 func _on_trick_changed(value: float):
     if value:
