@@ -37,9 +37,9 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 ## In Progress:
 - [ ] Fix brake feel (too easy to crash)
 - [ ] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod
+  - [ ] Move brakelight to "essentialmods", and add position/rotation params
 
 ## TODO:
-
 - [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
 - [ ] Final refactor
   - [ ] Simpify physics logic
