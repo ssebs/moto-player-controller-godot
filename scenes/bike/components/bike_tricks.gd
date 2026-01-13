@@ -52,7 +52,7 @@ const DIFFICULTY_MULT: Dictionary = {
 
 #region export vars
 # Brake system tuning
-@export var brake_grab_time_threshold: float = 0.2 # seconds, 0→100% - quick grab locks wheel
+@export var brake_grab_time_threshold: float = 0.4 # seconds, 0→100% - quick grab locks wheel
 @export var stoppie_reference_speed: float = 25.0 # full stoppie available at this speed
 @export var brake_lean_sensitivity: float = 0.7 # how much lean reduces safe brake amount
 # Tunables
@@ -277,7 +277,7 @@ func _update_wheelie(delta: float):
         player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * delta)
 
     # On EASY mode, clamp wheelie angle to prevent crash
-    if player_controller.state.difficulty == BikeState.PlayerDifficulty.EASY:
+    if player_controller.state.isEasyDifficulty():
         var safe_wheelie_limit = player_controller.bike_crash.crash_wheelie_threshold - deg_to_rad(5)
         player_controller.state.pitch_angle = min(player_controller.state.pitch_angle, safe_wheelie_limit)
 
@@ -413,7 +413,7 @@ func _update_boost(delta):
 func _update_grip_usage(delta) -> bool:
     """Updates grip usage for front tire. Returns true if crash should occur."""
     # Skip grip logic entirely on EASY difficulty
-    if player_controller.state.difficulty == BikeState.PlayerDifficulty.EASY:
+    if player_controller.state.isEasyDifficulty():
         player_controller.state.grip_usage = 0.0
         brake_was_grabbed = false
         return false
@@ -421,7 +421,7 @@ func _update_grip_usage(delta) -> bool:
     var front_brake = player_controller.bike_input.front_brake
 
     # Track brake grab timing: time from 0 → 100%
-    if front_brake < 0.1:
+    if front_brake < 0.5:
         # Brake released - reset tracking
         brake_was_zero = true
         brake_grab_timer = 0.0
@@ -722,7 +722,7 @@ func get_boosted_throttle(base_throttle: float) -> float:
 func is_front_wheel_locked() -> bool:
     """Returns true if front brake was grabbed (quick 0→100%) causing wheel lock/skid"""
     # On EASY, front wheel never locks
-    if player_controller.state.difficulty == BikeState.PlayerDifficulty.EASY:
+    if player_controller.state.isEasyDifficulty():
         return false
     return brake_was_grabbed
 

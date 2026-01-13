@@ -150,7 +150,7 @@ func _update_bike_root_rotation(total_lean: float):
 
 func _update_training_wheels_visibility():
     if player_controller.training_wheels:
-        if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+        if player_controller.state.isEasyDifficulty():
             player_controller.training_wheels.show()
         else:
             player_controller.training_wheels.hide()

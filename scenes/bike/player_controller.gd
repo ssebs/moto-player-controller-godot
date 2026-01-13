@@ -90,7 +90,7 @@ func _ready():
     bike_resource = bike_resources[current_bike_index]
     _apply_bike_config()
     if Engine.is_editor_hint():
-        return # Don't run game logic in editor
+        return
 
     spawn_position = global_position
     spawn_rotation = rotation
@@ -118,7 +118,7 @@ func _ready():
 
 func _physics_process(delta):
     if Engine.is_editor_hint():
-        return # Don't run game logic in editor
+        return
 
     # Handle crash states first (before input)
     if state.player_state == BikeState.PlayerState.CRASHED || \
