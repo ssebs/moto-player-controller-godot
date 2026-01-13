@@ -364,7 +364,7 @@ func _update_skidding(delta: float):
             _spawn_skid_mark(rear_wheel_pos, bike_rot)
 
         # Fishtail calculation - steering induces fishtail direction
-        var steer_influence = player_controller.state.steering_angle / player_controller.bike_physics.max_steering_angle
+        var steer_influence = player_controller.state.steering_angle / player_controller.bike_resource.max_steering_angle
         var target_fishtail = - steer_influence * max_fishtail_angle * player_controller.bike_input.rear_brake
 
         # Small natural wobble when skidding straight (random direction, small amplitude)

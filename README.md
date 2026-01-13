@@ -37,13 +37,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 
-- [ ] fix bug
-      E 0:00:16:063 BikeTricks.\_update_skidding: Invalid access to property or key 'max_steering_angle' on a base object of type 'Node3D (BikePhysics)'.
-      <GDScript Source>bike_tricks.gd:367 @ BikeTricks.\_update_skidding()
-      <Stack Trace> bike_tricks.gd:367 @ \_update_skidding()
-      bike_tricks.gd:202 @ \_update_riding()
-      bike_tricks.gd:149 @ \_bike_update()
-      player_controller.gd:142 @ \_physics_process()
 
 ## TODO:
 
@@ -64,6 +57,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] fix max_steering_angle bug
 - [x] add emission on brake light
 - [x] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod
   - [x] Move brakelight to "essentialmods", and add position/rotation params
