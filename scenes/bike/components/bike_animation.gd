@@ -7,12 +7,7 @@ class_name BikeAnimation extends BikeComponent
 var tail_light_material: StandardMaterial3D = null
 var butt_position_offset: float = 0.0
 
-func _get_anim(anim_name: String) -> String:
-    if player_controller.bike_resource:
-        return player_controller.bike_resource.animation_library_name + "/" + anim_name
-    return anim_name
-
-
+#region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
 
@@ -35,114 +30,24 @@ func _bike_setup(p_controller: PlayerController):
 
     # Connect to player state changes
     player_controller.state.state_changed.connect(_on_player_state_changed)
+    
     _update_training_wheels_visibility()
 
 
 func _bike_update(delta):
     # Skip mesh rotation when idle - let the idle_stopped animation control the pose
     if player_controller.state.player_state != BikeState.PlayerState.IDLE:
-        apply_mesh_rotation()
-        update_lean_animation(delta)
+        var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
+        _update_bike_root_rotation(total_lean)
+        _update_butt_lean_animation(delta, total_lean)
 
-
-func _on_front_brake_changed(value: float):
-    _update_brake_light(value)
-
-func _on_rear_brake_changed(value: float):
-    _update_brake_light(value)
-
-
-func _on_difficulty_toggled():
+func _bike_reset():
+    _update_brake_light(0)
     _update_training_wheels_visibility()
-
-
-func _update_training_wheels_visibility():
-    if player_controller.training_wheels:
-        if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
-            player_controller.training_wheels.show()
-        else:
-            player_controller.training_wheels.hide()
-
-
-func _on_boost_started():
-    if player_controller.anim_player.is_playing():
-        return
-    player_controller.anim_player.play(_get_anim("naruto_run_start"))
-    player_controller.anim_player.animation_finished.connect(_on_boost_anim_finished)
-
-
-func _on_boost_ended():
-    if player_controller.anim_player.animation_finished.is_connected(_on_boost_anim_finished):
-        player_controller.anim_player.animation_finished.disconnect(_on_boost_anim_finished)
-    player_controller.anim_player.play_backwards(_get_anim("naruto_run_start"))
-
-
-func _on_boost_anim_finished(anim_name: String):
-    if anim_name == _get_anim("naruto_run_start"):
-        player_controller.anim_player.play(_get_anim("naruto_run_loop"))
-
-
-func _on_trick_started(trick: int):
-    match trick:
-        BikeTricks.Trick.HEEL_CLICKER:
-            player_controller.anim_player.play(_get_anim("heel_clicker"))
-        BikeTricks.Trick.KICKFLIP:
-            player_controller.anim_player.play(_get_anim("kickflip"))
-
-
-func _on_trick_ended(trick: int, _score: float, _duration: float):
-    match trick:
-        BikeTricks.Trick.HEEL_CLICKER, BikeTricks.Trick.KICKFLIP:
-            await player_controller.anim_player.animation_finished
-            player_controller.anim_player.play(_get_anim("RESET"))
-
-func _update_brake_light(value: float):
-    if tail_light_material:
-        tail_light_material.emission_enabled = value > 0.01
-
-
-func update_lean_animation(delta: float):
-    var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
-    var target_offset = signf(total_lean) * player_controller.bike_resource.max_butt_offset if absf(total_lean) > 0.1 else 0.0
-    butt_position_offset = lerpf(butt_position_offset, target_offset, lean_lerp_speed * delta)
-    _apply_butt_offset()
-
-
-func _apply_butt_offset():
-    var base_pos = player_controller.bike_resource.butt_target_position
-    var butt_target = player_controller.character_mesh.get_node("Targets/ButtTarget")
-    butt_target.position = base_pos + Vector3(butt_position_offset, 0, 0)
-
-
-func apply_mesh_rotation():
-    player_controller.rotation_root.transform = Transform3D.IDENTITY
-    player_controller.collision_shape.rotation.x = deg_to_rad(-90.0)
-
-    if player_controller.state.ground_pitch != 0:
-        player_controller.rotation_root.rotate_x(-player_controller.state.ground_pitch)
-
-    var pivot: Vector3
-    if player_controller.state.pitch_angle >= 0:
-        pivot = player_controller.rear_wheel.position
-    else:
-        pivot = player_controller.front_wheel.position
-
-    if player_controller.state.pitch_angle != 0:
-        _rotate_around_pivot(player_controller.rotation_root, pivot, Vector3.RIGHT)
-        player_controller.collision_shape.rotation.x = deg_to_rad(-90.0) + player_controller.state.pitch_angle
-
-    var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
-    if total_lean != 0:
-        player_controller.rotation_root.rotate_z(total_lean)
-
-
-func _rotate_around_pivot(node: Node3D, pivot: Vector3, axis: Vector3):
-    var t = node.transform
-    t.origin -= pivot
-    t = t.rotated(axis, player_controller.state.pitch_angle)
-    t.origin += pivot
-    node.transform = t
-
+    butt_position_offset = 0.0
+    player_controller.anim_player.stop()
+    _update_bike_root_rotation(player_controller.state.lean_angle + player_controller.state.fall_angle)
+#endregion
 
 func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
     # Handle state exit
@@ -169,9 +74,103 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
             # Could show "press to respawn" animation
             pass
 
+#region input handlers 
+func _on_front_brake_changed(value: float):
+    _update_brake_light(value)
 
-func _bike_reset():
-    _update_brake_light(0)
-    butt_position_offset = 0.0
-    player_controller.anim_player.stop()
-    apply_mesh_rotation()
+func _on_rear_brake_changed(value: float):
+    _update_brake_light(value)
+
+func _on_difficulty_toggled():
+    _update_training_wheels_visibility()
+#endregion
+
+#region boost handlers
+func _on_boost_started():
+    if player_controller.anim_player.is_playing():
+        return
+    player_controller.anim_player.play(_get_anim("naruto_run_start"))
+    player_controller.anim_player.animation_finished.connect(_on_boost_anim_finished)
+
+func _on_boost_ended():
+    if player_controller.anim_player.animation_finished.is_connected(_on_boost_anim_finished):
+        player_controller.anim_player.animation_finished.disconnect(_on_boost_anim_finished)
+    player_controller.anim_player.play_backwards(_get_anim("naruto_run_start"))
+
+func _on_boost_anim_finished(anim_name: String):
+    if anim_name == _get_anim("naruto_run_start"):
+        player_controller.anim_player.play(_get_anim("naruto_run_loop"))
+
+#endregion
+
+#region tricks handlers
+func _on_trick_started(trick: int):
+    match trick:
+        BikeTricks.Trick.HEEL_CLICKER:
+            player_controller.anim_player.play(_get_anim("heel_clicker"))
+        BikeTricks.Trick.KICKFLIP:
+            player_controller.anim_player.play(_get_anim("kickflip"))
+
+func _on_trick_ended(trick: int, _score: float, _duration: float):
+    match trick:
+        BikeTricks.Trick.HEEL_CLICKER, BikeTricks.Trick.KICKFLIP:
+            await player_controller.anim_player.animation_finished
+            player_controller.anim_player.play(_get_anim("RESET"))
+#endregion
+
+
+#region MISC / implementation details
+func _update_butt_lean_animation(delta: float, total_lean: float):
+    var target_offset = signf(total_lean) * player_controller.bike_resource.max_butt_offset if absf(total_lean) > 0.1 else 0.0
+    butt_position_offset = lerpf(butt_position_offset, target_offset, lean_lerp_speed * delta)
+
+    # Move butt
+    var base_pos = player_controller.bike_resource.butt_target_position
+    var butt_target = player_controller.character_mesh.get_node("Targets/ButtTarget")
+    butt_target.position = base_pos + Vector3(butt_position_offset, 0, 0)
+
+## Rotate (lean, wheelie angles, etc.)
+func _update_bike_root_rotation(total_lean: float):
+    player_controller.rotation_root.transform = Transform3D.IDENTITY
+    player_controller.collision_shape.rotation.x = deg_to_rad(-90.0)
+
+    if player_controller.state.ground_pitch != 0:
+        player_controller.rotation_root.rotate_x(-player_controller.state.ground_pitch)
+
+    var pivot: Vector3
+    if player_controller.state.pitch_angle >= 0:
+        pivot = player_controller.rear_wheel.position
+    else:
+        pivot = player_controller.front_wheel.position
+
+    if player_controller.state.pitch_angle != 0:
+        _rotate_around_pivot(player_controller.rotation_root, pivot, Vector3.RIGHT)
+        player_controller.collision_shape.rotation.x = deg_to_rad(-90.0) + player_controller.state.pitch_angle
+
+    if total_lean != 0:
+        player_controller.rotation_root.rotate_z(total_lean)
+
+func _update_training_wheels_visibility():
+    if player_controller.training_wheels:
+        if player_controller.state.difficulty == player_controller.state.PlayerDifficulty.EASY:
+            player_controller.training_wheels.show()
+        else:
+            player_controller.training_wheels.hide()
+
+func _update_brake_light(value: float):
+    if tail_light_material:
+        tail_light_material.emission_enabled = value > 0.01
+
+func _rotate_around_pivot(node: Node3D, pivot: Vector3, axis: Vector3):
+    var t = node.transform
+    t.origin -= pivot
+    t = t.rotated(axis, player_controller.state.pitch_angle)
+    t.origin += pivot
+    node.transform = t
+
+func _get_anim(anim_name: String) -> String:
+    if player_controller.bike_resource:
+        return player_controller.bike_resource.animation_library_name + "/" + anim_name
+    return anim_name
+
+#endregion
