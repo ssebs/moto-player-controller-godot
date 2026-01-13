@@ -14,15 +14,6 @@ signal trick_ended(trick: Trick, score: float, duration: float)
 signal trick_cancelled(trick: Trick)
 signal combo_expired
 
-#region dank
-# signal dank_triggered(bonus: float) # Emitted when wheelie/stoppie exceeds 60 degrees # danktodo
-
-# # Dank bonus (wheelie/stoppie > 60 degrees) # danktodo
-# const DANK_ANGLE: float = deg_to_rad(60)
-# const DANK_BONUS: float = 100.0
-# var _dank_triggered_this_trick: bool = false
-
-#endregion
 
 #region Trick Object Definition
 # Trick enum
@@ -48,7 +39,7 @@ const TRICK_DATA: Dictionary[Trick, Dictionary] = {
 	Trick.DRIFT: {"name": "Drift", "base_points": 50, "points_per_sec": 12.0},
 	Trick.HEEL_CLICKER: {"name": "Heel Clicker", "base_points": 200, "points_per_sec": 50.0},
 	Trick.BOOST: {"name": "Boost", "base_points": 0, "points_per_sec": 25.0, "is_modifier": true},
-    Trick.KICKFLIP: {"name": "Kickflip","base_points": 200, "points_per_sec": 0.0},
+    Trick.KICKFLIP: {"name": "Kickflip", "base_points": 200, "points_per_sec": 0.0},
 }
 #endregion
 
@@ -59,11 +50,11 @@ const DIFFICULTY_MULT: Dictionary = {
 	BikeState.PlayerDifficulty.HARD: 1.5,
 }
 
-# Brake system tuning
-@export var brake_grab_time_threshold: float = 0.2  # seconds, 0→100% - quick grab locks wheel
-@export var stoppie_reference_speed: float = 25.0   # full stoppie available at this speed
-@export var brake_lean_sensitivity: float = 0.7     # how much lean reduces safe brake amount
 #region export vars
+# Brake system tuning
+@export var brake_grab_time_threshold: float = 0.2 # seconds, 0→100% - quick grab locks wheel
+@export var stoppie_reference_speed: float = 25.0 # full stoppie available at this speed
+@export var brake_lean_sensitivity: float = 0.7 # how much lean reduces safe brake amount
 # Tunables
 @export var combo_window: float = 2.0
 @export var combo_increment: float = 0.25
@@ -95,7 +86,7 @@ const DIFFICULTY_MULT: Dictionary = {
 @export var boost_duration: float = 2.0
 @export var starting_boosts: int = 2
 @export var wheelie_time_for_boost: float = 5.0 # seconds
-@export var boost_steering_multiplier: float = 0.5  # Reduce steering during boost
+@export var boost_steering_multiplier: float = 0.5 # Reduce steering during boost
 #endregion
 
 #region local state
@@ -121,14 +112,15 @@ var _force_stoppie_rate: float = 0.0
 var _force_stoppie_active: bool = false
 
 # Brake grab detection state (time-based)
-var brake_grab_timer: float = 0.0  # tracks time since brake started increasing from 0
-var brake_was_zero: bool = true    # tracks if brake was released
-var brake_was_grabbed: bool = false  # true if current brake application was a grab (quick 0→100%)
+var brake_grab_timer: float = 0.0 # tracks time since brake started increasing from 0
+var brake_was_zero: bool = true # tracks if brake was released
+var brake_was_grabbed: bool = false # true if current brake application was a grab (quick 0→100%)
 #endregion
 
-#region BikeComponent stuff
+#region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
+    player_controller.state.state_changed.connect(_on_player_state_changed)
 
     player_controller.bike_input.trick_changed.connect(_on_trick_btn_changed)
     player_controller.bike_crash.crashed.connect(_on_crashed)
@@ -324,7 +316,7 @@ func _update_stoppie(delta: float):
     if not front_wheel_locked:
         var wants_stoppie = player_controller.bike_input.lean < -0.1 and player_controller.bike_input.front_brake > 0.5
         if player_controller.state.speed > 1 and (was_in_stoppie or (wants_stoppie and can_start_trick)):
-            stoppie_target = -effective_max_stoppie * player_controller.bike_input.front_brake * (1.0 - player_controller.bike_input.throttle * 0.5)
+            stoppie_target = - effective_max_stoppie * player_controller.bike_input.front_brake * (1.0 - player_controller.bike_input.throttle * 0.5)
             stoppie_target += -effective_max_stoppie * (-player_controller.bike_input.lean) * 0.15
 
     # Apply stoppie pitch
@@ -361,7 +353,7 @@ func _update_skidding(delta: float):
     var front_wheel_pos = player_controller.front_wheel.global_position
     var bike_rot = player_controller.global_rotation
 
-    var is_rear_skidding = player_controller.bike_input.rear_brake > 0.5 and player_controller.state.speed > 2 and is_on_floor 
+    var is_rear_skidding = player_controller.bike_input.rear_brake > 0.5 and player_controller.state.speed > 2 and is_on_floor
     var is_front_skidding = front_wheel_locked and player_controller.state.speed > 2 and is_on_floor
 
     # Rear wheel skid
@@ -373,7 +365,7 @@ func _update_skidding(delta: float):
 
         # Fishtail calculation - steering induces fishtail direction
         var steer_influence = player_controller.state.steering_angle / player_controller.bike_physics.max_steering_angle
-        var target_fishtail = -steer_influence * max_fishtail_angle * player_controller.bike_input.rear_brake
+        var target_fishtail = - steer_influence * max_fishtail_angle * player_controller.bike_input.rear_brake
 
         # Small natural wobble when skidding straight (random direction, small amplitude)
         if abs(steer_influence) < 0.1:
@@ -470,7 +462,7 @@ func _update_grip_usage(delta) -> bool:
                 # Grabbed + turning = crash (lowside)
                 # Grabbed + stoppie = crash (over the bars / lowside)
                 player_controller.bike_crash.crash_pitch_direction = -1 if in_stoppie else 0
-                player_controller.bike_crash.crash_lean_direction = -sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
+                player_controller.bike_crash.crash_lean_direction = - sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
                 player_controller.bike_crash.trigger_crash()
                 return true
             # Grabbed + straight (not in stoppie) = skid (handled by is_front_wheel_locked)
@@ -479,7 +471,7 @@ func _update_grip_usage(delta) -> bool:
             if is_turning and front_brake > max_safe_brake:
                 # Progressive + turning + over lean threshold = crash
                 player_controller.bike_crash.crash_pitch_direction = 0
-                player_controller.bike_crash.crash_lean_direction = -sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
+                player_controller.bike_crash.crash_lean_direction = - sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
                 player_controller.bike_crash.trigger_crash()
                 return true
             # Progressive + straight = stoppie (handled by _update_stoppie)

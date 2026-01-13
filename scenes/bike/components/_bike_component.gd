@@ -7,6 +7,8 @@ func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
     player_controller.state.state_changed.connect(_on_player_state_changed)
 
+    # call _bike_reset deferred?
+
 func _bike_update(_delta: float):
     pass
 
