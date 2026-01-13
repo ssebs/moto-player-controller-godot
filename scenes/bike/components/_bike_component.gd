@@ -1,4 +1,4 @@
-class_name BikeComponent extends Node
+class_name BikeComponent extends Node3D
 
 var player_controller: PlayerController
 

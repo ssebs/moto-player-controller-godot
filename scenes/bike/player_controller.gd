@@ -9,6 +9,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var bike_mesh: Node3D = %BikeMesh
 
 # TODO: move to bike_mods
+@onready var bike_mods: Node3D = %BikeMods
 @onready var tail_light: MeshInstance3D = %TailLight
 @onready var training_wheels: Node3D = %TrainingWheels
 
@@ -105,6 +106,11 @@ func _ready():
     bike_ui._bike_setup(self)
     bike_animation._bike_setup(self)
     bike_camera._bike_setup(self)
+
+    # Mods
+    for child in bike_mods.get_children(true):
+        if child is TrainingWheelsMod:
+            child._bike_setup(self)
 
     bike_crash.respawn_requested.connect(_respawn)
     bike_input.bike_switch_pressed.connect(_switch_bike)

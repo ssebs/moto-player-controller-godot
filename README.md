@@ -35,8 +35,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-
-- [ ] Move bikemods into resource + new bike_component
+- [ ] Fix brake feel (too easy to crash)
+- [ ] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod
 
 ## TODO:
 

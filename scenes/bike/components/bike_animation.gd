@@ -35,9 +35,7 @@ func _bike_setup(p_controller: PlayerController):
 
     # Connect to player state changes
     player_controller.state.state_changed.connect(_on_player_state_changed)
-
-    # Setup training wheel mods with state reference
-    _setup_training_wheels()
+    _update_training_wheels_visibility()
 
 
 func _bike_update(delta):
@@ -64,16 +62,6 @@ func _update_training_wheels_visibility():
             player_controller.training_wheels.show()
         else:
             player_controller.training_wheels.hide()
-
-
-func _setup_training_wheels():
-    if not player_controller.training_wheels:
-        return
-    _update_training_wheels_visibility()
-
-    for child in player_controller.training_wheels.get_children():
-        if child is TrainingWheelsMod:
-            child.setup(player_controller.state)
 
 
 func _on_boost_started():
