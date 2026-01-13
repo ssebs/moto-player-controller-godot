@@ -30,28 +30,32 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
     - if the front tire skids and regains traction, the bike should high-side crash.
   - Failing a trick (hit the ground before you're back on the bike)
 - [Controls](https://www.padcrafter.com/?templates=Controller+Scheme+1&leftTrigger=Front+Brake&rightTrigger=Throttle&leftBumper=Clutch&leftStick=Steer+%26+Lean&dpadUp=&dpadRight=&aButton=Rear+Brake&yButton=&xButton=Shift+Down&bButton=Shift+Up&rightBumper=Trick&rightStick=Camera.+If+RB+held%2C+Trick&leftStickClick=Switch+Bike&backButton=Change+Difficulty)
+
 ---
 
 # Planning / Tasks
 
 ## In Progress:
-- [ ] Fix brake feel (too easy to crash)
-- [ ] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod
-  - [ ] Move brakelight to "essentialmods", and add position/rotation params
+
+- [ ] Simplify gearing logic
 
 ## TODO:
-- [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
-- [ ] Final refactor
-  - [ ] Simpify physics logic
-  - [ ] Simplify gearing logic
-  - [ ] Simplify tricks logic
-  - [ ] Simplify crash checks logic
-  - [ ] Simplify state machines / animation logic
-  - [ ] Simplify UI logic
+
+- [ ] Simplify physics logic
+- [ ] Simplify tricks logic
+- [ ] Simplify crash checks logic
+- [ ] Simplify state machines / animation logic
+- [ ] Simplify UI logic
+- [ ] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod
+  - [ ] Move brakelight to "essentialmods", and add position/rotation params
 - [ ] Fix bugs
+- [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
+- [ ] Fix brake feel (too easy to crash)
   - [ ] Speed carries over even when crashing into collider
+- [ ] Cleanup animations / add some polish.
 
 ## Done:
+
 - [x] race track w/ level select
 - [x] Camera controller
 - [x] lean animation broken with diff bikes
