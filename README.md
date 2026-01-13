@@ -53,6 +53,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Cleanup animations / add some polish.
 
 ## Done:
+- [x] Simplify audio logic
 - [x] Simplify animation logic
 - [x] Simplify gearing logic
 - [x] race track w/ level select

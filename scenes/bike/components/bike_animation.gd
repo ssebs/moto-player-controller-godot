@@ -118,7 +118,6 @@ func _on_trick_ended(trick: int, _score: float, _duration: float):
             player_controller.anim_player.play(_get_anim("RESET"))
 #endregion
 
-
 #region MISC / implementation details
 func _update_butt_lean_animation(delta: float, total_lean: float):
     var target_offset = signf(total_lean) * player_controller.bike_resource.max_butt_offset if absf(total_lean) > 0.1 else 0.0
