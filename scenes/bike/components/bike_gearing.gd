@@ -16,10 +16,12 @@ var clutch_just_pressed: bool = false
 
 # Local state
 var clutch_hold_time: float = 0.0
+var br: BikeResource # Cached reference for brevity
 
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
+    br = player_controller.bike_resource
 
     player_controller.bike_input.clutch_held_changed.connect(_on_clutch_input)
     player_controller.bike_input.gear_up_pressed.connect(_on_gear_up)
@@ -46,7 +48,7 @@ func _bike_update(delta):
 
 func _bike_reset():
     player_controller.state.current_gear = 1
-    player_controller.state.current_rpm = player_controller.bike_resource.idle_rpm
+    player_controller.state.current_rpm = br.idle_rpm
     player_controller.state.is_stalled = false
     player_controller.state.clutch_value = 0.0
     clutch_hold_time = 0.0
@@ -65,7 +67,7 @@ func _on_gear_up():
     # Medium: no clutch needed, Hard: clutch required
     var can_shift = player_controller.state.isMediumDifficulty() or player_controller.state.clutch_value > gear_shift_threshold
     if can_shift:
-        if player_controller.state.current_gear < player_controller.bike_resource.num_gears:
+        if player_controller.state.current_gear < br.num_gears:
             player_controller.state.current_gear += 1
             gear_changed.emit(player_controller.state.current_gear)
     else:
@@ -90,7 +92,6 @@ func _on_gear_down():
 
 ## sets player_controller.state.clutch_value
 func _update_clutch(delta: float):
-    var br := player_controller.bike_resource
     if clutch_held:
         clutch_hold_time += delta
         if clutch_just_pressed:
@@ -106,8 +107,6 @@ func _update_clutch(delta: float):
 
 ## does way too much, but: sets player_controller.state.current_rpm, emits engine_started/stalled
 func _update_rpm(delta: float):
-    var br := player_controller.bike_resource
-
     if player_controller.state.is_stalled:
         player_controller.state.current_rpm = 0.0
         var should_start = false
@@ -171,13 +170,13 @@ func _update_rpm(delta: float):
     player_controller.state.current_rpm = clamp(player_controller.state.current_rpm, br.idle_rpm, br.max_rpm)
 
 func _get_rpm_ratio() -> float:
-    if player_controller.bike_resource.max_rpm <= player_controller.bike_resource.idle_rpm:
+    if br.max_rpm <= br.idle_rpm:
         return 0.0
-    return (player_controller.state.current_rpm - player_controller.bike_resource.idle_rpm) / (player_controller.bike_resource.max_rpm - player_controller.bike_resource.idle_rpm)
+    return (player_controller.state.current_rpm - br.idle_rpm) / (br.max_rpm - br.idle_rpm)
 
 func _update_auto_shift():
     var rpm_ratio = _get_rpm_ratio()
-    if rpm_ratio >= auto_shift_up_rpm and player_controller.state.current_gear < player_controller.bike_resource.num_gears:
+    if rpm_ratio >= auto_shift_up_rpm and player_controller.state.current_gear < br.num_gears:
         player_controller.state.current_gear += 1
         gear_changed.emit(player_controller.state.current_gear)
     elif rpm_ratio <= auto_shift_down_rpm and player_controller.state.current_gear > 1:
@@ -200,7 +199,6 @@ func get_power_output() -> float:
     var rpm_ratio = _get_rpm_ratio()
     var power_curve = rpm_ratio * (2.0 - rpm_ratio) # Peaks around 75% RPM
 
-    var br := player_controller.bike_resource
     var gear_ratio = br.gear_ratios[player_controller.state.current_gear - 1]
     var base_ratio = br.gear_ratios[br.num_gears - 1]
     var torque_multiplier = gear_ratio / base_ratio
@@ -214,7 +212,6 @@ func get_clutch_engagement() -> float:
 
 
 func get_max_speed_for_gear() -> float:
-    var br := player_controller.bike_resource
     var gear_ratio = br.gear_ratios[player_controller.state.current_gear - 1]
     var lowest_ratio = br.gear_ratios[br.num_gears - 1]
     return br.max_speed * (lowest_ratio / gear_ratio)
