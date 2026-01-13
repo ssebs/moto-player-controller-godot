@@ -48,7 +48,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Simplify UI logic
 - [ ] Simplify bike_state
 - [ ] Simplify camera switching (make it possible for Multiplayer to disable)
-
 - [ ] Fix bugs
 - [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
 - [ ] Fix brake feel (too easy to crash)
