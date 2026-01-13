@@ -1,6 +1,8 @@
 class_name TailLightMod extends BikeComponent
 
-var emission_something
+@onready var mesh: MeshInstance3D = %Mesh
+
+var surface_mat: StandardMaterial3D
 
 func _ready():
     add_to_group("Mods", true)
@@ -8,13 +10,14 @@ func _ready():
 
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
-    print("bike_setup in taillightmod")
+    surface_mat = mesh.get_active_material(0)
+    
 
 func turn_on_light():
-    pass
+    surface_mat.emission_enabled = true
 
 func turn_off_light():
-    pass
+    surface_mat.emission_enabled = false
 
 
 # hack - gets called in _apply_bike_config

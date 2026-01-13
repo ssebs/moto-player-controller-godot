@@ -118,6 +118,8 @@ func _ready():
     bike_crash.respawn_requested.connect(_respawn)
     bike_input.bike_switch_pressed.connect(_switch_bike)
 
+    _respawn()
+
 
 func _physics_process(delta):
     if Engine.is_editor_hint():
@@ -193,6 +195,10 @@ func _respawn():
     bike_ui._bike_reset()
     bike_animation._bike_reset()
     bike_camera._bike_reset()
+
+    for child in get_tree().get_nodes_in_group("Mods"):
+        if child is BikeComponent:
+            child._bike_reset()
 
     # Reset to idle state
     state.player_state = BikeState.PlayerState.IDLE

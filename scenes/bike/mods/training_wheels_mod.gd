@@ -11,12 +11,10 @@ func _ready():
 
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
-    print("bike_setup in trainingwheels")
 
 
 func _bike_update(delta):
     if not player_controller.state:
-        print("no player state in training_wheels_mod update")
         return
 
     # Left wheel lifts when turning right (negative steer), right wheel lifts when turning left (positive steer)
