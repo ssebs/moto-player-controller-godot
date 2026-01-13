@@ -18,36 +18,36 @@ signal combo_expired
 #region Trick Object Definition
 # Trick enum
 enum Trick {
-	NONE,
-	WHEELIE_SITTING,
-	WHEELIE_STANDING,
-	STOPPIE,
-	FISHTAIL,
-	DRIFT,
-	HEEL_CLICKER,
-	BOOST,
+    NONE,
+    WHEELIE_SITTING,
+    WHEELIE_STANDING,
+    STOPPIE,
+    FISHTAIL,
+    DRIFT,
+    HEEL_CLICKER,
+    BOOST,
     KICKFLIP,
 }
 # Trick data configuration
 # base_points: instant score when trick completes
 # points_per_sec: score accumulated per second while trick is active
 const TRICK_DATA: Dictionary[Trick, Dictionary] = {
-	Trick.WHEELIE_SITTING: {"name": "Sitting Wheelie", "base_points": 50, "points_per_sec": 10.0},
-	Trick.WHEELIE_STANDING: {"name": "Standing Wheelie", "base_points": 100, "points_per_sec": 20.0},
-	Trick.STOPPIE: {"name": "Stoppie", "base_points": 75, "points_per_sec": 15.0},
-	Trick.FISHTAIL: {"name": "Fishtail", "base_points": 25, "points_per_sec": 8.0},
-	Trick.DRIFT: {"name": "Drift", "base_points": 50, "points_per_sec": 12.0},
-	Trick.HEEL_CLICKER: {"name": "Heel Clicker", "base_points": 200, "points_per_sec": 50.0},
-	Trick.BOOST: {"name": "Boost", "base_points": 0, "points_per_sec": 25.0, "is_modifier": true},
+    Trick.WHEELIE_SITTING: {"name": "Sitting Wheelie", "base_points": 50, "points_per_sec": 10.0},
+    Trick.WHEELIE_STANDING: {"name": "Standing Wheelie", "base_points": 100, "points_per_sec": 20.0},
+    Trick.STOPPIE: {"name": "Stoppie", "base_points": 75, "points_per_sec": 15.0},
+    Trick.FISHTAIL: {"name": "Fishtail", "base_points": 25, "points_per_sec": 8.0},
+    Trick.DRIFT: {"name": "Drift", "base_points": 50, "points_per_sec": 12.0},
+    Trick.HEEL_CLICKER: {"name": "Heel Clicker", "base_points": 200, "points_per_sec": 50.0},
+    Trick.BOOST: {"name": "Boost", "base_points": 0, "points_per_sec": 25.0, "is_modifier": true},
     Trick.KICKFLIP: {"name": "Kickflip", "base_points": 200, "points_per_sec": 0.0},
 }
 #endregion
 
 # Difficulty score multipliers
 const DIFFICULTY_MULT: Dictionary = {
-	BikeState.PlayerDifficulty.EASY: 0.8,
-	BikeState.PlayerDifficulty.MEDIUM: 1.0,
-	BikeState.PlayerDifficulty.HARD: 1.5,
+    BikeState.PlayerDifficulty.EASY: 0.8,
+    BikeState.PlayerDifficulty.MEDIUM: 1.0,
+    BikeState.PlayerDifficulty.HARD: 1.5,
 }
 
 #region export vars

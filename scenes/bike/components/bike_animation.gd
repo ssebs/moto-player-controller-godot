@@ -4,17 +4,12 @@ class_name BikeAnimation extends BikeComponent
 @export var lean_lerp_speed: float = 5.0
 
 # Local state
-var tail_light_material: StandardMaterial3D = null
 var butt_position_offset: float = 0.0
 
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
     player_controller.state.state_changed.connect(_on_player_state_changed)
-
-    # Setup tail light material reference
-    if player_controller.tail_light:
-        tail_light_material = player_controller.tail_light.get_surface_override_material(0)
 
     # Connect to input signals
     player_controller.bike_input.front_brake_changed.connect(_on_front_brake_changed)
@@ -156,8 +151,10 @@ func _update_training_wheels_visibility():
             player_controller.training_wheels.hide()
 
 func _update_brake_light(value: float):
-    if tail_light_material:
-        tail_light_material.emission_enabled = value > 0.01
+    if value > 0.01:
+        player_controller.tail_light.turn_on_light()
+    else:
+        player_controller.tail_light.turn_off_light()
 
 func _rotate_around_pivot(node: Node3D, pivot: Vector3, axis: Vector3):
     var t = node.transform

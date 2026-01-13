@@ -21,6 +21,13 @@
     - `_bike_update()` called in `_physics_process()` from main script
     - `_bike_reset()` - reset to default values for respawning
 
+- Mods:
+  - player_controler's _save_mod_targets_to_config saves target transforms.
+  - Load them in the mod's script in _bike_reset
+  - see tail_light_mod
+  - Make sure to call `add_to_group("Mods", true)` in _ready
+
+
 ## Player State Machine
 
 The bike uses an enum-based state machine defined in `BikeState`:

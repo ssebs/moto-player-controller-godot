@@ -36,6 +36,17 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
+- [ ] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod
+  - [ ] Move brakelight to "essentialmods", and add position/rotation params
+
+- [ ] fix bug
+E 0:00:16:063   BikeTricks._update_skidding: Invalid access to property or key 'max_steering_angle' on a base object of type 'Node3D (BikePhysics)'.
+  <GDScript Source>bike_tricks.gd:367 @ BikeTricks._update_skidding()
+  <Stack Trace> bike_tricks.gd:367 @ _update_skidding()
+                bike_tricks.gd:202 @ _update_riding()
+                bike_tricks.gd:149 @ _bike_update()
+                player_controller.gd:142 @ _physics_process()
+- [ ] add emission on brake light
 
 ## TODO:
 
@@ -47,13 +58,12 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Simplify UI logic
 - [ ] Simplify bike_state
 - [ ] Simplify camera switching (make it possible for Multiplayer to disable)
-- [ ] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod
-  - [ ] Move brakelight to "essentialmods", and add position/rotation params
+
 - [ ] Fix bugs
 - [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
 - [ ] Fix brake feel (too easy to crash)
-  - [ ] Speed carries over even when crashing into collider
-- [ ] Cleanup animations / add some polish.
+- [ ] Speed carries over even when crashing into collider
+- [ ] Cleanup animations / add some polish
 
 ## Done:
 - [x] update_fov_from_speed

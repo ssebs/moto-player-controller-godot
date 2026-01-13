@@ -23,6 +23,11 @@ class_name BikeResource extends Resource
 @export var front_wheel_position: Vector3
 @export var rear_wheel_position: Vector3
 
+# Mod transforms
+@export var taillight_transform: Transform3D
+@export var left_training_wheel_transform: Transform3D
+@export var right_training_wheel_transform: Transform3D
+
 # Animation
 @export var animation_library_name: String = "sport_bike"
 

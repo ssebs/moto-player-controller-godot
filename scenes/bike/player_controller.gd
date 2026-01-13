@@ -10,8 +10,10 @@ class_name PlayerController extends CharacterBody3D
 
 # TODO: move to bike_mods
 @onready var bike_mods: Node3D = %BikeMods
-@onready var tail_light: MeshInstance3D = %TailLight
+@onready var tail_light: Node3D = %TailLight
 @onready var training_wheels: Node3D = %TrainingWheels
+@onready var left_training_wheel: Node3D = %LeftTrainingWheel
+@onready var right_training_wheel: Node3D = %RightTrainingWheel
 
 @onready var riding_cam_position: Node3D = %RidingCamPosition
 @onready var crash_cam_position: Node3D = %CrashCamPosition
@@ -72,6 +74,7 @@ class_name PlayerController extends CharacterBody3D
 @export var invert_camera_y: bool = false
 var bike_resource: BikeResource
 
+@export_tool_button("Save Mod transforms to bike_resource") var save_mods_btn = _save_mod_targets_to_config
 @export_tool_button("Save IK Targets to bike_resource") var save_ik_btn = _save_ik_targets_to_config
 @export_tool_button("Save IK Targets to RESET Animation") var save_reset_btn = _save_ik_targets_to_reset
 @export_tool_button("Set All Animations first frame to RESET") var init_anims_btn = _init_all_anims_from_reset
@@ -108,8 +111,8 @@ func _ready():
     bike_camera._bike_setup(self)
 
     # Mods
-    for child in bike_mods.get_children(true):
-        if child is TrainingWheelsMod:
+    for child in get_tree().get_nodes_in_group("Mods"):
+        if child is BikeComponent:
             child._bike_setup(self)
 
     bike_crash.respawn_requested.connect(_respawn)
@@ -148,6 +151,10 @@ func _physics_process(delta):
 
     # Align to ground & bike_mesh rotation
     bike_animation._bike_update(delta)
+
+    for child in get_tree().get_nodes_in_group("Mods"):
+        if child is BikeComponent:
+            child._bike_update(delta)
 
 func _update_player_state():
     # Don't auto-transition out of crash states - they have explicit exits
@@ -209,8 +216,15 @@ func _apply_bike_config():
     _apply_ik_targets()
 
     # Apply wheel marker positions
-    front_wheel.position = bike_resource.front_wheel_position
-    rear_wheel.position = bike_resource.rear_wheel_position
+    if front_wheel != null and rear_wheel != null:
+        # TODO: see _save_mod_targets_to_config
+        front_wheel.position = bike_resource.front_wheel_position
+        rear_wheel.position = bike_resource.rear_wheel_position
+    
+    # Apply mods
+    for child in get_tree().get_nodes_in_group("Mods"):
+        if child is BikeComponent:
+            child._bike_reset()
 
     # Apply audio tracks
     engine_sound.stream = bike_resource.engine_sound_stream
@@ -270,6 +284,26 @@ func _save_ik_targets_to_config():
     bike_resource.left_leg_target_rotation = targets.get_node("LeftLegTarget").rotation
     bike_resource.right_leg_target_position = targets.get_node("RightLegTarget").position
     bike_resource.right_leg_target_rotation = targets.get_node("RightLegTarget").rotation
+
+    var err = ResourceSaver.save(bike_resource, bike_resource.resource_path)
+    if err != OK:
+        push_error("Failed to save bike_resource: %s" % err)
+    else:
+        print("Saved IK targets to: %s" % bike_resource.resource_path)
+#endregion
+
+## Save Mods position/rotation to bike_resource's file
+# See mods/*mod.gd's _bike_reset
+func _save_mod_targets_to_config():
+    if !bike_resource:
+        push_error("No bike_resource assigned")
+        return
+
+
+    bike_resource.taillight_transform = tail_light.transform
+    bike_resource.left_training_wheel_transform = left_training_wheel.transform
+    bike_resource.right_training_wheel_transform = right_training_wheel.transform
+
 
     var err = ResourceSaver.save(bike_resource, bike_resource.resource_path)
     if err != OK:
