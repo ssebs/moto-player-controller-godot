@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbwrfuqbnho7o"]
+
+[ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="1_g41l3"]
+[ext_resource type="ArrayMesh" uid="uid://lsggbfk62ux8" path="res://scenes/bike/models/sportbike_mesh.tres" id="2_cnfsl"]
+
+[node name="Sportbike" instance=ExtResource("1_g41l3")]
+transform = Transform3D(0.018, 0, 0, 0, 0.018, 0, 0, 0, 0.018, 0, 0, 0)
+
+[node name="Motorcycle" parent="." index="0"]
+mesh = ExtResource("2_cnfsl")

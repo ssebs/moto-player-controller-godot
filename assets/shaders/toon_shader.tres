@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://rrycgnvw83uc"]
+
+[ext_resource type="Shader" uid="uid://dnexs01m77vqg" path="res://assets/shaders/toon.gdshader" id="1_ntn34"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_ntn34")
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/shadow = 0.5
+shader_parameter/shadow_width = 0.0
+shader_parameter/shadow_color = Color(0.705, 0.705, 0.705, 0.705)
+shader_parameter/_specular_smoothness = 0.01
+shader_parameter/_specular_strength = 0.075
+shader_parameter/_glossiness = 0.1
+shader_parameter/_rim_size = 0.5
+shader_parameter/_rim_smoothness = 0.01

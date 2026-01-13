@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" uid="uid://d1bbnsiw21th1" path="res://scenes/bike/resources/bike_resource.gd" id="1_7beja"]
 [ext_resource type="AudioStream" uid="uid://dn6ey2jxm33vt" path="res://assets/sounds/motorcycle-stable-rpm.ogg" id="1_wl44a"]
-[ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="2_mesh"]
+[ext_resource type="PackedScene" uid="uid://bbwrfuqbnho7o" path="res://scenes/bike/models/sportbike.tscn" id="2_k44ib"]
 
 [resource]
 script = ExtResource("1_7beja")
-mesh_scene = ExtResource("2_mesh")
+mesh_scene = ExtResource("2_k44ib")
 mesh_scale = Vector3(0.018, 0.018, 0.018)
 head_target_position = Vector3(-1.3219673e-07, 1.452965, 0.39370275)
 head_target_rotation = Vector3(0.43134058, 1.4476901e-08, 7.8451706e-08)

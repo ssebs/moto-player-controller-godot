@@ -142,3 +142,26 @@ switch_bike={
 
 anti_aliasing/quality/screen_space_aa=1
 occlusion_culling/use_occlusion_culling=true
+
+[shader_globals]
+
+specular_smoothness={
+"type": "float",
+"value": 0.0
+}
+fresnel_smoothness={
+"type": "float",
+"value": 0.0
+}
+outline_width={
+"type": "float",
+"value": 0.0
+}
+outline_color={
+"type": "color",
+"value": Color(0, 0, 0, 1)
+}
+diffuse_curve={
+"type": "sampler2D",
+"value": "res://assets/shaders/gradient_tex_for_toon_shader.tres"
+}

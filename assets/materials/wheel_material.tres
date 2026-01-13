@@ -1,6 +1,20 @@
-[gd_resource type="StandardMaterial3D" format=3 uid="uid://bhopjocmujp43"]
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://bhopjocmujp43"]
+
+[ext_resource type="Shader" uid="uid://ccuunse2eieo1" path="res://assets/shaders/cel-shader-base.gdshader" id="1_wg1tf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_00tvq"]
+render_priority = 0
+shader = ExtResource("1_wg1tf")
+shader_parameter/emission = Color(0, 0, 0, 1)
+shader_parameter/emission_energy = 1.0
+shader_parameter/color = Color(0.31, 0.31, 0.31, 1)
+shader_parameter/specular = Color(1, 1, 1, 0.5019608)
+shader_parameter/fresnel = Color(0.2, 0.2, 0.2, 0.3)
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
 
 [resource]
+next_pass = SubResource("ShaderMaterial_00tvq")
 albedo_color = Color(0.3515629, 0.35156292, 0.35156274, 1)
 metallic = 0.4
 roughness = 0.4

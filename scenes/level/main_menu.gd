@@ -13,6 +13,12 @@ func _ready() -> void:
 	city_level_btn.pressed.connect(_on_city_level_pressed)
 	race_track_level_btn.pressed.connect(_on_race_track_level_pressed)
 
+func _input(event):
+	if event.is_action_pressed("brake_rear"):
+		_on_city_level_pressed()
+	if event.is_action_pressed("gear_up"):
+		_on_race_track_level_pressed()
+	
 
 func _on_city_level_pressed() -> void:
 	get_tree().change_scene_to_packed(levels[0])
