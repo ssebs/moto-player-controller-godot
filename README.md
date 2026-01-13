@@ -36,7 +36,9 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-
+- [ ] bike_component #regions, just these remaining:
+  - [ ] bike_tricks
+  - [ ] bike_ui
 ## TODO:
 
 - [ ] Simplify physics logic
@@ -44,6 +46,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Simplify crash checks logic
 - [ ] Simplify state machines logic
 - [ ] Simplify UI logic
+- [ ] Simplify bike_state
 - [ ] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod
   - [ ] Move brakelight to "essentialmods", and add position/rotation params
 - [ ] Fix bugs

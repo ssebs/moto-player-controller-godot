@@ -10,6 +10,7 @@ var butt_position_offset: float = 0.0
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
+    player_controller.state.state_changed.connect(_on_player_state_changed)
 
     # Setup tail light material reference
     if player_controller.tail_light:
@@ -27,9 +28,6 @@ func _bike_setup(p_controller: PlayerController):
     # Connect to trick signals for animations
     player_controller.bike_tricks.trick_started.connect(_on_trick_started)
     player_controller.bike_tricks.trick_ended.connect(_on_trick_ended)
-
-    # Connect to player state changes
-    player_controller.state.state_changed.connect(_on_player_state_changed)
     
     _update_training_wheels_visibility()
 
@@ -47,7 +45,6 @@ func _bike_reset():
     butt_position_offset = 0.0
     player_controller.anim_player.stop()
     _update_bike_root_rotation(player_controller.state.lean_angle + player_controller.state.fall_angle)
-#endregion
 
 func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
     # Handle state exit
@@ -73,6 +70,8 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
         BikeState.PlayerState.CRASHED:
             # Could show "press to respawn" animation
             pass
+
+#endregion
 
 #region input handlers 
 func _on_front_brake_changed(value: float):

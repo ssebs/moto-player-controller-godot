@@ -21,12 +21,14 @@ var crash_lean_direction: float = 0.0
 var _ragdoll_stopped: bool = false
 var _ragdoll_stop_time: float = 0.0
 
+# TODO: cleanup _trigger_collision_crash and _check_collision_crash
 
+#region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
+    player_controller.state.state_changed.connect(_on_player_state_changed)
 
-    _switch_to_riding_camera()
-
+    switch_to_riding_camera()
 
 func _bike_update(delta):
     if player_controller.state.player_state == BikeState.PlayerState.CRASHING or player_controller.state.player_state == BikeState.PlayerState.CRASHED:
@@ -34,35 +36,33 @@ func _bike_update(delta):
         return
 
     if player_controller.is_on_floor():
-        check_crash_conditions(delta)
+        _check_crash_conditions(delta)
     _check_collision_crash()
 
+func _bike_reset():
+    crash_timer = 0.0
+    crash_pitch_direction = 0.0
+    crash_lean_direction = 0.0
+    _ragdoll_stopped = false
+    _ragdoll_stop_time = 0.0
+    switch_to_riding_camera()
+    respawned.emit()
 
-func _check_collision_crash():
-    if player_controller.state.player_state == BikeState.PlayerState.CRASHING or player_controller.state.player_state == BikeState.PlayerState.CRASHED:
+#endregion
+
+func _update_crash_state(delta):
+    crash_timer += delta
+    # Allow pause input to force respawn immediately
+    if Input.is_action_just_pressed("pause"):
+        _do_respawn()
         return
+    
+    _update_ragdoll(delta)
+    
+    # TODO: bike crash physics
 
-    for i in player_controller.get_slide_collision_count():
-        var collision = player_controller.get_slide_collision(i)
-        var collider = collision.get_collider()
-
-        # Check if collider is on layer 2 (bit 1)
-        var is_crash_layer = false
-        if collider is CollisionObject3D:
-            is_crash_layer = collider.get_collision_layer_value(2)
-        elif collider is CSGShape3D and collider.use_collision:
-            is_crash_layer = (collider.collision_layer & 2) != 0
-
-        if is_crash_layer:
-            var normal = collision.get_normal()
-            if player_controller.state.speed > 5:
-                var local_normal = player_controller.global_transform.basis.inverse() * normal
-                trigger_collision_crash(local_normal)
-                return
-
-
-func check_crash_conditions(_delta) -> String:
-    """Returns crash reason or empty string if no crash"""
+## Returns crash reason or empty string if no crash. Sets: crash_reason, crash_pitch_direction, crash_lean_direction
+func _check_crash_conditions(_delta) -> String:
     var crash_reason = ""
 
     # Wheelie too far
@@ -100,33 +100,52 @@ func check_crash_conditions(_delta) -> String:
 
     return crash_reason
 
-
-func trigger_crash():
-    player_controller.state.request_state_change(BikeState.PlayerState.CRASHING)
-    crash_timer = 0.0
-
-    # Speed reduction for lowside crashes
-    if is_lowside_crash():
-        player_controller.state.speed *= 0.7
-
-    crashed.emit(crash_pitch_direction, crash_lean_direction)
-
-
-func _update_crash_state(delta):
-    crash_timer += delta
-    # Allow pause input to force respawn immediately
-    if Input.is_action_just_pressed("pause"):
-        _do_respawn()
+func _check_collision_crash():
+    if player_controller.state.player_state == BikeState.PlayerState.CRASHING or player_controller.state.player_state == BikeState.PlayerState.CRASHED:
         return
-    
-    _update_ragdoll(delta)
-    
-    # TODO: bike crash physics
+
+    for i in player_controller.get_slide_collision_count():
+        var collision = player_controller.get_slide_collision(i)
+        var collider = collision.get_collider()
+
+        # Check if collider is on layer 2 (bit 1)
+        var is_crash_layer = false
+        if collider is CollisionObject3D:
+            is_crash_layer = collider.get_collision_layer_value(2)
+        elif collider is CSGShape3D and collider.use_collision:
+            is_crash_layer = (collider.collision_layer & 2) != 0
+
+        if is_crash_layer:
+            var normal = collision.get_normal()
+            if player_controller.state.speed > 5:
+                var local_normal = player_controller.global_transform.basis.inverse() * normal
+                _trigger_collision_crash(local_normal)
+                return
+## Trigger crash from hitting an obstacle
+func _trigger_collision_crash(collision_normal: Vector3):
+    # Determine crash direction from collision normal
+    var local_normal = collision_normal
+
+    # If hit from front, flip over handlebars
+    if local_normal.z > 0.5:
+        crash_pitch_direction = -1
+        crash_lean_direction = 0
+    # If hit from side, lowside in that direction
+    elif abs(local_normal.x) > 0.3:
+        crash_pitch_direction = 0
+        crash_lean_direction = sign(local_normal.x)
+    # Otherwise default to forward flip
+    else:
+        crash_pitch_direction = -1
+        crash_lean_direction = 0
+
+    trigger_crash()
+
 
 func _update_ragdoll(delta):
     if not player_controller.character_mesh.is_ragdoll:
         player_controller.character_mesh.start_ragdoll(player_controller.velocity, 0.5)
-    _switch_to_crash_camera()
+    switch_to_crash_camera()
 
     # Smoothly follow ragdoll hips position
     var hips_bone = player_controller.character_mesh.ragdoll_bones.get_node("Physical Bone mixamorig6_Hips")
@@ -166,42 +185,21 @@ func _do_respawn():
     respawn_requested.emit()
 
 
-func is_lowside_crash() -> bool:
-    return crash_lean_direction != 0 and crash_pitch_direction == 0
-
-
-func trigger_collision_crash(collision_normal: Vector3):
-    """Trigger crash from hitting an obstacle"""
-    # Determine crash direction from collision normal
-    var local_normal = collision_normal
-
-    # If hit from front, flip over handlebars
-    if local_normal.z > 0.5:
-        crash_pitch_direction = -1
-        crash_lean_direction = 0
-    # If hit from side, lowside in that direction
-    elif abs(local_normal.x) > 0.3:
-        crash_pitch_direction = 0
-        crash_lean_direction = sign(local_normal.x)
-    # Otherwise default to forward flip
-    else:
-        crash_pitch_direction = -1
-        crash_lean_direction = 0
-
-    trigger_crash()
-
-func _bike_reset():
+#region public funcs
+func trigger_crash():
+    player_controller.state.request_state_change(BikeState.PlayerState.CRASHING)
     crash_timer = 0.0
-    crash_pitch_direction = 0.0
-    crash_lean_direction = 0.0
-    _ragdoll_stopped = false
-    _ragdoll_stop_time = 0.0
-    _switch_to_riding_camera()
-    respawned.emit()
 
+    # Speed reduction for lowside crashes
+    if crash_lean_direction != 0 and crash_pitch_direction == 0:
+        player_controller.state.speed *= 0.7
 
-func _switch_to_crash_camera():
+    crashed.emit(crash_pitch_direction, crash_lean_direction)
+
+func switch_to_crash_camera():
     player_controller.crashing_camera.make_current()
 
-func _switch_to_riding_camera():
+func switch_to_riding_camera():
     player_controller.riding_camera.make_current()
+
+#endregion

@@ -12,8 +12,10 @@ var has_started_moving: bool = false
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 
+#region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
+    player_controller.state.state_changed.connect(_on_player_state_changed)
 
     brake_stopped.connect(_on_brake_stopped)
 
@@ -31,46 +33,56 @@ func _bike_update(delta):
         BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
             pass # Handled by crash system
 
+func _bike_reset():
+    player_controller.state.speed = 0.0
+    player_controller.state.fall_angle = 0.0
+    has_started_moving = false
+    player_controller.state.steering_angle = 0.0
+    player_controller.state.lean_angle = 0.0
 
+#endregion
+
+#region update based on state
 func _update_idle(delta):
     # Keep bike stable at rest, handle braking to full stop
     player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, 0, player_controller.bike_resource.fall_rate * 2.0 * delta)
-    handle_acceleration(
+    _handle_acceleration(
         delta,
         player_controller.bike_gearing.get_power_output(),
         player_controller.bike_gearing.get_max_speed_for_gear(),
         player_controller.bike_tricks.is_front_wheel_locked()
     )
-    align_to_ground(delta)
+    _align_to_ground(delta)
 
 
 func _update_riding(delta):
     # Normal riding physics
-    handle_acceleration(
+    _handle_acceleration(
         delta,
         player_controller.bike_gearing.get_power_output(),
         player_controller.bike_gearing.get_max_speed_for_gear(),
         player_controller.bike_tricks.is_front_wheel_locked()
     )
-    handle_steering(delta)
-    update_lean(delta)
-    handle_fall_physics(delta)
-    check_brake_stop()
-    align_to_ground(delta)
+    _handle_steering(delta)
+    _update_lean(delta)
+    _handle_fall_physics(delta)
+    _check_brake_stop()
+    _align_to_ground(delta)
 
 
 func _update_airborne(delta):
     # In air - can shift weight but no ground physics
-    update_lean(delta)
+    _update_lean(delta)
     # Gravity is handled in apply_movement()
 
 
 func _update_trick_ground(delta):
     # Same as riding - wheelie/stoppie physics handled by BikeTricks
     _update_riding(delta)
+#endregion
 
 
-func handle_acceleration(delta, power_output: float, gear_max_speed: float,
+func _handle_acceleration(delta, power_output: float, gear_max_speed: float,
                            front_wheel_locked: bool = false):
     var br := player_controller.bike_resource
     # Apply boost multiplier to max speed
@@ -105,7 +117,7 @@ func handle_acceleration(delta, power_output: float, gear_max_speed: float,
         player_controller.state.speed = move_toward(player_controller.state.speed, 0, drag * delta)
 
 
-func handle_fall_physics(delta):
+func _handle_fall_physics(delta):
     """
     Fall physics with speed-based stability curve:
     - Below stability_speed: bike falls over (low speed wobble)
@@ -122,11 +134,10 @@ func handle_fall_physics(delta):
     # pull upright if speed increases
     player_controller.state.fall_angle = move_toward(player_controller.state.fall_angle, 0, player_controller.bike_resource.fall_rate * 2.0 * delta)
 
-func apply_fishtail_friction(_delta, fishtail_speed_loss: float):
+func _apply_fishtail_friction(_delta, fishtail_speed_loss: float):
     player_controller.state.speed = move_toward(player_controller.state.speed, 0, fishtail_speed_loss)
 
-
-func check_brake_stop():
+func _check_brake_stop():
     if !player_controller.state:
         return
 
@@ -141,13 +152,14 @@ func check_brake_stop():
         brake_stopped.emit()
 
 
+# TODO: remove me
 func apply_gravity(delta, velocity: Vector3, is_on_floor: bool) -> Vector3:
     if !is_on_floor:
         velocity.y -= gravity * delta
     return velocity
 
 
-func handle_steering(delta):
+func _handle_steering(delta):
     """
     Countersteering: lean angle induces automatic steering in that direction.
     When you lean right, the bike naturally steers right (turns into the lean).
@@ -184,7 +196,7 @@ func handle_steering(delta):
     player_controller.state.steering_angle = lerpf(player_controller.state.steering_angle, target_steer, br.steering_speed * delta)
 
 
-func update_lean(delta):
+func _update_lean(delta):
     """
     Visual lean angle based on steering and player input.
     Fall angle is added separately in mesh rotation.
@@ -204,18 +216,12 @@ func update_lean(delta):
     player_controller.state.lean_angle = lerpf(player_controller.state.lean_angle, target_lean, br.lean_speed * delta)
 
 
-func get_turn_rate() -> float:
+func _get_turn_rate() -> float:
     var br := player_controller.bike_resource
     var speed_pct = player_controller.state.speed / br.max_speed
     var turn_radius = lerpf(br.min_turn_radius, br.max_turn_radius, speed_pct)
     return br.turn_speed / turn_radius
-
-
-func is_turning() -> bool:
-    return abs(player_controller.state.steering_angle) > 0.2
-
-
-func align_to_ground(delta):
+func _align_to_ground(delta):
     if player_controller.is_on_floor():
         var floor_normal = player_controller.get_floor_normal()
         var forward_dir = - player_controller.global_transform.basis.z
@@ -225,32 +231,27 @@ func align_to_ground(delta):
     else:
         player_controller.state.ground_pitch = lerp(player_controller.state.ground_pitch, 0.0, ground_align_speed * 0.5 * delta)
 
+func _on_brake_stopped():
+    _bike_reset()
+    player_controller.velocity = Vector3.ZERO
+
+#region public funcs
+func is_turning() -> bool:
+    return abs(player_controller.state.steering_angle) > 0.2
 
 func apply_movement(delta):
     var forward = - player_controller.global_transform.basis.z
 
     if player_controller.state.speed > 0.5:
-        var turn_rate = get_turn_rate()
+        var turn_rate = _get_turn_rate()
         player_controller.rotate_y(-player_controller.state.steering_angle * turn_rate * delta)
 
         if abs(player_controller.state.fishtail_angle) > 0.01:
             player_controller.rotate_y(player_controller.state.fishtail_angle * delta * 1.5)
-            apply_fishtail_friction(delta, player_controller.bike_tricks.get_fishtail_speed_loss(delta))
+            _apply_fishtail_friction(delta, player_controller.bike_tricks.get_fishtail_speed_loss(delta))
 
     var vertical_velocity = player_controller.velocity.y
     player_controller.velocity = forward * player_controller.state.speed
     player_controller.velocity.y = vertical_velocity
     player_controller.velocity = apply_gravity(delta, player_controller.velocity, player_controller.is_on_floor())
-
-
-func _on_brake_stopped():
-    _bike_reset()
-    player_controller.velocity = Vector3.ZERO
-
-
-func _bike_reset():
-    player_controller.state.speed = 0.0
-    player_controller.state.fall_angle = 0.0
-    has_started_moving = false
-    player_controller.state.steering_angle = 0.0
-    player_controller.state.lean_angle = 0.0
+#endregion

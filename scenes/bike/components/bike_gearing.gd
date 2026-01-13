@@ -23,6 +23,8 @@ var br: BikeResource # Cached reference for brevity
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
+    player_controller.state.state_changed.connect(_on_player_state_changed)
+
     br = player_controller.bike_resource
 
     player_controller.bike_input.clutch_held_changed.connect(_on_clutch_input)

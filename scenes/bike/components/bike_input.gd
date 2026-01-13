@@ -1,5 +1,6 @@
 class_name BikeInput extends BikeComponent
 
+#region signals & state vars
 signal throttle_changed(value: float)
 signal front_brake_changed(value: float)
 signal rear_brake_changed(value: float)
@@ -51,14 +52,21 @@ var trick: bool = false:
 		if trick != value:
 			trick = value
 			trick_changed.emit(value)
+#endregion
 
+#region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
 	player_controller = p_controller
+	player_controller.state.state_changed.connect(_on_player_state_changed)
+
 	# TODO: MP check for authority
 
 func _bike_update(_delta):
 	_update_input()
 
+func _bike_reset():
+	stop_vibration()
+#endregion
 
 func _update_input():
 	throttle = Input.get_action_strength("throttle_pct")
@@ -86,7 +94,7 @@ func _update_input():
 	if Input.is_action_just_pressed("switch_bike"):
 		bike_switch_pressed.emit()
 
-
+#region public funcs
 func add_vibration(weak: float, strong: float):
 	"""Add vibration intensity from external sources. Call this each frame vibration is needed."""
 	if weak > 0.01 or strong > 0.01:
@@ -102,6 +110,4 @@ func has_input() -> bool:
 	"""Returns true if any significant input is being applied"""
 	return throttle > 0.1 or front_brake > 0.1 or rear_brake > 0.1
 
-
-func _bike_reset():
-	stop_vibration()
+#endregion

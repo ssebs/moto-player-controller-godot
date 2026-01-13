@@ -18,8 +18,8 @@ var exhaust_pop_timer: float = 0.0
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
-
     player_controller.state.state_changed.connect(_on_player_state_changed)
+
     player_controller.bike_crash.crashed.connect(_on_crashed)
 
     # Gearing signals
@@ -46,7 +46,6 @@ func _bike_reset():
     _stop_tire_screech()
     _stop_exhaust_pops()
     _stop_nos()
-#endregion
 
 func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
     # Handle state exit
@@ -61,6 +60,7 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
         BikeState.PlayerState.CRASHED:
             _stop_tire_screech()
 
+#endregion
 
 #region signal handlers
 
