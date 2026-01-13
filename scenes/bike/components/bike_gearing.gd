@@ -5,7 +5,6 @@ signal engine_stalled
 signal engine_started
 signal gear_grind # Tried to shift without clutch
 
-
 # Local config (not in BikeResource)
 @export var gear_shift_threshold: float = 0.2 # Clutch value needed to shift
 @export var auto_shift_up_rpm: float = 0.85 # RPM ratio to shift up
@@ -37,10 +36,10 @@ func _bike_update(delta):
             return
         _:
             # Engine runs normally in all other states
-            update_clutch(delta)
-            update_rpm(delta)
+            _update_clutch(delta)
+            _update_rpm(delta)
             # Cache RPM ratio for other components to use
-            player_controller.state.rpm_ratio = get_rpm_ratio()
+            player_controller.state.rpm_ratio = _get_rpm_ratio()
             # Auto-shift during boost or easy mode
             if player_controller.state.is_boosting or player_controller.state.isEasyDifficulty():
                 _update_auto_shift()
@@ -58,7 +57,7 @@ func _on_clutch_input(held: bool, just_pressed: bool):
     clutch_held = held
     clutch_just_pressed = just_pressed
 
-
+## emits gear_changed or gear_grind
 func _on_gear_up():
     # Easy mode: auto-shift handles this, ignore manual input
     if player_controller.state.isEasyDifficulty():
@@ -72,7 +71,7 @@ func _on_gear_up():
     else:
         gear_grind.emit()
 
-
+## emits gear_changed or gear_grind
 func _on_gear_down():
     # Easy mode: auto-shift handles this, ignore manual input
     if player_controller.state.isEasyDifficulty():
@@ -87,7 +86,10 @@ func _on_gear_down():
         gear_grind.emit()
 #endregion
 
-func update_clutch(delta: float):
+#region clutch, rpm, and shifting fun
+
+## sets player_controller.state.clutch_value
+func _update_clutch(delta: float):
     var br := player_controller.bike_resource
     if clutch_held:
         clutch_hold_time += delta
@@ -102,20 +104,8 @@ func update_clutch(delta: float):
         # Release: slowly let clutch out
         player_controller.state.clutch_value = move_toward(player_controller.state.clutch_value, 0.0, br.clutch_release_speed * delta)
 
-
-func get_clutch_engagement() -> float:
-    """Returns 0-1 where 0 = clutch pulled in (disengaged), 1 = clutch released (engaged to wheel)"""
-    return 1.0 - player_controller.state.clutch_value
-
-
-func get_max_speed_for_gear() -> float:
-    var br := player_controller.bike_resource
-    var gear_ratio = br.gear_ratios[player_controller.state.current_gear - 1]
-    var lowest_ratio = br.gear_ratios[br.num_gears - 1]
-    return br.max_speed * (lowest_ratio / gear_ratio)
-
-
-func update_rpm(delta: float):
+## does way too much, but: sets player_controller.state.current_rpm, emits engine_started/stalled
+func _update_rpm(delta: float):
     var br := player_controller.bike_resource
 
     if player_controller.state.is_stalled:
@@ -180,25 +170,24 @@ func update_rpm(delta: float):
 
     player_controller.state.current_rpm = clamp(player_controller.state.current_rpm, br.idle_rpm, br.max_rpm)
 
-func get_rpm_ratio() -> float:
-    var br := player_controller.bike_resource
-    if br.max_rpm <= br.idle_rpm:
+func _get_rpm_ratio() -> float:
+    if player_controller.bike_resource.max_rpm <= player_controller.bike_resource.idle_rpm:
         return 0.0
-    return (player_controller.state.current_rpm - br.idle_rpm) / (br.max_rpm - br.idle_rpm)
-
+    return (player_controller.state.current_rpm - player_controller.bike_resource.idle_rpm) / (player_controller.bike_resource.max_rpm - player_controller.bike_resource.idle_rpm)
 
 func _update_auto_shift():
-    var rpm_ratio = get_rpm_ratio()
+    var rpm_ratio = _get_rpm_ratio()
     if rpm_ratio >= auto_shift_up_rpm and player_controller.state.current_gear < player_controller.bike_resource.num_gears:
         player_controller.state.current_gear += 1
         gear_changed.emit(player_controller.state.current_gear)
     elif rpm_ratio <= auto_shift_down_rpm and player_controller.state.current_gear > 1:
         player_controller.state.current_gear -= 1
         gear_changed.emit(player_controller.state.current_gear)
+#endregion
 
-
+#region public funcs
+## Returns power multiplier (0-1) based on current RPM and gear
 func get_power_output() -> float:
-    """Returns power multiplier based on current RPM and gear"""
     if player_controller.state.is_stalled:
         return 0.0
 
@@ -208,7 +197,7 @@ func get_power_output() -> float:
     elif engagement < 0.05:
         return 0.0
 
-    var rpm_ratio = get_rpm_ratio()
+    var rpm_ratio = _get_rpm_ratio()
     var power_curve = rpm_ratio * (2.0 - rpm_ratio) # Peaks around 75% RPM
 
     var br := player_controller.bike_resource
@@ -219,7 +208,18 @@ func get_power_output() -> float:
     var effective_throttle = player_controller.bike_tricks.get_boosted_throttle(player_controller.bike_input.throttle)
     return effective_throttle * power_curve * torque_multiplier * engagement
 
+func get_clutch_engagement() -> float:
+    """Returns 0-1 where 0 = clutch pulled in (disengaged), 1 = clutch released (engaged to wheel)"""
+    return 1.0 - player_controller.state.clutch_value
+
+
+func get_max_speed_for_gear() -> float:
+    var br := player_controller.bike_resource
+    var gear_ratio = br.gear_ratios[player_controller.state.current_gear - 1]
+    var lowest_ratio = br.gear_ratios[br.num_gears - 1]
+    return br.max_speed * (lowest_ratio / gear_ratio)
 
 func is_clutch_dump(last_clutch: float) -> bool:
     """Returns true if clutch was just dumped while revving"""
     return last_clutch > 0.7 and player_controller.state.clutch_value < 0.3 and player_controller.bike_input.throttle > 0.5
+#endregion

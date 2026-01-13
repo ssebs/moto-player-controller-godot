@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="BikeResource" load_steps=4 format=3 uid="uid://dcjfcorrb2vtt"]
 
 [ext_resource type="Script" uid="uid://d1bbnsiw21th1" path="res://scenes/bike/resources/bike_resource.gd" id="1_dwgpo"]
-[ext_resource type="AudioStream" uid="uid://dn6ey2jxm33vt" path="res://assets/sounds/motorcycle-stable-rpm.ogg" id="1_wl44a"]
+[ext_resource type="AudioStream" uid="uid://bsf4wtttontul" path="res://assets/sounds/engine-47745.mp3" id="1_qo6tk"]
 [ext_resource type="PackedScene" uid="uid://bkehfbgcj2elg" path="res://assets/bikes/GoogleMotorcycleSportbike.glb" id="2_mesh"]
 
 [resource]
@@ -21,8 +21,8 @@ left_leg_target_rotation = Vector3(-0.9147987, -0.16730168, -3.0440352)
 right_leg_target_position = Vector3(-0.199, 0.29, -0.019)
 right_leg_target_rotation = Vector3(-0.914553, -0.20148091, -3.0438542)
 animation_library_name = "pocket_bike"
-engine_sound_stream = ExtResource("1_wl44a")
-engine_sound_volume_db = -30.0
+engine_sound_stream = ExtResource("1_qo6tk")
+engine_sound_volume_db = -20.0
 max_speed = 60.0
 acceleration = 6.0
 countersteer_factor = 0.5
