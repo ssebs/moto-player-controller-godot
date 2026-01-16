@@ -53,6 +53,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Idle => Riding animation + turning snappy
 - [ ] Fix bugs
 - [ ] Add back countersteering
+- [ ] first person camera
 
 ## Done:
 
