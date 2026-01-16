@@ -22,8 +22,8 @@ class_name IKCharacterMesh extends Node3D
 @export var right_leg_magnet: Vector3 = Vector3(-0.1, 0, 1)
 
 # Ragdoll velocity limits
-@export var max_bone_linear_velocity: float = 100.0
-@export var max_bone_angular_velocity: float = 50.0
+@export var max_bone_linear_velocity: float = 50.0
+@export var max_bone_angular_velocity: float = 10.0
 
 
 # IK nodes
@@ -63,10 +63,11 @@ func start_ragdoll(initial_velocity: Vector3 = Vector3.ZERO, velocity_scale: flo
     is_ragdoll = true
     ragdoll_bones.physical_bones_start_simulation()
 
-    # Apply scaled velocity to all physical bones
+    # Apply scaled velocity to all physical bones, zero angular to prevent constraint explosion
     for child in ragdoll_bones.get_children():
         if child is PhysicalBone3D:
             child.linear_velocity = initial_velocity * velocity_scale
+            child.angular_velocity = Vector3.ZERO
 
 func stop_ragdoll():
     is_ragdoll = false

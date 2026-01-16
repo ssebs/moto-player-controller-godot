@@ -36,6 +36,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
+- [ ] fix jumping too high
 
 ## TODO:
 

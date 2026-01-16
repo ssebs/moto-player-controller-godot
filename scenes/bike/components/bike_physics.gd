@@ -3,7 +3,7 @@ class_name BikePhysics extends BikeComponent
 # Local config (not in BikeResource)
 @export var ground_align_speed: float = 10.0
 @export var lean_to_steer_factor: float = 1.0
-@export var gravity_mult: float = 2.0
+@export var gravity_mult: float = 4.0
 
 # Local state
 var br: BikeResource # Cached reference for brevity
@@ -164,5 +164,4 @@ func apply_movement(delta):
     # Apply gravity when airborne
     if !player_controller.is_on_floor():
         player_controller.velocity.y -= ProjectSettings.get_setting("physics/3d/default_gravity") * delta * gravity_mult
-
 #endregion
