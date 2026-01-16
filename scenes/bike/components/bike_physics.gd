@@ -17,11 +17,8 @@ func _bike_setup(p_controller: PlayerController):
 
 func _bike_update(delta):
     # Note: player_controller will call apply_movement using the values from these _update funcs
-
     match player_controller.state.player_state:
-        BikeState.PlayerState.IDLE:
-            _update_idle(delta)
-        BikeState.PlayerState.RIDING, BikeState.PlayerState.TRICK_GROUND:
+        BikeState.PlayerState.IDLE, BikeState.PlayerState.RIDING, BikeState.PlayerState.TRICK_GROUND:
             _update_riding(delta)
         BikeState.PlayerState.AIRBORNE, BikeState.PlayerState.TRICK_AIR:
             _update_airborne(delta)
@@ -35,13 +32,10 @@ func _bike_reset():
 #endregion
 
 #region update based on state
-func _update_idle(delta):
-    _handle_acceleration(delta)
-
 func _update_riding(delta):
     _handle_acceleration(delta)
     _update_lean(delta)
-    _align_to_ground(delta)
+    _handle_ground_alignment(delta)
     # _update_countersteering(delta)
 
 func _update_airborne(delta):
@@ -106,24 +100,18 @@ func _update_lean(delta):
 
 ## replace_me
 # Sets player_controller.state.lean_angle
-func _update_countersteering(delta):
-    if abs(player_controller.bike_input.steer) < 0.1 and player_controller.bike_input.throttle > 0.1:
-        var stability = clamp(player_controller.state.speed / 20.0, 0.0, 1.0)
-        player_controller.state.lean_angle = move_toward(
-            player_controller.state.lean_angle,
-            0,
-            stability * br.lean_speed * delta
-        )
-
-
-## replace_me
-func _get_turn_rate() -> float:
-    var speed_pct = player_controller.state.speed / br.max_speed
-    var turn_radius = lerpf(br.min_turn_radius, br.max_turn_radius, speed_pct)
-    return br.turn_speed / turn_radius
+func _update_countersteering(_delta):
+    print("_update_countersteering does nothing atm")
+    # if abs(player_controller.bike_input.steer) < 0.1 and player_controller.bike_input.throttle > 0.1:
+    #     var stability = clamp(player_controller.state.speed / 20.0, 0.0, 1.0)
+    #     player_controller.state.lean_angle = move_toward(
+    #         player_controller.state.lean_angle,
+    #         0,
+    #         stability * br.lean_speed * delta
+    #     )
 
 ## aligns the bike visually to slopes/ramps while riding.
-func _align_to_ground(delta):
+func _handle_ground_alignment(delta):
     if player_controller.is_on_floor():
         var floor_normal = player_controller.get_floor_normal()
         var forward_dir = - player_controller.global_transform.basis.z
@@ -132,6 +120,23 @@ func _align_to_ground(delta):
         player_controller.state.ground_pitch = lerp(player_controller.state.ground_pitch, target_pitch, ground_align_speed * delta)
     else:
         player_controller.state.ground_pitch = lerp(player_controller.state.ground_pitch, 0.0, ground_align_speed * 0.5 * delta)
+
+## rotate / update speed if fishtailing
+func _handle_fishtail(delta: float):
+    if abs(player_controller.state.fishtail_angle) < 0.01:
+        return
+
+    # Fishtail rotation
+    player_controller.rotate_y(player_controller.state.fishtail_angle * delta * 1.5)
+
+    # Fishtail friction
+    player_controller.state.speed = move_toward(player_controller.state.speed, 0, player_controller.bike_tricks.get_fishtail_speed_loss(delta))
+
+## Reduce turn angle based on speed. Used in apply_movement
+func _get_turn_rate() -> float:
+    var speed_pct = player_controller.state.speed / br.max_speed
+    var turn_radius = lerpf(br.min_turn_radius, br.max_turn_radius, speed_pct)
+    return br.turn_speed / turn_radius
 
 
 #region public funcs
@@ -143,18 +148,17 @@ func apply_movement(delta):
     var forward = - player_controller.global_transform.basis.z
 
     if player_controller.state.speed > 0.5:
-        var turn_rate = _get_turn_rate()
         # Lean directly controls turning
-        player_controller.rotate_y(-player_controller.state.lean_angle * lean_to_steer_factor * turn_rate * delta)
+        player_controller.rotate_y(-player_controller.state.lean_angle * lean_to_steer_factor * _get_turn_rate() * delta)
 
-        if abs(player_controller.state.fishtail_angle) > 0.01:
-            player_controller.rotate_y(player_controller.state.fishtail_angle * delta * 1.5)
-            # Fishtail friction
-            player_controller.state.speed = move_toward(player_controller.state.speed, 0, player_controller.bike_tricks.get_fishtail_speed_loss(delta))
+        _handle_fishtail(delta)
 
-    var vertical_velocity = player_controller.velocity.y
+    # Set movement velocity
+    var old_vertical_velocity = player_controller.velocity.y
+    # Move X/Z
     player_controller.velocity = forward * player_controller.state.speed
-    player_controller.velocity.y = vertical_velocity
+    # Move Y from prev val
+    player_controller.velocity.y = old_vertical_velocity
 
     # Apply gravity
     if !player_controller.is_on_floor():

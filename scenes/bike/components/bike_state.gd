@@ -84,7 +84,7 @@ var rpm_ratio: float = 0.0 # Cached per frame by BikeGearing
 
 # Tricks state
 var pitch_angle: float = 0.0 # in radians
-var fishtail_angle: float = 0.0
+var fishtail_angle: float = 0.0 # 0 = not fishtailing
 
 # Trick scoring state
 var active_trick: int = 0 # BikeTricks.Trick enum (0 = NONE)
