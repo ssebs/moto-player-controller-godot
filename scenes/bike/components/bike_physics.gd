@@ -152,13 +152,16 @@ func apply_movement(delta):
         _handle_fishtail(delta)
 
     # Set movement velocity
-    var old_vertical_velocity = player_controller.velocity.y
-    # Move X/Z
-    player_controller.velocity = forward * player_controller.state.speed
-    # Move Y from prev val
-    player_controller.velocity.y = old_vertical_velocity
+    if player_controller.is_on_floor():
+        # On ground: velocity follows slope direction (enables ramp launches)
+        player_controller.velocity = forward.slide(player_controller.get_floor_normal()).normalized() * player_controller.state.speed
+    else:
+        # In air: preserve vertical velocity, only update horizontal
+        var old_y = player_controller.velocity.y
+        player_controller.velocity = Vector3(forward.x, 0, forward.z).normalized() * player_controller.state.speed
+        player_controller.velocity.y = old_y
 
-    # Apply gravity
+    # Apply gravity when airborne
     if !player_controller.is_on_floor():
         player_controller.velocity.y -= ProjectSettings.get_setting("physics/3d/default_gravity") * delta * gravity_mult
 
