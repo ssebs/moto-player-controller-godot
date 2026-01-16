@@ -36,11 +36,14 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-
+- [ ] Simplify physics logic
+  - [x] duplicate lean/steering angle vars
+  - [ ] Remove redundant code
+  - [ ] _handle_acceleration => _handle_acceleration + _handle_deceleration
+  - [ ] Fix snappy steering / feel
 
 ## TODO:
 
-- [ ] Simplify physics logic
 - [ ] Simplify tricks logic
   - [ ] Move `_update_vibration` here from `bike_ui`
 - [ ] Simplify crash checks logic

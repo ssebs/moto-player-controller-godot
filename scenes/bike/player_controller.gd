@@ -50,6 +50,7 @@ class_name PlayerController extends CharacterBody3D
 @onready var trick_label: Label = %TrickLabel
 @onready var combo_label: Label = %ComboLabel
 @onready var trick_feed_label: Label = %TrickFeedLabel
+@onready var debug_player_state_label: Label = %DBGPlayerState
 
 # Components
 @onready var bike_input: BikeInput = %BikeInput

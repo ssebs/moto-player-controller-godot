@@ -363,8 +363,8 @@ func _update_skidding(delta: float):
             skid_spawn_timer = 0.0
             _spawn_skid_mark(rear_wheel_pos, bike_rot)
 
-        # Fishtail calculation - steering induces fishtail direction
-        var steer_influence = player_controller.state.steering_angle / player_controller.bike_resource.max_steering_angle
+        # Fishtail calculation - lean induces fishtail direction
+        var steer_influence = player_controller.state.lean_angle / player_controller.bike_resource.max_lean_angle_rad
         var target_fishtail = - steer_influence * max_fishtail_angle * player_controller.bike_input.rear_brake
 
         # Small natural wobble when skidding straight (random direction, small amplitude)
@@ -462,7 +462,7 @@ func _update_grip_usage(delta) -> bool:
                 # Grabbed + turning = crash (lowside)
                 # Grabbed + stoppie = crash (over the bars / lowside)
                 player_controller.bike_crash.crash_pitch_direction = -1 if in_stoppie else 0
-                player_controller.bike_crash.crash_lean_direction = - sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
+                player_controller.bike_crash.crash_lean_direction = sign(player_controller.state.lean_angle) if player_controller.state.lean_angle != 0 else 1
                 player_controller.bike_crash.trigger_crash()
                 return true
             # Grabbed + straight (not in stoppie) = skid (handled by is_front_wheel_locked)
@@ -471,7 +471,7 @@ func _update_grip_usage(delta) -> bool:
             if is_turning and front_brake > max_safe_brake:
                 # Progressive + turning + over lean threshold = crash
                 player_controller.bike_crash.crash_pitch_direction = 0
-                player_controller.bike_crash.crash_lean_direction = - sign(player_controller.state.steering_angle) if player_controller.state.steering_angle != 0 else sign(player_controller.state.lean_angle)
+                player_controller.bike_crash.crash_lean_direction = sign(player_controller.state.lean_angle) if player_controller.state.lean_angle != 0 else 1
                 player_controller.bike_crash.trigger_crash()
                 return true
             # Progressive + straight = stoppie (handled by _update_stoppie)
@@ -630,7 +630,6 @@ func _on_crashed(_pitch_direction: float, _lean_direction: float):
 func _on_stoppie_stopped():
     player_controller.bike_physics._bike_reset()
     player_controller.state.speed = 0.0
-    player_controller.state.fall_angle = 0.0
     player_controller.velocity = Vector3.ZERO
 
 func _on_force_stoppie_requested(target_pitch: float, rate: float):

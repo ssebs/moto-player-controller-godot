@@ -131,6 +131,11 @@ func _update_labels():
         else:
             player_controller.combo_label.visible = false
 
+    # Misc debug labels
+    if player_controller.debug_player_state_label:
+        player_controller.debug_player_state_label.text = "PlayerState: %s" % player_controller.state.get_player_state_as_str(player_controller.state.player_state)
+
+
 func _update_bars():
     # Set throttle bar
     player_controller.throttle_bar.value = player_controller.bike_input.throttle
@@ -171,6 +176,10 @@ func _update_toast(delta):
 ## Apply vibration from tricks
 # TODO: move to bike_tricks
 func _update_vibration():
+    if player_controller.state.player_state ==player_controller.state.PlayerState.IDLE:
+        player_controller.bike_input.stop_vibration()
+        return
+
     var weak_total = 0.0
     var strong_total = 0.0
 

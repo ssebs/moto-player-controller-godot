@@ -30,16 +30,15 @@ func _bike_setup(p_controller: PlayerController):
 func _bike_update(delta):
     # Skip mesh rotation when idle - let the idle_stopped animation control the pose
     if player_controller.state.player_state != BikeState.PlayerState.IDLE:
-        var total_lean = player_controller.state.lean_angle + player_controller.state.fall_angle
-        _update_bike_root_rotation(total_lean)
-        _update_butt_lean_animation(delta, total_lean)
+        _update_bike_root_rotation(player_controller.state.lean_angle)
+        _update_butt_lean_animation(delta, player_controller.state.lean_angle)
 
 func _bike_reset():
     _update_brake_light(0)
     _update_training_wheels_visibility()
     butt_position_offset = 0.0
     player_controller.anim_player.stop()
-    _update_bike_root_rotation(player_controller.state.lean_angle + player_controller.state.fall_angle)
+    _update_bike_root_rotation(player_controller.state.lean_angle)
 
 func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeState.PlayerState):
     # Handle state exit
@@ -115,7 +114,7 @@ func _on_trick_ended(trick: int, _score: float, _duration: float):
 #region MISC / implementation details
 func _update_butt_lean_animation(delta: float, total_lean: float):
     var target_offset = signf(total_lean) * player_controller.bike_resource.max_butt_offset if absf(total_lean) > 0.1 else 0.0
-    butt_position_offset = lerpf(butt_position_offset, target_offset, lean_lerp_speed * delta)
+    butt_position_offset = lerpf(butt_position_offset, -target_offset, lean_lerp_speed * delta)
 
     # Move butt
     var base_pos = player_controller.bike_resource.butt_target_position
@@ -141,7 +140,7 @@ func _update_bike_root_rotation(total_lean: float):
         player_controller.collision_shape.rotation.x = deg_to_rad(-90.0) + player_controller.state.pitch_angle
 
     if total_lean != 0:
-        player_controller.rotation_root.rotate_z(total_lean)
+        player_controller.rotation_root.rotate_z(-total_lean)
 
 func _update_training_wheels_visibility():
     if player_controller.training_wheels:

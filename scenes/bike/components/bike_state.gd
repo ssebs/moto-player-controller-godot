@@ -1,6 +1,16 @@
 class_name BikeState extends Resource
 
-# Player state machine
+# Difficulty levels
+enum PlayerDifficulty {
+	EASY, # Automatic transmission
+	MEDIUM, # Semi-auto (no clutch needed for shifts)
+	HARD # Full manual (clutch required)
+}
+
+#region Player state machine
+signal state_changed(old_state: PlayerState, new_state: PlayerState)
+var player_state: PlayerState = PlayerState.IDLE
+
 enum PlayerState {
 	IDLE, # Stationary, no throttle
 	RIDING, # On ground, moving
@@ -11,17 +21,6 @@ enum PlayerState {
 	CRASHED # Waiting for respawn
 }
 
-# Difficulty levels
-enum PlayerDifficulty {
-	EASY, # Automatic transmission
-	MEDIUM, # Semi-auto (no clutch needed for shifts)
-	HARD # Full manual (clutch required)
-}
-
-signal state_changed(old_state: PlayerState, new_state: PlayerState)
-
-var player_state: PlayerState = PlayerState.IDLE
-
 const VALID_TRANSITIONS: Dictionary = {
 	PlayerState.IDLE: [PlayerState.RIDING, PlayerState.AIRBORNE, PlayerState.CRASHING],
 	PlayerState.RIDING: [PlayerState.IDLE, PlayerState.AIRBORNE, PlayerState.TRICK_GROUND, PlayerState.CRASHING],
@@ -31,7 +30,6 @@ const VALID_TRANSITIONS: Dictionary = {
 	PlayerState.CRASHING: [PlayerState.CRASHED],
 	PlayerState.CRASHED: [PlayerState.IDLE]
 }
-
 
 func request_state_change(new_state: PlayerState) -> bool:
 	if new_state == player_state:
@@ -44,6 +42,27 @@ func request_state_change(new_state: PlayerState) -> bool:
 	state_changed.emit(old, new_state)
 	return true
 
+func get_player_state_as_str(ps: PlayerState) -> String:
+	match ps:
+		PlayerState.IDLE:
+			return "IDLE"
+		PlayerState.RIDING:
+			return "RIDING"
+		PlayerState.AIRBORNE:
+			return "AIRBORNE"
+		PlayerState.TRICK_AIR:
+			return "TRICK_AIR"
+		PlayerState.TRICK_GROUND:
+			return "TRICK_GROUND"
+		PlayerState.CRASHING:
+			return "CRASHING"
+		PlayerState.CRASHED:
+			return "CRASHED"
+		_:
+			return "N/A"
+
+#endregion
+
 func isEasyDifficulty() -> bool:
 	return difficulty == PlayerDifficulty.EASY
 func isMediumDifficulty() -> bool:
@@ -54,9 +73,7 @@ func isHardDifficulty() -> bool:
 
 # Physics state
 var speed: float = 0.0
-var steering_angle: float = 0.0
-var lean_angle: float = 0.0
-var fall_angle: float = 0.0 # Bike falling over due to lack of gyroscopic stability
+var lean_angle: float = 0.0 # in radians
 
 # Gearing state
 var current_gear: int = 1
@@ -66,7 +83,7 @@ var is_stalled: bool = false
 var rpm_ratio: float = 0.0 # Cached per frame by BikeGearing
 
 # Tricks state
-var pitch_angle: float = 0.0
+var pitch_angle: float = 0.0 # in radians
 var fishtail_angle: float = 0.0
 
 # Trick scoring state

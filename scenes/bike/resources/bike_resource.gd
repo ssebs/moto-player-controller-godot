@@ -62,19 +62,12 @@ class_name BikeResource extends Resource
 @export var brake_strength: float = 20.0
 @export var friction: float = 2.0
 @export var engine_brake_strength: float = 12.0
-@export var steering_speed: float = 4.0
-@export var max_steering_angle: float = 35.0 # degrees, converted to radians on apply
 @export var max_lean_angle: float = 45.0 # degrees, converted to radians on apply
-@export var lean_speed: float = 3.5
+@export var lean_speed: float = 2.5
 @export var min_turn_radius: float = 0.25
 @export var max_turn_radius: float = 3.0
 @export var turn_speed: float = 2.0
-@export var fall_rate: float = 0.5
-@export var countersteer_factor: float = 1.2
 
 # Computed getters (degrees to radians)
-var max_steering_angle_rad: float:
-    get: return deg_to_rad(max_steering_angle)
-
 var max_lean_angle_rad: float:
     get: return deg_to_rad(max_lean_angle)

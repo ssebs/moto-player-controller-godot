@@ -78,22 +78,16 @@ func _check_crash_conditions(_delta) -> String:
         crash_lean_direction = 0
 
     # Turning while in a stoppie - lowside crash
-    elif player_controller.state.pitch_angle < deg_to_rad(-15) and abs(player_controller.state.steering_angle) > deg_to_rad(15):
+    elif player_controller.state.pitch_angle < deg_to_rad(-15) and abs(player_controller.state.lean_angle) > deg_to_rad(15):
         crash_reason = "stoppie_turn"
         crash_pitch_direction = 0
-        crash_lean_direction = sign(player_controller.state.steering_angle)
+        crash_lean_direction = sign(player_controller.state.lean_angle)
 
-    # Falling over (gyro instability)
-    if crash_reason == "" and abs(player_controller.state.fall_angle) >= crash_lean_threshold:
-        crash_reason = "fall"
-        crash_pitch_direction = 0
-        crash_lean_direction = sign(player_controller.state.fall_angle)
-
-    # Total lean too far
-    if crash_reason == "" and abs(player_controller.state.lean_angle + player_controller.state.fall_angle) >= crash_lean_threshold:
+    # Lean too far
+    if crash_reason == "" and abs(player_controller.state.lean_angle) >= crash_lean_threshold:
         crash_reason = "lean"
         crash_pitch_direction = 0
-        crash_lean_direction = sign(player_controller.state.lean_angle + player_controller.state.fall_angle)
+        crash_lean_direction = sign(player_controller.state.lean_angle)
 
     if crash_reason != "":
         trigger_crash()
