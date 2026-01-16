@@ -36,11 +36,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-- [ ] Simplify physics logic
-  - [x] duplicate lean/steering angle vars
-  - [x] Remove redundant code
-  - [ ] _handle_acceleration => _handle_acceleration + _handle_deceleration
-  - [x] Fix snappy steering / feel
 
 ## TODO:
 
@@ -61,6 +56,11 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] Simplify physics logic
+  - [x] duplicate lean/steering angle vars
+  - [x] Remove redundant code
+  - [x] \_handle_acceleration => \_handle_acceleration + \_handle_deceleration
+  - [x] Fix snappy steering / feel
 - [x] fix max_steering_angle bug
 - [x] add emission on brake light
 - [x] Refactor bikemods into resource + new bike_component? Or follow TrainingWheelsMod

@@ -707,10 +707,12 @@ func get_fishtail_speed_loss(delta) -> float:
         var slide_friction = abs(player_controller.state.fishtail_angle) / max_fishtail_angle
         return slide_friction * 15.0 * delta
     return 0.0
-func get_boosted_max_speed(base_max_speed: float) -> float:
+
+## Get max speed, higher if boosting.
+func get_effective_max_speed() -> float:
     if player_controller.state.is_boosting:
-        return base_max_speed * boost_speed_multiplier
-    return base_max_speed
+        return player_controller.bike_gearing.get_max_speed_for_gear() * boost_speed_multiplier
+    return player_controller.bike_gearing.get_max_speed_for_gear()
 
 
 func get_boosted_throttle(base_throttle: float) -> float:
