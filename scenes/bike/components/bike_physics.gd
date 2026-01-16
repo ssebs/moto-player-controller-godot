@@ -4,6 +4,7 @@ class_name BikePhysics extends BikeComponent
 @export var ground_align_speed: float = 10.0
 @export var lean_to_steer_factor: float = 1.0
 @export var gravity_mult: float = 4.0
+@export var launch_velocity_dampen: float = 0.5
 
 # Local state
 var br: BikeResource # Cached reference for brevity
@@ -29,9 +30,15 @@ func _bike_reset():
     player_controller.state.speed = 0.0
     player_controller.state.lean_angle = 0.0
 
+func _on_player_state_changed(old_state, new_state):
+    if old_state == BikeState.PlayerState.RIDING and new_state == BikeState.PlayerState.AIRBORNE:
+        if player_controller.velocity.y > 0:
+            player_controller.velocity.y *= launch_velocity_dampen
+
 #endregion
 
 #region update based on state
+# Gets player_controller.state.speed & applies to player_controller.velocity
 func _update_riding(delta):
     _handle_acceleration(delta)
     _handle_deceleration(delta)
@@ -39,9 +46,30 @@ func _update_riding(delta):
     _handle_ground_alignment(delta)
     # _handle_countersteering(delta)
 
-func _update_airborne(_delta):
-    # _handle_lean(delta)
-    pass
+    # Movement logic (merged from apply_movement)
+    var forward = - player_controller.global_transform.basis.z
+
+    if player_controller.state.speed > 0.5:
+        # Lean directly controls turning
+        player_controller.rotate_y(-player_controller.state.lean_angle * lean_to_steer_factor * _get_turn_rate() * delta)
+        _handle_fishtail(delta)
+
+    # Set velocity following slope direction (enables ramp launches)
+    if player_controller.is_on_floor():
+        player_controller.velocity = forward.slide(player_controller.get_floor_normal()).normalized() * player_controller.state.speed
+    else:
+        player_controller.velocity = forward * player_controller.state.speed
+
+# Gets player_controller.state.speed & applies to player_controller.velocity
+func _update_airborne(delta):
+    # Preserve horizontal velocity, apply gravity
+    var forward = - player_controller.global_transform.basis.z
+    var old_y = player_controller.velocity.y
+    player_controller.velocity = Vector3(forward.x, 0, forward.z).normalized() * player_controller.state.speed
+    player_controller.velocity.y = old_y
+
+    # Apply gravity
+    player_controller.velocity.y -= ProjectSettings.get_setting("physics/3d/default_gravity") * delta * gravity_mult
 #endregion
 
 
@@ -141,27 +169,4 @@ func _get_turn_rate() -> float:
 func is_turning() -> bool:
     return abs(player_controller.state.lean_angle) > 0.2
 
-## set velocity from state.speed
-func apply_movement(delta):
-    var forward = - player_controller.global_transform.basis.z
-
-    if player_controller.state.speed > 0.5:
-        # Lean directly controls turning
-        player_controller.rotate_y(-player_controller.state.lean_angle * lean_to_steer_factor * _get_turn_rate() * delta)
-
-        _handle_fishtail(delta)
-
-    # Set movement velocity
-    if player_controller.is_on_floor():
-        # On ground: velocity follows slope direction (enables ramp launches)
-        player_controller.velocity = forward.slide(player_controller.get_floor_normal()).normalized() * player_controller.state.speed
-    else:
-        # In air: preserve vertical velocity, only update horizontal
-        var old_y = player_controller.velocity.y
-        player_controller.velocity = Vector3(forward.x, 0, forward.z).normalized() * player_controller.state.speed
-        player_controller.velocity.y = old_y
-
-    # Apply gravity when airborne
-    if !player_controller.is_on_floor():
-        player_controller.velocity.y -= ProjectSettings.get_setting("physics/3d/default_gravity") * delta * gravity_mult
 #endregion

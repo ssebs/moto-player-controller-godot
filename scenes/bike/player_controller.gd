@@ -141,15 +141,13 @@ func _physics_process(delta):
     # Component updates
     # TODO: call this from %FunctionalityComponents.get_children()
     bike_gearing._bike_update(delta)
-    bike_physics._bike_update(delta)
     bike_tricks._bike_update(delta)
     bike_crash._bike_update(delta)
     bike_audio._bike_update(delta)
     bike_ui._bike_update(delta)
     bike_camera._bike_update(delta)
+    bike_physics._bike_update(delta)
 
-    # Movement
-    bike_physics.apply_movement(delta)
     move_and_slide()
 
     # Align to ground & bike_mesh rotation
