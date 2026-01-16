@@ -18,8 +18,6 @@ var clutch_just_pressed: bool = false
 var clutch_hold_time: float = 0.0
 var br: BikeResource # Cached reference for brevity
 
-# TODO: final refactor: split up update_rpm into multiple funcs
-
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
@@ -43,10 +41,11 @@ func _bike_update(delta):
         _:
             # Engine runs normally in all other states
             _update_clutch(delta)
-            _update_rpm(delta)
-            # Cache RPM ratio for other components to use
+            if _handle_stalled_engine(delta):
+                return
+            _blend_rpm_to_target(delta)
+            _apply_rpm_limits()
             player_controller.state.rpm_ratio = _get_rpm_ratio()
-            # Auto-shift during boost or easy mode
             if player_controller.state.is_boosting or player_controller.state.isEasyDifficulty():
                 _update_auto_shift()
 
@@ -109,25 +108,32 @@ func _update_clutch(delta: float):
         # Release: slowly let clutch out
         player_controller.state.clutch_value = move_toward(player_controller.state.clutch_value, 0.0, br.clutch_release_speed * delta)
 
-## does way too much, but: sets player_controller.state.current_rpm, emits engine_started/stalled
-func _update_rpm(delta: float):
-    if player_controller.state.is_stalled:
-        player_controller.state.current_rpm = 0.0
-        var should_start = false
-        # Restart engine with throttle + clutch while stalled
-        if player_controller.state.clutch_value > 0.5 and player_controller.bike_input.throttle > 0.3:
-            should_start = true
-        # Easy mode: auto-start with throttle only (no clutch required)
-        if player_controller.state.isEasyDifficulty() and player_controller.bike_input.throttle > 0.1:
-            should_start = true
+## Returns true if engine is stalled (caller should early return)
+func _handle_stalled_engine(_delta: float) -> bool:
+    if !player_controller.state.is_stalled:
+        return false
 
-        if should_start:
-            player_controller.state.is_stalled = false
-            player_controller.state.current_rpm = br.idle_rpm
-            engine_started.emit()
-        return
+    player_controller.state.current_rpm = 0.0
+    var should_start = false
+    # Restart engine with throttle + clutch while stalled
+    if player_controller.state.clutch_value > 0.5 and player_controller.bike_input.throttle > 0.3:
+        should_start = true
+    # Easy mode: auto-start with throttle only (no clutch required)
+    if player_controller.state.isEasyDifficulty() and player_controller.bike_input.throttle > 0.1:
+        should_start = true
 
+    if should_start:
+        player_controller.state.is_stalled = false
+        player_controller.state.current_rpm = br.idle_rpm
+        engine_started.emit()
+    return true
+
+## Blends current RPM toward target based on clutch engagement
+func _blend_rpm_to_target(delta: float):
     var engagement = get_clutch_engagement()
+    # Easy mode: automatic clutch - disengage when stationary/slow to allow revving
+    if player_controller.state.isEasyDifficulty() and player_controller.state.speed < 5.0:
+        engagement = clamp(player_controller.state.speed / 5.0, 0.0, 1.0)
 
     # Calculate wheel-driven RPM based on wheel speed
     var gear_max_speed = get_max_speed_for_gear()
@@ -136,10 +142,6 @@ func _update_rpm(delta: float):
 
     # Throttle-driven RPM (instant - no smoothing, engine revs freely)
     var throttle_rpm = lerpf(br.idle_rpm, br.max_rpm, player_controller.bike_input.throttle)
-
-    # Easy mode: automatic clutch - disengage when stationary/slow to allow revving
-    if player_controller.state.isEasyDifficulty() and player_controller.state.speed < 5.0:
-        engagement = clamp(player_controller.state.speed / 5.0, 0.0, 1.0)
 
     # Blend between throttle RPM and wheel RPM based on clutch engagement
     # engagement = 0: clutch in, engine free-revs (fast response)
@@ -158,6 +160,13 @@ func _update_rpm(delta: float):
         # RPM blend speed: fast when free-revving, slower when engaged to wheel
         var blend_speed = lerpf(12.0, br.rpm_blend_speed, engagement)
         player_controller.state.current_rpm = lerpf(player_controller.state.current_rpm, target_rpm, blend_speed * delta)
+
+## Applies stall check and rev limiter, clamps RPM
+func _apply_rpm_limits():
+    var engagement = get_clutch_engagement()
+    # Easy mode: automatic clutch - disengage when stationary/slow to allow revving
+    if player_controller.state.isEasyDifficulty() and player_controller.state.speed < 5.0:
+        engagement = clamp(player_controller.state.speed / 5.0, 0.0, 1.0)
 
     # Check for stall when clutch is mostly engaged and RPM too low (skip on easy mode)
     if !player_controller.state.isEasyDifficulty() and engagement > 0.9 and player_controller.state.current_rpm < br.stall_rpm:
