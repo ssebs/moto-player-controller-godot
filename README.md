@@ -36,26 +36,27 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-- [ ] fix jumping too high
 
 ## TODO:
 
+- [ ] Simplify bike_crash logic
 - [ ] Simplify bike_tricks logic
   - [ ] Move `_update_vibration` here from `bike_ui`
-- [ ] Simplify bike_crash logic
 - [ ] Simplify state machines logic
 - [ ] Simplify UI logic
 - [ ] Simplify bike_state
 - [ ] Simplify camera switching (make it possible for Multiplayer to disable)
-- [ ] Fix bugs
-- [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
 - [ ] Fix brake feel (too easy to crash)
+- [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
 - [ ] Speed carries over even when crashing into collider
 - [ ] Cleanup animations / add some polish
   - [ ] Idle => Riding animation + turning snappy
+- [ ] Fix bugs
 - [ ] Add back countersteering
 
 ## Done:
+
+- [x] fix jumping too high
 - [x] launch in air from any ramp
 - [x] Simplify physics logic
   - [x] duplicate lean/steering angle vars
