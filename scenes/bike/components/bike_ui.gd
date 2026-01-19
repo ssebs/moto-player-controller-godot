@@ -58,7 +58,7 @@ func _on_difficulty_toggled():
         player_controller.state.difficulty = player_controller.state.PlayerDifficulty.EASY
     _update_difficulty_display()
 
-func _on_crashed(_pitch_direction: float, _lean_direction: float):
+func _on_crashed():
     if player_controller.respawn_label:
         player_controller.respawn_label.visible = true
 

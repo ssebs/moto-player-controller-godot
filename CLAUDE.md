@@ -190,3 +190,15 @@ External components can extend `BikeComponent` and be auto-setup:
 2. Override `_bike_setup()`, `_bike_update()`, `_bike_reset()` as needed
 3. Use `player_controller._save_mod_targets_to_config()` to persist transforms
 4. Load transforms in `_bike_reset()` (see `tail_light_mod` for reference)
+
+
+## Code style
+
+Function doc comments are in this format:
+```py
+## This line explains the function. Emits this signal, etc.
+func my_name():
+  pass
+```
+
+See [this](./scenes/bike/README.md) page for more info.

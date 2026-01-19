@@ -20,6 +20,7 @@ func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
     player_controller.state.state_changed.connect(_on_player_state_changed)
 
+    # Crash signals
     player_controller.bike_crash.crashed.connect(_on_crashed)
 
     # Gearing signals
@@ -64,9 +65,9 @@ func _on_player_state_changed(old_state: BikeState.PlayerState, new_state: BikeS
 
 #region signal handlers
 
-func _on_crashed(_pitch_dir: float, lean_dir: float):
+func _on_crashed():
     # Play tire screech for lowside crashes
-    if lean_dir != 0:
+    if player_controller.state.lean_angle != 0:
         _play_tire_screech(0.8)
 
 

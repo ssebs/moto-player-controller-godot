@@ -7,6 +7,7 @@ signal stoppie_stopped # Emitted when bike comes to rest during a stoppie
 signal boost_started
 signal boost_ended
 signal boost_earned # Emitted when a boost is earned from tricks
+signal grip_crash_triggered
 
 # Trick lifecycle signals
 signal trick_started(trick: Trick)
@@ -410,13 +411,12 @@ func _update_boost(delta):
         boost_ended.emit()
 
 
-func _update_grip_usage(delta) -> bool:
-    """Updates grip usage for front tire. Returns true if crash should occur."""
+func _update_grip_usage(delta):
     # Skip grip logic entirely on EASY difficulty
     if player_controller.state.isEasyDifficulty():
         player_controller.state.grip_usage = 0.0
         brake_was_grabbed = false
-        return false
+        return
 
     var front_brake = player_controller.bike_input.front_brake
 
@@ -452,31 +452,18 @@ func _update_grip_usage(delta) -> bool:
     # Crash logic based on behavior matrix
     if player_controller.state.speed > 10:
         var is_turning = lean_ratio > 0.3
-
-        # Check if currently in a stoppie
         var in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
 
         if brake_was_grabbed:
-            # Grabbed brake (quick application)
             if is_turning or in_stoppie:
-                # Grabbed + turning = crash (lowside)
-                # Grabbed + stoppie = crash (over the bars / lowside)
-                player_controller.bike_crash.crash_pitch_direction = -1 if in_stoppie else 0
-                player_controller.bike_crash.crash_lean_direction = sign(player_controller.state.lean_angle) if player_controller.state.lean_angle != 0 else 1
-                player_controller.bike_crash.trigger_crash()
-                return true
+                grip_crash_triggered.emit()
+                return
             # Grabbed + straight (not in stoppie) = skid (handled by is_front_wheel_locked)
         else:
-            # Progressive brake
             if is_turning and front_brake > max_safe_brake:
-                # Progressive + turning + over lean threshold = crash
-                player_controller.bike_crash.crash_pitch_direction = 0
-                player_controller.bike_crash.crash_lean_direction = sign(player_controller.state.lean_angle) if player_controller.state.lean_angle != 0 else 1
-                player_controller.bike_crash.trigger_crash()
-                return true
+                grip_crash_triggered.emit()
+                return
             # Progressive + straight = stoppie (handled by _update_stoppie)
-
-    return false
 
 
 func _update_wheelie_distance(delta):
@@ -613,7 +600,7 @@ func _bank_boost_trick_score():
 
 
 #region signal handlers
-func _on_crashed(_pitch_direction: float, _lean_direction: float):
+func _on_crashed():
     """Called when player crashes - cancels active trick and resets combo."""
     var trick = player_controller.state.active_trick
     if trick != Trick.NONE:
