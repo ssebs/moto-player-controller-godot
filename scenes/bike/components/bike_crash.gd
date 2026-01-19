@@ -14,6 +14,10 @@ signal respawned
 @export var crash_deceleration: float = 20.0
 @export var crash_rotation_speed: float = 3.0
 
+# Brake/grip system
+@export var brake_grab_time_threshold: float = 0.4 # seconds, 0→100% - quick grab locks wheel
+@export var brake_lean_sensitivity: float = 0.7 # how much lean reduces safe brake amount
+
 # Local state
 var crash_timer: float = 0.0
 var crash_pitch_direction: float = 0.0
@@ -21,30 +25,29 @@ var crash_lean_direction: float = 0.0
 var _ragdoll_stopped: bool = false
 var _ragdoll_stop_time: float = 0.0
 
+#region Brake Grab Detection
+var _brake_grab_timer: float = 0.0
+var _brake_was_zero: bool = true
+var _brake_was_grabbed: bool = false
+#endregion
+
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
     player_controller.state.state_changed.connect(_on_player_state_changed)
-    player_controller.bike_tricks.grip_crash_triggered.connect(_on_grip_crash)
 
     switch_to_riding_camera()
-
-## Handles grip crash from bike_tricks. Direction derived from pitch/lean angles.
-func _on_grip_crash():
-    trigger_crash()
 
 func _bike_update(delta):
     match player_controller.state.player_state:
         BikeState.PlayerState.CRASHING, BikeState.PlayerState.CRASHED:
             _update_crash_state(delta)
-            return
         BikeState.PlayerState.RIDING, BikeState.PlayerState.TRICK_GROUND:
+            _update_grip(delta)
             _check_crash_conditions()
             _check_collision_crash()
-            return
         BikeState.PlayerState.AIRBORNE, BikeState.PlayerState.TRICK_AIR:
             _check_collision_crash()
-            return
 
     
 func _bike_reset():
@@ -53,8 +56,64 @@ func _bike_reset():
     crash_lean_direction = 0.0
     _ragdoll_stopped = false
     _ragdoll_stop_time = 0.0
+    _brake_grab_timer = 0.0
+    _brake_was_zero = true
+    _brake_was_grabbed = false
+    player_controller.state.grip_usage = 0.0
     switch_to_riding_camera()
     respawned.emit()
+
+#endregion
+
+#region Brake Grab Detection
+
+## Updates brake grab detection and grip-based crash triggering.
+func _update_grip(delta):
+    if player_controller.state.isEasyDifficulty():
+        player_controller.state.grip_usage = 0.0
+        _brake_was_grabbed = false
+        return
+
+    var front_brake = player_controller.bike_input.front_brake
+
+    # Track brake grab timing
+    if front_brake < 0.5:
+        _brake_was_zero = true
+        _brake_grab_timer = 0.0
+        _brake_was_grabbed = false
+    elif _brake_was_zero and front_brake > 0.1:
+        _brake_was_zero = false
+        _brake_grab_timer = 0.0
+    elif not _brake_was_zero:
+        _brake_grab_timer += delta
+        if front_brake > 0.9 and not _brake_was_grabbed:
+            _brake_was_grabbed = _brake_grab_timer < brake_grab_time_threshold
+
+    # Calculate grip usage for UI
+    var lean_ratio = abs(player_controller.state.lean_angle) / crash_lean_threshold
+    var max_safe_brake = 1.0 - (lean_ratio * brake_lean_sensitivity)
+
+    if front_brake > 0.1:
+        player_controller.state.grip_usage = clamp(front_brake / max_safe_brake, 0.0, 1.0)
+    else:
+        player_controller.state.grip_usage = move_toward(player_controller.state.grip_usage, 0.0, 3.0 * delta)
+
+    # Crash detection
+    if player_controller.state.speed > 10:
+        var is_turning = lean_ratio > 0.3
+        var in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
+
+        if _brake_was_grabbed and (is_turning or in_stoppie):
+            trigger_crash()
+        elif not _brake_was_grabbed and is_turning and front_brake > max_safe_brake:
+            trigger_crash()
+
+
+## Returns true if front brake was grabbed causing wheel lock.
+func is_front_wheel_locked() -> bool:
+    if player_controller.state.isEasyDifficulty():
+        return false
+    return _brake_was_grabbed
 
 #endregion
 
