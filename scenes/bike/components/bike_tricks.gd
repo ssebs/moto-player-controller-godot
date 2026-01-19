@@ -51,27 +51,30 @@ const DIFFICULTY_MULT: Dictionary = {
     BikeState.PlayerDifficulty.HARD: 1.5,
 }
 
-#region export vars
-# Brake system tuning
-@export var brake_grab_time_threshold: float = 0.4 # seconds, 0→100% - quick grab locks wheel
-@export var stoppie_reference_speed: float = 25.0 # full stoppie available at this speed
-@export var brake_lean_sensitivity: float = 0.7 # how much lean reduces safe brake amount
-# Tunables
+# TODO: potentially move
+# Score, combos, etc.
+@export var starting_boosts: int = 2 # TODO: move to bike_state
+@export var wheelie_time_for_boost: float = 5.0 # seconds
 @export var combo_window: float = 2.0
 @export var combo_increment: float = 0.25
 @export var max_combo_multiplier: float = 4.0
-@export var boost_double_tap_window: float = 1.0
 
-# Rotation tuning
+#region Tunables (export vars)
+# Brake system
+@export var brake_grab_time_threshold: float = 0.4 # seconds, 0→100% - quick grab locks wheel
+@export var stoppie_reference_speed: float = 15.0 # full stoppie available at this speed
+@export var brake_lean_sensitivity: float = 0.7 # how much lean reduces safe brake amount
+
+# Rotation
 @export var max_wheelie_angle: float = deg_to_rad(80)
 @export var max_stoppie_angle: float = deg_to_rad(50)
 @export var rotation_speed: float = 2.0
 @export var return_speed: float = 3.0
 
-# Wheelie RPM tuning
+# Wheelie RPM
 @export var wheelie_rpm_threshold: float = 0.65 # RPM ratio where wheelies can start
 
-# Fishtail/drift tuning
+# Fishtail/drift
 @export var max_fishtail_angle: float = deg_to_rad(30)
 @export var fishtail_speed: float = 8.0
 @export var fishtail_recovery_speed: float = 3.0
@@ -82,11 +85,10 @@ const DIFFICULTY_MULT: Dictionary = {
 @export var skid_spawn_interval: float = 0.025
 @export var skid_tex_lifetime: float = 5.0
 
-# Boost tuning
+# Boost
+@export var boost_double_tap_window: float = 1.0
 @export var boost_speed_multiplier: float = 1.5
 @export var boost_duration: float = 2.0
-@export var starting_boosts: int = 2
-@export var wheelie_time_for_boost: float = 5.0 # seconds
 @export var boost_steering_multiplier: float = 0.5 # Reduce steering during boost
 #endregion
 

@@ -36,10 +36,10 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
+- [ ] Simplify bike_tricks logic
 
 ## TODO:
 
-- [ ] Simplify bike_tricks logic
   - [ ] Move `_update_vibration` here from `bike_ui`
 - [ ] Simplify state machines logic
 - [ ] Simplify UI logic
@@ -53,6 +53,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Fix bugs
 - [ ] Add back countersteering
 - [ ] first person camera
+- [ ] Improved KBM controls
 
 ## Done:
 
