@@ -36,12 +36,10 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-
-
-
+- [ ] If in wheelie, pressing rear brake should lower target. front brake should do nothing
 
 ## TODO:
-- [ ] If in wheelie, pressing rear brake should lower target. front brake should do nothing
+
 - [ ] Force state machines logic
   - [ ] Lots of code uses e.g.
     - `var in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)` instead of state.tricks / tricks in wheelie
@@ -60,8 +58,9 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Improved KBM controls
 
 ## Done:
+
 - [x] add balance point wheele (much less throttle needed if angle > 60deg)
-`wheelie_balance_point_angle`
+      `wheelie_balance_point_angle`
 - [x] Simplify bike_tricks logic
   - [x] WIP from plan
   - [x] Gravity no longer works?
