@@ -37,8 +37,10 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 - [ ] Simplify bike_tricks logic
-  - [ ] WIP from plan
+  - [x] WIP from plan
   - [x] Gravity no longer works?
+- [ ] Refactor how wheelie / stoppies are detected.
+  - [ ] Currently they don't change the state back from trick_ground to riding when done
 
 ## TODO:
 

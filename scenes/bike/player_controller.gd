@@ -138,7 +138,7 @@ func _physics_process(delta):
 
     _update_player_state()
 
-    # Component updates
+    # Component updates. Each of these can request_state_change
     # TODO: call this from %FunctionalityComponents.get_children()
     bike_gearing._bike_update(delta)
     bike_tricks._bike_update(delta)

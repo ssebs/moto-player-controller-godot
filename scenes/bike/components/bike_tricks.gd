@@ -174,8 +174,8 @@ func _update_riding(delta):
 ## Airborne with no active pitch control. Transitions to TRICK_AIR or RIDING.
 func _update_airborne(delta):
     _update_airborne_pitch(delta)
-    if player_controller.is_on_floor():
-        player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
+    # if player_controller.is_on_floor():
+    #     player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
 
 
 ## Airborne with pitch control active. Transitions to TRICK_GROUND or RIDING on land.
