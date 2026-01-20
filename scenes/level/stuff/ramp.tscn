@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bpxochbjv7hq5"]
+
+[node name="Ramp" type="Node3D"]
+
+[node name="CSGBox3DRAMP2" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.371139e-08, -0.25881904, 0.9659258, 0, 0.96592593, 0.25881907, -1.0000001, 1.13133405e-08, -4.2221963e-08, 1.841149, 0.49333444, -8.047918e-08)
+use_collision = true
+size = Vector3(4, 0.1, 4.5368047)
+
+[node name="CSGBox3DRAMP3" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.1906574e-08, -0.5228259, 0.8524394, -1.2430799e-08, 0.8524395, 0.5228259, -1.0000001, 1.13133405e-08, -4.2221966e-08, 5.3572445, 1.8961535, 0)
+use_collision = true
+size = Vector3(4, 0.1, 3.282)
+
+[node name="CSGBox3DRAMP4" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.3711392e-08, -1, 0, 1.0000001, -4.371139e-08, 0, 0, 0, 0.99999994, 6.7246413, 1.3560262, 0)
+use_collision = true
+size = Vector3(2.7196655, 0.1, 4)
