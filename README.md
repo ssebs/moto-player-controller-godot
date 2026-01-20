@@ -36,16 +36,13 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
-- [ ] Simplify bike_tricks logic
-  - [x] WIP from plan
-  - [x] Gravity no longer works?
-- [ ] Refactor how wheelie / stoppies are detected.
-  - [ ] Currently they don't change the state back from trick_ground to riding when done
-- [ ] Simplify state machines logic
-- [ ] Simplify bike_state
+
+- [ ] add balance point wheele (much less throttle needed if angle > 60deg)
 
 ## TODO:
-- [ ] add balance point wheele (much less throttle needed if angle > 60deg)
+
+- [ ] Simplify state machines logic
+- [ ] Simplify bike_state
 - [ ] Move `_update_vibration` from `bike_ui`
 - [ ] Simplify UI logic
 - [ ] Simplify camera switching (make it possible for Multiplayer to disable)
@@ -61,6 +58,11 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] Simplify bike_tricks logic
+  - [x] WIP from plan
+  - [x] Gravity no longer works?
+- [x] Refactor how wheelie / stoppies are detected.
+  - [x] Currently they don't change the state back from trick_ground to riding when done
 - [x] Simplify bike_crash logic
 - [x] fix jumping too high
 - [x] launch in air from any ramp

@@ -85,6 +85,11 @@ const DIFFICULTY_MULT: Dictionary = {
 @export var boost_speed_multiplier: float = 1.5
 @export var boost_duration: float = 2.0
 @export var boost_steering_multiplier: float = 0.5 # Reduce steering during boost
+
+# Trick detection thresholds
+@export var wheelie_threshold: float = deg_to_rad(15)  # Pitch angle to detect wheelie
+@export var stoppie_threshold: float = deg_to_rad(10)  # Pitch angle to detect stoppie (positive value, used as negative)
+@export var fishtail_threshold: float = deg_to_rad(10) # Fishtail angle to detect fishtail/drift
 #endregion
 
 #region Local State
@@ -216,7 +221,7 @@ func _update_airborne_pitch(delta: float):
 func _update_wheelie(delta: float):
     _update_wheelie_distance(delta)
 
-    var in_wheelie = player_controller.state.active_trick in [Trick.WHEELIE_SITTING, Trick.WHEELIE_STANDING]
+    var in_wheelie = player_controller.state.pitch_angle > wheelie_threshold
 
     # Detect clutch dump
     var clutch_dump = _last_clutch_value > 0.7 and player_controller.state.clutch_value < 0.3 and player_controller.bike_input.throttle > 0.5
@@ -251,18 +256,11 @@ func _update_wheelie(delta: float):
         var safe_limit = player_controller.bike_crash.crash_wheelie_threshold - deg_to_rad(5)
         player_controller.state.pitch_angle = min(player_controller.state.pitch_angle, safe_limit)
 
-    # State transition
-    var now_in_wheelie = player_controller.state.pitch_angle > deg_to_rad(5)
-    if now_in_wheelie and not in_wheelie:
-        player_controller.state.request_state_change(BikeState.PlayerState.TRICK_GROUND)
-    elif not now_in_wheelie and in_wheelie:
-        player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
-
 
 ## Handles stoppie initiation, continuation, and forced stoppie from crash system.
 func _update_stoppie(delta: float):
     var front_wheel_locked = is_front_wheel_locked()
-    var was_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
+    var was_in_stoppie = player_controller.state.pitch_angle < -stoppie_threshold
 
     # Handle forced stoppie from crash system
     if _force_stoppie_active:
@@ -293,7 +291,7 @@ func _update_stoppie(delta: float):
         if not was_in_stoppie:
             tire_screech_start.emit(skid_volume)
         # Check if bike stopped during stoppie - soft reset without position change
-        var currently_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
+        var currently_in_stoppie = player_controller.state.pitch_angle < -stoppie_threshold
         if player_controller.state.speed < 0.5 and currently_in_stoppie:
             player_controller.state.pitch_angle = 0.0
             tire_screech_stop.emit()
@@ -301,17 +299,8 @@ func _update_stoppie(delta: float):
     elif player_controller.state.pitch_angle < 0:
         # Return to neutral if not in wheelie territory
         player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * delta)
-        if was_in_stoppie and player_controller.state.pitch_angle >= deg_to_rad(-5):
+        if was_in_stoppie and player_controller.state.pitch_angle >= -stoppie_threshold:
             tire_screech_stop.emit()
-
-    # State transitions for stoppies
-    var is_in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)
-    if is_in_stoppie and not was_in_stoppie:
-        player_controller.state.request_state_change(BikeState.PlayerState.TRICK_GROUND)
-    elif not is_in_stoppie and was_in_stoppie and player_controller.state.pitch_angle <= 0:
-        # Only exit TRICK_GROUND if we're not in a wheelie
-        if player_controller.state.player_state == BikeState.PlayerState.TRICK_GROUND:
-            player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
 
 
 ## Updates rear and front wheel skidding, fishtail physics, and spawns skid marks.
@@ -407,18 +396,18 @@ func _update_combo_timer(delta: float):
 
 ## Detects ground tricks based on pitch, fishtail, and input.
 func _detect_ground_trick() -> Trick:
-    # Wheelie (pitch > 15 degrees)
-    if player_controller.state.pitch_angle > deg_to_rad(15):
+    # Wheelie
+    if player_controller.state.pitch_angle > wheelie_threshold:
         if player_controller.bike_input.trick:
             return Trick.WHEELIE_STANDING
         return Trick.WHEELIE_SITTING
 
-    # Stoppie (pitch < -10 degrees)
-    if player_controller.state.pitch_angle < deg_to_rad(-10):
+    # Stoppie
+    if player_controller.state.pitch_angle < -stoppie_threshold:
         return Trick.STOPPIE
 
-    # Fishtail/Drift (fishtail angle > 10 degrees)
-    if abs(player_controller.state.fishtail_angle) > deg_to_rad(10):
+    # Fishtail/Drift
+    if abs(player_controller.state.fishtail_angle) > fishtail_threshold:
         if player_controller.bike_input.throttle > 0.5:
             return Trick.DRIFT
         return Trick.FISHTAIL
@@ -459,6 +448,13 @@ func _update_trick_scoring(delta: float):
             _commit_trick_score(current)
         if detected != Trick.NONE:
             _begin_trick_scoring(detected)
+            # Transition to trick state when ground trick starts
+            if _is_ground_trick(detected):
+                player_controller.state.request_state_change(BikeState.PlayerState.TRICK_GROUND)
+        else:
+            # Transition back to RIDING when ground trick ends
+            if player_controller.state.player_state == BikeState.PlayerState.TRICK_GROUND:
+                player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
 
     if player_controller.state.active_trick != Trick.NONE:
         _accumulate_trick_score(delta)
@@ -574,6 +570,10 @@ func _on_trick_btn_changed(btn_pressed: bool):
 #endregion
 
 #region Utils
+
+## Returns true if the trick is a ground-based trick (wheelie, stoppie, fishtail, drift).
+func _is_ground_trick(trick: Trick) -> bool:
+    return trick in [Trick.WHEELIE_SITTING, Trick.WHEELIE_STANDING, Trick.STOPPIE, Trick.FISHTAIL, Trick.DRIFT]
 
 ## Spawns a skid mark decal at the given position.
 func _spawn_skid_mark(pos: Vector3, rot: Vector3):
