@@ -253,7 +253,7 @@ func _update_wheelie(delta: float):
         player_controller.wheelie_sweetspot_label.show() # TODO: move to ui
         # Lean input adjusts target within balance zone
         var lean_influence = player_controller.bike_input.lean * (max_wheelie_angle - wheelie_balance_point_angle)
-        var balance_target = player_controller.state.pitch_angle + lean_influence * 0.5
+        var balance_target = player_controller.state.pitch_angle + lean_influence * 0.75
 
         if player_controller.bike_input.throttle >= 0.5:
             # Throttle ≥ 0.5: can go higher, lean still affects
@@ -263,21 +263,24 @@ func _update_wheelie(delta: float):
             # wheelie_target = clampf(balance_target, wheelie_balance_point_angle, max_wheelie_angle)
             var midpoint = (wheelie_balance_point_angle + max_wheelie_angle) / 2
 
-            if balance_target <= midpoint:
-                wheelie_target = clampf(balance_target, wheelie_balance_point_angle, player_controller.bike_input.throttle)
-                print("NOT past midpoint")
+            if balance_target < midpoint:
+                # wheelie_target = clampf(balance_target, wheelie_balance_point_angle, player_controller.bike_input.throttle)
+                wheelie_target = move_toward(balance_target, 0, delta)
+            elif balance_target > midpoint:
+                wheelie_target = move_toward(balance_target, max_wheelie_angle + deg_to_rad(1), delta)
             else:
-                print("past midpoint")
-                wheelie_target = clampf(balance_target, midpoint, max_wheelie_angle + deg_to_rad(1))
+                wheelie_target += randf_range(deg_to_rad(-25), deg_to_rad(25)) 
 
-            # randomness!
-            # wheelie_target *= randf_range(deg_to_rad(-1),deg_to_rad(1))
 
     else:
         player_controller.wheelie_sweetspot_label.hide() # TODO: move to ui
         # Normal wheelie: lean forward brings wheel down
         if player_controller.bike_input.lean < 0 and in_wheelie:
             player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * abs(player_controller.bike_input.lean) * 2.0 * delta)
+
+    if player_controller.bike_input.rear_brake > 0:
+        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, player_controller.bike_input.rear_brake * 0.5 * delta)
+
 
     # Apply wheelie pitch
     if wheelie_target > 0:
