@@ -38,10 +38,14 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 ## In Progress:
 
 - [ ] add balance point wheele (much less throttle needed if angle > 60deg)
+`wheelie_balance_point_angle`
+
 
 ## TODO:
 
-- [ ] Simplify state machines logic
+- [ ] Force state machines logic
+  - [ ] Lots of code uses e.g.
+    - `var in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)` instead of state.tricks / tricks in wheelie
 - [ ] Simplify bike_state
 - [ ] Move `_update_vibration` from `bike_ui`
 - [ ] Simplify UI logic

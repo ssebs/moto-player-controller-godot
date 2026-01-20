@@ -61,10 +61,12 @@ const DIFFICULTY_MULT: Dictionary = {
 @export var stoppie_reference_speed: float = 15.0 # full stoppie available at this speed
 
 # Rotation
-@export var max_wheelie_angle: float = deg_to_rad(80)
-@export var max_stoppie_angle: float = deg_to_rad(50)
+@export var max_wheelie_angle: float = deg_to_rad(85) # in radians
+@export var max_stoppie_angle: float = deg_to_rad(55) # in radians
+@export var wheelie_balance_point_angle: float = deg_to_rad(60) # in radians
 @export var rotation_speed: float = 2.0
 @export var return_speed: float = 3.0
+@export var balance_point_decay_mult: float = 0.25 # Slower decay when in balance point zone
 
 # Wheelie RPM
 @export var wheelie_rpm_threshold: float = 0.65 # RPM ratio where wheelies can start
@@ -87,16 +89,16 @@ const DIFFICULTY_MULT: Dictionary = {
 @export var boost_steering_multiplier: float = 0.5 # Reduce steering during boost
 
 # Trick detection thresholds
-@export var wheelie_threshold: float = deg_to_rad(15)  # Pitch angle to detect wheelie
-@export var stoppie_threshold: float = deg_to_rad(10)  # Pitch angle to detect stoppie (positive value, used as negative)
+@export var wheelie_threshold: float = deg_to_rad(15) # Pitch angle to detect wheelie
+@export var stoppie_threshold: float = deg_to_rad(10) # Pitch angle to detect stoppie (positive value, used as negative)
 @export var fishtail_threshold: float = deg_to_rad(10) # Fishtail angle to detect fishtail/drift
 #endregion
 
 #region Local State
 var _boost_timer: float = 0.0
-var _wheelie_time_held: float = 0.0  # For boost earning during wheelie
+var _wheelie_time_held: float = 0.0 # For boost earning during wheelie
 var _combo_timer: float = 0.0
-var _last_trick_press_time: float = 0.0  # Double-tap boost detection
+var _last_trick_press_time: float = 0.0 # Double-tap boost detection
 
 var _skid_spawn_timer: float = 0.0
 var _front_skid_spawn_timer: float = 0.0
@@ -221,6 +223,7 @@ func _update_airborne_pitch(delta: float):
 func _update_wheelie(delta: float):
     _update_wheelie_distance(delta)
 
+    # Detect if we can / are in a wheelie
     var in_wheelie = player_controller.state.pitch_angle > wheelie_threshold
 
     # Detect clutch dump
@@ -233,23 +236,57 @@ func _update_wheelie(delta: float):
     # Wheelie initiation requires RPM above threshold or clutch dump
     var rpm_above_threshold = player_controller.state.rpm_ratio >= wheelie_rpm_threshold
     var can_pop = player_controller.bike_input.lean > 0.3 and player_controller.bike_input.throttle > 0.7 and (rpm_above_threshold or clutch_dump)
+    var fast_enough = player_controller.state.speed > 1
+
+    # Calculate the target angle
+    var in_balance_point = player_controller.state.pitch_angle > wheelie_balance_point_angle
 
     var wheelie_target = 0.0
-    if player_controller.state.speed > 1 and (in_wheelie or (can_pop and can_start)):
+    if fast_enough and (in_wheelie or (can_pop and can_start)):
         if player_controller.bike_input.throttle > 0.3:
             wheelie_target = max_wheelie_angle * player_controller.bike_input.throttle
             if player_controller.bike_input.lean > 0:
                 wheelie_target += max_wheelie_angle * player_controller.bike_input.lean * 0.15
 
-    # Lean forward brings wheel down
-    if player_controller.bike_input.lean < 0 and player_controller.state.pitch_angle > 0:
-        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * abs(player_controller.bike_input.lean) * 2.0 * delta)
+    # Balance point wheelie - stable zone where bike is easier to balance but still unstable
+    if in_balance_point:
+        player_controller.wheelie_sweetspot_label.show() # TODO: move to ui
+        # Lean input adjusts target within balance zone
+        var lean_influence = player_controller.bike_input.lean * (max_wheelie_angle - wheelie_balance_point_angle)
+        var balance_target = player_controller.state.pitch_angle + lean_influence * 0.5
+
+        if player_controller.bike_input.throttle >= 0.5:
+            # Throttle ≥ 0.5: can go higher, lean still affects
+            wheelie_target = maxf(wheelie_target, balance_target)
+        else:
+            # Throttle < 0.5: drift toward balance point, lean still affects
+            # wheelie_target = clampf(balance_target, wheelie_balance_point_angle, max_wheelie_angle)
+            var midpoint = (wheelie_balance_point_angle + max_wheelie_angle) / 2
+
+            if balance_target <= midpoint:
+                wheelie_target = clampf(balance_target, wheelie_balance_point_angle, player_controller.bike_input.throttle)
+                print("NOT past midpoint")
+            else:
+                print("past midpoint")
+                wheelie_target = clampf(balance_target, midpoint, max_wheelie_angle + deg_to_rad(1))
+
+            # randomness!
+            # wheelie_target *= randf_range(deg_to_rad(-1),deg_to_rad(1))
+
+    else:
+        player_controller.wheelie_sweetspot_label.hide() # TODO: move to ui
+        # Normal wheelie: lean forward brings wheel down
+        if player_controller.bike_input.lean < 0 and in_wheelie:
+            player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * abs(player_controller.bike_input.lean) * 2.0 * delta)
 
     # Apply wheelie pitch
     if wheelie_target > 0:
-        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, wheelie_target, rotation_speed * delta)
+        var speed = rotation_speed * balance_point_decay_mult if in_balance_point else rotation_speed
+        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, wheelie_target, speed * delta)
     elif player_controller.state.pitch_angle > 0:
-        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, return_speed * delta)
+        # Use slower decay when in balance point zone
+        var decay_speed = return_speed * balance_point_decay_mult if in_balance_point else return_speed
+        player_controller.state.pitch_angle = move_toward(player_controller.state.pitch_angle, 0, decay_speed * delta)
 
     # EASY mode clamp
     if player_controller.state.isEasyDifficulty():
@@ -371,7 +408,7 @@ func _update_boost(delta):
 
 ## Tracks wheelie time for boost earning.
 func _update_wheelie_distance(delta):
-    if player_controller.state.pitch_angle > deg_to_rad(5):
+    if player_controller.state.pitch_angle > wheelie_threshold:
         _wheelie_time_held += delta
         if _wheelie_time_held >= wheelie_time_for_boost:
             _wheelie_time_held -= wheelie_time_for_boost

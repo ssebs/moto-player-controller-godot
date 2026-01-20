@@ -5,8 +5,12 @@ signal respawn_requested
 signal respawned
 
 # Crash thresholds
-@export var crash_wheelie_threshold: float = deg_to_rad(75)
-@export var crash_stoppie_threshold: float = deg_to_rad(55)
+@export var crash_wheelie_threshold: float:
+    get():
+        return player_controller.bike_tricks.max_wheelie_angle
+@export var crash_stoppie_threshold: float:
+    get():
+        return player_controller.bike_tricks.max_stoppie_angle
 @export var crash_lean_threshold: float = deg_to_rad(80)
 @export var respawn_delay: float = 5.0
 
@@ -138,9 +142,9 @@ func _check_crash_conditions():
         trigger_crash()
         return
 
-    if player_controller.state.pitch_angle < deg_to_rad(-15) and abs(player_controller.state.lean_angle) > deg_to_rad(15):
-        trigger_crash()
-        return
+    # if player_controller.state.pitch_angle < deg_to_rad(-15) and abs(player_controller.state.lean_angle) > deg_to_rad(15):
+        # trigger_crash()
+        # return
 
     if abs(player_controller.state.lean_angle) >= crash_lean_threshold:
         trigger_crash()
