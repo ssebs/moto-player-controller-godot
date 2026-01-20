@@ -41,13 +41,13 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [x] Gravity no longer works?
 - [ ] Refactor how wheelie / stoppies are detected.
   - [ ] Currently they don't change the state back from trick_ground to riding when done
+- [ ] Simplify state machines logic
+- [ ] Simplify bike_state
 
 ## TODO:
-
-  - [ ] Move `_update_vibration` here from `bike_ui`
-- [ ] Simplify state machines logic
+- [ ] add balance point wheele (much less throttle needed if angle > 60deg)
+- [ ] Move `_update_vibration` from `bike_ui`
 - [ ] Simplify UI logic
-- [ ] Simplify bike_state
 - [ ] Simplify camera switching (make it possible for Multiplayer to disable)
 - [ ] Fix brake feel (too easy to crash)
 - [ ] Create Signals that emit from player_controller.gd for use in MultiPlayer
