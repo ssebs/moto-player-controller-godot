@@ -1,5 +1,7 @@
 class_name BikePhysics extends BikeComponent
 
+signal launched # Emitted when bike leaves the ground
+
 # Local config (not in BikeResource)
 @export var ground_align_speed: float = 10.0
 @export var lean_to_steer_factor: float = 1.0
@@ -8,6 +10,7 @@ class_name BikePhysics extends BikeComponent
 
 # Local state
 var br: BikeResource # Cached reference for brevity
+var _was_on_floor: bool = true
 
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
@@ -29,9 +32,11 @@ func _bike_update(delta):
 func _bike_reset():
     player_controller.state.speed = 0.0
     player_controller.state.lean_angle = 0.0
+    _was_on_floor = true
 
 func _on_player_state_changed(old_state, new_state):
-    if old_state == BikeState.PlayerState.RIDING and new_state == BikeState.PlayerState.AIRBORNE:
+    # Dampen launch velocity when transitioning from ground to air
+    if player_controller.state.isOnGround(old_state) and player_controller.state.isAirborne(new_state):
         if player_controller.velocity.y > 0:
             player_controller.velocity.y *= launch_velocity_dampen
 
@@ -57,8 +62,12 @@ func _update_riding(delta):
     # Set velocity following slope direction (enables ramp launches)
     if player_controller.is_on_floor():
         player_controller.velocity = forward.slide(player_controller.get_floor_normal()).normalized() * player_controller.state.speed
+        _was_on_floor = true
     else:
         player_controller.velocity = forward * player_controller.state.speed
+        if has_launched():
+            launched.emit()
+        _was_on_floor = false
 
 # Gets player_controller.state.speed & applies to player_controller.velocity
 func _update_airborne(delta):
@@ -168,5 +177,9 @@ func _get_turn_rate() -> float:
 #region public funcs
 func is_turning() -> bool:
     return abs(player_controller.state.lean_angle) > 0.2
+
+## Returns true if the bike is launching (was on floor, now has upward velocity from ramp).
+func has_launched() -> bool:
+    return _was_on_floor and player_controller.velocity.y > 0.5
 
 #endregion

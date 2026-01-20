@@ -50,9 +50,7 @@ const DIFFICULTY_MULT: Dictionary = {
     BikeState.PlayerDifficulty.HARD: 1.5,
 }
 
-# TODO: potentially move
-# Score, combos, etc.
-@export var starting_boosts: int = 2 # TODO: move to bike_state
+@export var starting_boosts: int = 2
 @export var wheelie_time_for_boost: float = 5.0 # seconds
 @export var combo_window: float = 2.0
 @export var combo_increment: float = 0.25
@@ -110,10 +108,9 @@ var _force_stoppie_active: bool = false
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
     player_controller = p_controller
-    player_controller.state.state_changed.connect(_on_player_state_changed)
-
     player_controller.bike_input.trick_changed.connect(_on_trick_btn_changed)
     player_controller.bike_crash.crashed.connect(_on_crashed)
+    player_controller.bike_physics.launched.connect(_on_launched)
     stoppie_stopped.connect(_on_stoppie_stopped)
 
 func _bike_update(delta):
@@ -162,13 +159,10 @@ func _bike_reset():
     _force_stoppie_target = 0.0
     _force_stoppie_rate = 0.0
     _force_stoppie_active = false
-
-    # Reset brake grab detection state (now in bike_crash)
     player_controller.state.grip_usage = 0.0
-
 #endregion
 
-#region _update / handlers
+#region State Handlers
 
 ## Updates riding state - checks for wheelie, stoppie, and skidding.
 func _update_riding(delta):
@@ -177,18 +171,30 @@ func _update_riding(delta):
     _update_skidding(delta)
 
 
-## Airborne with no active pitch control.
+## Airborne with no active pitch control. Transitions to TRICK_AIR or RIDING.
 func _update_airborne(delta):
     _update_airborne_pitch(delta)
+    if player_controller.is_on_floor():
+        player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
 
 
-## Airborne with pitch control active.
+## Airborne with pitch control active. Transitions to TRICK_GROUND or RIDING on land.
 func _update_trick_air(delta):
+    _update_wheelie_distance(delta)
     _update_airborne_pitch(delta)
+    if player_controller.is_on_floor():
+        if abs(player_controller.state.pitch_angle) > deg_to_rad(5):
+            player_controller.state.request_state_change(BikeState.PlayerState.TRICK_GROUND)
+        else:
+            player_controller.state.request_state_change(BikeState.PlayerState.RIDING)
 
 
 ## Updates trick ground state - wheelie/stoppie/fishtail physics.
 func _update_trick_ground(delta):
+    # Transition to air trick if we've left the ground (e.g. wheelie off a ramp)
+    if player_controller.bike_physics.has_launched():
+        player_controller.state.request_state_change(BikeState.PlayerState.TRICK_AIR)
+        return
     _update_wheelie(delta)
     _update_stoppie(delta)
     _update_skidding(delta)
@@ -399,6 +405,7 @@ func _update_combo_timer(delta: float):
             player_controller.state.combo_count = 0
             combo_expired.emit()
 
+#endregion
 
 #region Trick Detection
 
@@ -436,6 +443,7 @@ func _detect_air_trick() -> Trick:
 
 #endregion
 
+#region Trick Scoring
 
 ## Main scoring update - detects trick changes and manages scoring lifecycle.
 func _update_trick_scoring(delta: float):
@@ -458,9 +466,7 @@ func _update_trick_scoring(delta: float):
 
     if player_controller.state.active_trick != Trick.NONE:
         _accumulate_trick_score(delta)
-#endregion
 
-#region Trick Scoring
 
 ## Initializes scoring for a new trick.
 func _begin_trick_scoring(trick: Trick):
@@ -539,6 +545,11 @@ func _on_stoppie_stopped():
     player_controller.bike_physics._bike_reset()
     player_controller.state.speed = 0.0
     player_controller.velocity = Vector3.ZERO
+
+## Transitions to TRICK_AIR when launching from TRICK_GROUND.
+func _on_launched():
+    if player_controller.state.player_state == BikeState.PlayerState.TRICK_GROUND:
+        player_controller.state.request_state_change(BikeState.PlayerState.TRICK_AIR)
 
 
 ## Sets force stoppie parameters from crash system.

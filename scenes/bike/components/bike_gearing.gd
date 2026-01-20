@@ -150,12 +150,8 @@ func _blend_rpm_to_target(delta: float):
 
     # When clutch is fully engaged, RPM follows wheel speed
     if engagement > 0.95:
-        if !player_controller.state.isHardDifficulty():
-            # Easy/Medium: smooth rev-matching when shifting (RPM blends to new gear's wheel RPM)
-            player_controller.state.current_rpm = lerpf(player_controller.state.current_rpm, wheel_rpm, br.rev_match_speed * delta)
-        else:
-            # Hard: RPM locked directly to wheel speed
-            player_controller.state.current_rpm = wheel_rpm
+        # Smooth rev-matching when shifting (RPM blends to new gear's wheel RPM)
+        player_controller.state.current_rpm = lerpf(player_controller.state.current_rpm, wheel_rpm, br.rev_match_speed * delta)
     else:
         # RPM blend speed: fast when free-revving, slower when engaged to wheel
         var blend_speed = lerpf(12.0, br.rpm_blend_speed, engagement)

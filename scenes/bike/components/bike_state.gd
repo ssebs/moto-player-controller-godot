@@ -70,6 +70,18 @@ func isMediumDifficulty() -> bool:
 func isHardDifficulty() -> bool:
 	return difficulty == PlayerDifficulty.HARD
 
+## Returns true if the given state is a ground state (IDLE, RIDING, TRICK_GROUND)
+func isOnGround(ps: PlayerState = player_state) -> bool:
+	return ps in [PlayerState.IDLE, PlayerState.RIDING, PlayerState.TRICK_GROUND]
+
+## Returns true if the given state is an airborne state (AIRBORNE, TRICK_AIR)
+func isAirborne(ps: PlayerState = player_state) -> bool:
+	return ps in [PlayerState.AIRBORNE, PlayerState.TRICK_AIR]
+
+## Returns true if the given state is a trick state (TRICK_GROUND, TRICK_AIR)
+func isTricking(ps: PlayerState = player_state) -> bool:
+	return ps in [PlayerState.TRICK_GROUND, PlayerState.TRICK_AIR]
+
 
 # Physics state
 var speed: float = 0.0
