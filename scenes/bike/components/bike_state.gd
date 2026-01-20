@@ -21,21 +21,23 @@ enum PlayerState {
 	CRASHED # Waiting for respawn
 }
 
-const VALID_TRANSITIONS: Dictionary = {
-	PlayerState.IDLE: [PlayerState.RIDING, PlayerState.AIRBORNE, PlayerState.CRASHING],
-	PlayerState.RIDING: [PlayerState.IDLE, PlayerState.AIRBORNE, PlayerState.TRICK_GROUND, PlayerState.CRASHING],
-	PlayerState.AIRBORNE: [PlayerState.RIDING, PlayerState.TRICK_AIR, PlayerState.TRICK_GROUND, PlayerState.CRASHING],
-	PlayerState.TRICK_AIR: [PlayerState.AIRBORNE, PlayerState.RIDING, PlayerState.TRICK_GROUND, PlayerState.CRASHING],
-	PlayerState.TRICK_GROUND: [PlayerState.RIDING, PlayerState.AIRBORNE, PlayerState.CRASHING],
-	PlayerState.CRASHING: [PlayerState.CRASHED],
-	PlayerState.CRASHED: [PlayerState.IDLE]
-}
+# const VALID_TRANSITIONS: Dictionary = {
+# 	PlayerState.IDLE: [PlayerState.RIDING, PlayerState.AIRBORNE, PlayerState.CRASHING],
+# 	PlayerState.RIDING: [PlayerState.IDLE, PlayerState.AIRBORNE, PlayerState.TRICK_GROUND, PlayerState.CRASHING],
+# 	PlayerState.AIRBORNE: [PlayerState.RIDING, PlayerState.TRICK_AIR, PlayerState.TRICK_GROUND, PlayerState.CRASHING],
+# 	PlayerState.TRICK_AIR: [PlayerState.AIRBORNE, PlayerState.RIDING, PlayerState.TRICK_GROUND, PlayerState.CRASHING],
+# 	PlayerState.TRICK_GROUND: [PlayerState.RIDING, PlayerState.AIRBORNE, PlayerState.CRASHING],
+# 	PlayerState.CRASHING: [PlayerState.CRASHED],
+# 	PlayerState.CRASHED: [PlayerState.IDLE]
+# }
 
 func request_state_change(new_state: PlayerState) -> bool:
 	if new_state == player_state:
 		return false
-	if new_state not in VALID_TRANSITIONS.get(player_state, []):
-		return false
+	# 
+	# if new_state not in VALID_TRANSITIONS.get(player_state, []):
+	# 	push_error("new_state not in VALID_TRANSITIONS. %s" % get_player_state_as_str(new_state))
+	# 	return false
 	var old = player_state
 	player_state = new_state
 	# print("StateChange: %s => %s" % [old, new_state])

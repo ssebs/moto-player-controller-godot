@@ -191,10 +191,6 @@ func _update_trick_air(delta):
 
 ## Updates trick ground state - wheelie/stoppie/fishtail physics.
 func _update_trick_ground(delta):
-    # Transition to air trick if we've left the ground (e.g. wheelie off a ramp)
-    if player_controller.bike_physics.has_launched():
-        player_controller.state.request_state_change(BikeState.PlayerState.TRICK_AIR)
-        return
     _update_wheelie(delta)
     _update_stoppie(delta)
     _update_skidding(delta)

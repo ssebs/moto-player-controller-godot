@@ -38,7 +38,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 ## In Progress:
 - [ ] Simplify bike_tricks logic
   - [ ] WIP from plan
-  - [ ] Gravity no longer works?
+  - [x] Gravity no longer works?
 
 ## TODO:
 
