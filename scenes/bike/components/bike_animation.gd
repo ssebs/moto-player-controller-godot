@@ -5,6 +5,7 @@ class_name BikeAnimation extends BikeComponent
 
 # Local state
 var butt_position_offset: float = 0.0
+var should_disable_butt_movement: bool = false
 
 #region BikeComponent lifecycle
 func _bike_setup(p_controller: PlayerController):
@@ -101,7 +102,9 @@ func _on_trick_started(trick: int):
     match trick:
         BikeTricks.Trick.HEEL_CLICKER:
             player_controller.anim_player.play(_get_anim("heel_clicker"))
+            should_disable_butt_movement = true
         BikeTricks.Trick.KICKFLIP:
+            should_disable_butt_movement = true
             player_controller.anim_player.play(_get_anim("kickflip"))
 
 func _on_trick_ended(trick: int, _score: float, _duration: float):
@@ -109,10 +112,13 @@ func _on_trick_ended(trick: int, _score: float, _duration: float):
         BikeTricks.Trick.HEEL_CLICKER, BikeTricks.Trick.KICKFLIP:
             await player_controller.anim_player.animation_finished
             player_controller.anim_player.play(_get_anim("RESET"))
+            should_disable_butt_movement = false
 #endregion
 
 #region MISC / implementation details
 func _update_butt_lean_animation(delta: float, total_lean: float):
+    if should_disable_butt_movement:
+        return
     var target_offset = signf(total_lean) * player_controller.bike_resource.max_butt_offset if absf(total_lean) > 0.1 else 0.0
     butt_position_offset = lerpf(butt_position_offset, -target_offset, lean_lerp_speed * delta)
 
@@ -123,6 +129,8 @@ func _update_butt_lean_animation(delta: float, total_lean: float):
 
 ## Rotate (lean, wheelie angles, etc.)
 func _update_bike_root_rotation(total_lean: float):
+    if should_disable_butt_movement:
+        return
     player_controller.rotation_root.transform = Transform3D.IDENTITY
     player_controller.collision_shape.rotation.x = deg_to_rad(-90.0)
 

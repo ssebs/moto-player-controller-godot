@@ -36,6 +36,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 # Planning / Tasks
 
 ## In Progress:
+
 - [ ] If in wheelie, pressing rear brake should lower target. front brake should do nothing
 
 ## TODO:
@@ -52,6 +53,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Speed carries over even when crashing into collider
 - [ ] Cleanup animations / add some polish
   - [ ] Idle => Riding animation + turning snappy
+- [ ] Don't allow boost during trick
 - [ ] Fix bugs
 - [ ] Add back countersteering
 - [ ] first person camera
@@ -59,6 +61,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## Done:
 
+- [x] kickflip broken animation - butt target needs to be disabled during trick
 - [x] add balance point wheele (much less throttle needed if angle > 60deg)
       `wheelie_balance_point_angle`
 - [x] Simplify bike_tricks logic
