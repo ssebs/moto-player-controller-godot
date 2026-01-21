@@ -41,6 +41,20 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - [ ] Update planning for this project!
 - [ ] If in wheelie, pressing rear brake should lower target. front brake should do nothing
 
+## Feedback
+
+- Pedro doesn't like:
+  - the camera snaps back when letting go
+- Pedro ideas:
+  - helldivers like combos
+  - Bobble head cosmetic
+  - "Jiggle Physics" cosmetics see - Marvel Rivals
+  - Upload PNG for face, or logo, etc.
+- Me:
+  - Reduce FOV speed change on mini bike
+  - Leaning animation broken after some time
+  - Transparent cosmetic - or xray / etc
+
 ## TODO:
 
 - [ ] Force state machines logic
@@ -58,7 +72,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 - [ ] Don't allow boost during trick
 - [ ] Fix bugs
 - [ ] Add back countersteering
-- [ ] first person camera
+- [ ] first person camera (for racing / weaving thru traffic)
 - [ ] Improved KBM controls
 
 ## Done:
