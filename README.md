@@ -31,17 +31,7 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - Failing a trick (hit the ground before you're back on the bike)
 - [Controls](https://www.padcrafter.com/?templates=Controller+Scheme+1&leftTrigger=Front+Brake&rightTrigger=Throttle&leftBumper=Clutch&leftStick=Steer+%26+Lean&dpadUp=&dpadRight=&aButton=Rear+Brake&yButton=&xButton=Shift+Down&bButton=Shift+Up&rightBumper=Trick&rightStick=Camera.+If+RB+held%2C+Trick&leftStickClick=Switch+Bike&backButton=Change+Difficulty)
 
----
-
-# Planning / Tasks
-
-## In Progress:
-
-- [ ] rethink how components should interact in current controller. E.g. what's a good way of managing tricks? It's hard to add more right now, too coupled.
-  - [ ] Update planning for this project!
-- [ ] If in wheelie, pressing rear brake should lower target. front brake should do nothing
-
-## Feedback
+## Peer Feedback
 
 - Pedro doesn't like:
   - the camera snaps back when letting go
@@ -54,6 +44,16 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - Reduce FOV speed change on mini bike
   - Leaning animation broken after some time
   - Transparent cosmetic - or xray / etc
+
+---
+
+# Planning / Tasks
+
+## In Progress:
+
+- [ ] rethink how components should interact in current controller. E.g. what's a good way of managing tricks? It's hard to add more right now, too coupled.
+  - [ ] Update planning for this project!
+- [ ] If in wheelie, pressing rear brake should lower target. front brake should do nothing
 
 ## TODO:
 
