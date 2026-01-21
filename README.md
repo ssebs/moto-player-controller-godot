@@ -37,6 +37,8 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
 
 ## In Progress:
 
+- [ ] rethink how components should interact in current controller. E.g. what's a good way of managing tricks? It's hard to add more right now, too coupled.
+  - [ ] Update planning for this project!
 - [ ] If in wheelie, pressing rear brake should lower target. front brake should do nothing
 
 ## TODO:
