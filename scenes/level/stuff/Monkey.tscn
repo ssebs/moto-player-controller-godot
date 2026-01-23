@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://dhctonbd3q7ok"]
+
+[ext_resource type="PackedScene" uid="uid://b2dk77n3nmdqg" path="res://assets/level/misc/PainterlyShaderMonkey.glb" id="1_otcay"]
+[ext_resource type="Texture2D" uid="uid://gingdxefrwet" path="res://assets/level/misc/PainterlyShaderNormalTex.png" id="3_q6rcw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u3oj7"]
+albedo_color = Color(0.91566664, 0.53999996, 1, 1)
+normal_enabled = true
+normal_texture = ExtResource("3_q6rcw")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="PainterlyShaderMonkey" parent="." instance=ExtResource("1_otcay")]
+
+[node name="Suzanne" parent="PainterlyShaderMonkey" index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_u3oj7")
+
+[editable path="PainterlyShaderMonkey"]
