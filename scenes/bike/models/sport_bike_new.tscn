@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://chwhb0shrugks"]
+
+[ext_resource type="PackedScene" uid="uid://c4o1uhs4okfn8" path="res://assets/bikes/SportBike/SportBike.glb" id="1_exjdd"]
+[ext_resource type="Material" uid="uid://beqbhkx6mqkil" path="res://assets/bikes/SportBike/OriginalMaterial.tres" id="2_bnnap"]
+
+[node name="SportBikeNEW" type="Node3D"]
+
+[node name="SportBike" parent="." instance=ExtResource("1_exjdd")]
+
+[node name="Motorcycle" parent="SportBike" index="0"]
+surface_material_override/0 = ExtResource("2_bnnap")
+
+[editable path="SportBike"]

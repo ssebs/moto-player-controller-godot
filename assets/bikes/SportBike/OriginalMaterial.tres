@@ -1,0 +1,9 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://beqbhkx6mqkil"]
+
+[ext_resource type="Texture2D" uid="uid://c78c1llhvrqtk" path="res://assets/bikes/SportBike/BlueNewColor.png" id="1_22ago"]
+[ext_resource type="Texture2D" uid="uid://bwkkaiculrdpr" path="res://assets/bikes/SportBike/SportBikeNormals.png" id="2_exogj"]
+
+[resource]
+albedo_texture = ExtResource("1_22ago")
+normal_enabled = true
+normal_texture = ExtResource("2_exogj")
