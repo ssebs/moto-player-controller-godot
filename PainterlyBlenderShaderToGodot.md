@@ -5,7 +5,9 @@
 **First, make sure your model is UV unwrapped.**
 
 - Edit mode (Tab) > Press `U` > **Smart UV Project** or **Unwrap**
-a
+
+Look at [HowToPainterlyShader2](./img/HowToPainterlyShader2)
+
 ---
 
 ## Part 1: Creating the Painterly Shader Material
