@@ -3,6 +3,7 @@
 Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally created for [Dank Nooner](https://github.com/ssebs/DankNooner), this is the motorcycle + controls + driving physics implementation.
 
 ## Latest status of this:
+
 - There are still a few todo's, but I've decided that they're not worth implementing in this player controller. There's enough of a refactor needed that I may as well just start work on Dank Nooner.
 - I've released the final pre-release at https://github.com/ssebs/moto-player-controller-godot/releases/tag/v1.0
 - All future changes will be found at [Dank Nooner](https://github.com/ssebs/DankNooner)'s repo
@@ -36,20 +37,6 @@ Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally c
   - Failing a trick (hit the ground before you're back on the bike)
 - [Controls](https://www.padcrafter.com/?templates=Controller+Scheme+1&leftTrigger=Front+Brake&rightTrigger=Throttle&leftBumper=Clutch&leftStick=Steer+%26+Lean&dpadUp=&dpadRight=&aButton=Rear+Brake&yButton=&xButton=Shift+Down&bButton=Shift+Up&rightBumper=Trick&rightStick=Camera.+If+RB+held%2C+Trick&leftStickClick=Switch+Bike&backButton=Change+Difficulty)
 
-## Peer Feedback
-
-- Pedro doesn't like:
-  - the camera snaps back when letting go
-- Pedro ideas:
-  - helldivers like combos
-  - Bobble head cosmetic
-  - "Jiggle Physics" cosmetics see - Marvel Rivals
-  - Upload PNG for face, or logo, etc.
-- Me:
-  - Reduce FOV speed change on mini bike
-  - Leaning animation broken after some time
-  - Transparent cosmetic - or xray / etc
-
 ## Architecture
 
 <details>
@@ -67,7 +54,6 @@ Click to see Architecture Diagram
 # Planning / Tasks
 
 ## In Progress:
-- [ ] Close out this repo
 
 ## TODO:
 
@@ -96,6 +82,7 @@ Click to see Architecture Diagram
 
 ## Done:
 
+- [x] Close out this repo
 - [x] kickflip broken animation - butt target needs to be disabled during trick
 - [x] add balance point wheele (much less throttle needed if angle > 60deg)
       `wheelie_balance_point_angle`
