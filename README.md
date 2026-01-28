@@ -2,6 +2,11 @@
 
 Motorcycle Player Controller (+ bike and world) written in Godot 4. Originally created for [Dank Nooner](https://github.com/ssebs/DankNooner), this is the motorcycle + controls + driving physics implementation.
 
+## Latest status of this:
+- There are still a few todo's, but I've decided that they're not worth implementing in this player controller. There's enough of a refactor needed that I may as well just start work on Dank Nooner.
+- I've released the final pre-release at https://github.com/ssebs/moto-player-controller-godot/releases/tag/v1.0
+- All future changes will be found at [Dank Nooner](https://github.com/ssebs/DankNooner)'s repo
+
 ## Gameplay
 
 [Gameplay YT Video](https://youtu.be/zCvxL6z0aGQ)
@@ -62,15 +67,15 @@ Click to see Architecture Diagram
 # Planning / Tasks
 
 ## In Progress:
+- [ ] Close out this repo
+
+## TODO:
 
 - [ ] Redesign trick system
   - [ ] Start via docs/plans/TRICK_PLAN.md
   - [ ] Continue w/ scoring being separate?
   - [ ] Also see img/architecture.excalidraw
 - [ ] If in wheelie, pressing rear brake should lower target. front brake should do nothing
-
-## TODO:
-
 - [ ] Force state machines logic
   - [ ] Lots of code uses e.g.
     - `var in_stoppie = player_controller.state.pitch_angle < deg_to_rad(-5)` instead of state.tricks / tricks in wheelie
